@@ -10,6 +10,12 @@ jobs:
       - uses: github/super-linter@v3
         name: lint files
         env:
+          VALIDATE_BASH: true
           VALIDATE_CSS: false
           VALIDATE_JAVASCRIPT_ES: false
           VALIDATE_JAVASCRIPT_STANDARD: false
+          VALIDATE_GO: true
+          VALIDATE_MD: true
+          VALIDATE_TERRAFORM: true
+          VALIDATE_TERRAFORM_TERRASCAN: true
+          VALIDATE_YAML: true

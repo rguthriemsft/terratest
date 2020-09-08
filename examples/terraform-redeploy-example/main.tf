@@ -247,8 +247,9 @@ resource "aws_alb_listener_rule" "send_all_to_web_servers" {
   }
 
   condition {
-    field  = "path-pattern"
-    values = ["*"]
+    path_pattern {
+      values = ["*"]
+    }
   }
 }
 

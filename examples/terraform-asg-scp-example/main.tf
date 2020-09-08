@@ -30,7 +30,6 @@ resource "aws_launch_template" "sample_launch_template" {
 
 resource "aws_autoscaling_group" "sample_asg" {
   vpc_zone_identifier = data.aws_subnet_ids.default_subnets.ids
-  availability_zones  = []
 
   desired_capacity = 1
   max_size         = 1

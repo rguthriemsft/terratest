@@ -60,7 +60,7 @@ var stableRegions = []string{
 	"uaenorth",
 }
 
-// GetStableRandomRegion gets a randomly chosen Azure region that is considered stable. Like GetRandomRegion, you can
+// GetRandomStableRegion gets a randomly chosen Azure region that is considered stable. Like GetRandomRegion, you can
 // further restrict the stable region list using approvedRegions and forbiddenRegions. We consider stable regions to be
 // those that have been around for at least 1 year.
 // Note that regions in the approvedRegions list that are not considered stable are ignored.

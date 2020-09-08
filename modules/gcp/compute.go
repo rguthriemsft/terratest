@@ -557,12 +557,12 @@ func getRandomInstance(t testing.TestingT, ig InstanceGroup, name string, region
 func getRandomInstanceE(t testing.TestingT, ig InstanceGroup, name string, region string, size int64, projectID string) (*Instance, error) {
 	instanceIDs := ig.GetInstanceIds(t)
 	if len(instanceIDs) == 0 {
-		return nil, fmt.Errorf("Could not find any instances in Regional Instance Group %s in Region %s", name, region)
+		return nil, fmt.Errorf("Could not find any instances in Regional Instance Group or Zonal Instance Group %s in Region %s", name, region)
 	}
 
 	clusterSize := int(size)
 	if len(instanceIDs) != clusterSize {
-		return nil, fmt.Errorf("Expected Regional Instance Group %s in Region %s to have %d instances, but found %d", name, region, clusterSize, len(instanceIDs))
+		return nil, fmt.Errorf("Expected Regional Instance Group or Zonal Instance Group %s in Region %s to have %d instances, but found %d", name, region, clusterSize, len(instanceIDs))
 	}
 
 	randIndex := random.Random(0, clusterSize-1)

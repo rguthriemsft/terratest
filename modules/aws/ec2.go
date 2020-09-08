@@ -388,6 +388,142 @@ func GetLaunchPermissionsForAmiE(t testing.TestingT, awsRegion string, amiID str
 	return output.LaunchPermissions, nil
 }
 
+// GetRecommendedInstanceType takes in a list of EC2 instance types (e.g., "t2.micro", "t3.micro") and returns the
+// first instance type in the list that is available in all Availability Zones (AZs) in the given region. If there's no
+// instance available in all AZs, this function exits with an error. This is useful because certain instance types,
+// such as t2.micro, are not available in some of the newer AZs, while t3.micro is not available in some of the older
+// AZs, and if you have code that needs to run on a "small" instance across all AZs in many different regions, you can
+// use this function to automatically figure out which instance type you should use.
+// This function will fail the test if there is an error.
+func GetRecommendedInstanceType(t testing.TestingT, region string, instanceTypeOptions []string) string {
+	out, err := GetRecommendedInstanceTypeE(t, region, instanceTypeOptions)
+	require.NoError(t, err)
+	return out
+}
+
+// GetRecommendedInstanceTypeE takes in a list of EC2 instance types (e.g., "t2.micro", "t3.micro") and returns the
+// first instance type in the list that is available in all Availability Zones (AZs) in the given region. If there's no
+// instance available in all AZs, this function exits with an error. This is useful because certain instance types,
+// such as t2.micro, are not available in some of the newer AZs, while t3.micro is not available in some of the older
+// AZs. If you have code that needs to run on a "small" instance across all AZs in many different regions, you can
+// use this function to automatically figure out which instance type you should use.
+func GetRecommendedInstanceTypeE(t testing.TestingT, region string, instanceTypeOptions []string) (string, error) {
+	client, err := NewEc2ClientE(t, region)
+	if err != nil {
+		return "", err
+	}
+	return GetRecommendedInstanceTypeWithClientE(t, client, instanceTypeOptions)
+}
+
+// GetRecommendedInstanceTypeWithClientE takes in a list of EC2 instance types (e.g., "t2.micro", "t3.micro") and returns the
+// first instance type in the list that is available in all Availability Zones (AZs) in the given region. If there's no
+// instance available in all AZs, this function exits with an error. This is useful because certain instance types,
+// such as t2.micro, are not available in some of the newer AZs, while t3.micro is not available in some of the older
+// AZs. If you have code that needs to run on a "small" instance across all AZs in many different regions, you can
+// use this function to automatically figure out which instance type you should use.
+// This function expects an authenticated EC2 client from the AWS SDK Go library.
+func GetRecommendedInstanceTypeWithClientE(t testing.TestingT, ec2Client *ec2.EC2, instanceTypeOptions []string) (string, error) {
+	availabilityZones, err := getAllAvailabilityZonesE(ec2Client)
+	if err != nil {
+		return "", err
+	}
+
+	instanceTypeOfferings, err := getInstanceTypeOfferingsE(ec2Client, instanceTypeOptions)
+	if err != nil {
+		return "", err
+	}
+
+	return pickRecommendedInstanceTypeE(availabilityZones, instanceTypeOfferings, instanceTypeOptions)
+}
+
+// pickRecommendedInstanceTypeE returns the first instance type from instanceTypeOptions that is available in all the
+// AZs in availabilityZones based on the availability data in instanceTypeOfferings. If none of the instance types are
+// available in all AZs, this function returns an error.
+func pickRecommendedInstanceTypeE(availabilityZones []string, instanceTypeOfferings []*ec2.InstanceTypeOffering, instanceTypeOptions []string) (string, error) {
+	// O(n^3) for the win!
+	for _, instanceType := range instanceTypeOptions {
+		if instanceTypeExistsInAllAzs(instanceType, availabilityZones, instanceTypeOfferings) {
+			return instanceType, nil
+		}
+	}
+
+	return "", NoInstanceTypeError{InstanceTypeOptions: instanceTypeOptions, Azs: availabilityZones}
+}
+
+// instanceTypeExistsInAllAzs returns true if the given inistance type exists in all the given availabilityZones based
+// on the availability data in instanceTypeOfferings
+func instanceTypeExistsInAllAzs(instanceType string, availabilityZones []string, instanceTypeOfferings []*ec2.InstanceTypeOffering) bool {
+	if len(availabilityZones) == 0 || len(instanceTypeOfferings) == 0 {
+		return false
+	}
+
+	for _, az := range availabilityZones {
+		if !hasOffering(instanceTypeOfferings, az, instanceType) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// hasOffering returns true if the given availability zone and instance type are one of the offerings in
+// instanceTypeOfferings
+func hasOffering(instanceTypeOfferings []*ec2.InstanceTypeOffering, availabilityZone string, instanceType string) bool {
+	for _, offering := range instanceTypeOfferings {
+		if aws.StringValue(offering.InstanceType) == instanceType && aws.StringValue(offering.Location) == availabilityZone {
+			return true
+		}
+	}
+
+	return false
+}
+
+// getInstanceTypeOfferingsE returns the instance types from the given list that are available in the region configured
+// in the given EC2 client
+func getInstanceTypeOfferingsE(client *ec2.EC2, instanceTypeOptions []string) ([]*ec2.InstanceTypeOffering, error) {
+	input := ec2.DescribeInstanceTypeOfferingsInput{
+		LocationType: aws.String(ec2.LocationTypeAvailabilityZone),
+		Filters: []*ec2.Filter{
+			{
+				Name:   aws.String("instance-type"),
+				Values: aws.StringSlice(instanceTypeOptions),
+			},
+		},
+	}
+
+	out, err := client.DescribeInstanceTypeOfferings(&input)
+	if err != nil {
+		return nil, err
+	}
+
+	return out.InstanceTypeOfferings, nil
+}
+
+// getAllAvailabilityZonesE returns all the available AZs in the region configured in the given EC2 client
+func getAllAvailabilityZonesE(client *ec2.EC2) ([]string, error) {
+	input := ec2.DescribeAvailabilityZonesInput{
+		Filters: []*ec2.Filter{
+			{
+				Name:   aws.String("state"),
+				Values: aws.StringSlice([]string{"available"}),
+			},
+		},
+	}
+
+	out, err := client.DescribeAvailabilityZones(&input)
+	if err != nil {
+		return nil, err
+	}
+
+	var azs []string
+
+	for _, az := range out.AvailabilityZones {
+		azs = append(azs, aws.StringValue(az.ZoneName))
+	}
+
+	return azs, nil
+}
+
 // NewEc2Client creates an EC2 client.
 func NewEc2Client(t testing.TestingT, region string) *ec2.EC2 {
 	client, err := NewEc2ClientE(t, region)

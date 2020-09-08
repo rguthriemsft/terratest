@@ -243,7 +243,7 @@ func HTTPDoWithValidationRetryE(
 	body []byte, headers map[string]string, expectedStatus int,
 	expectedBody string, retries int, sleepBetweenRetries time.Duration, tlsConfig *tls.Config,
 ) error {
-	_, err := retry.DoWithRetryE(t, fmt.Sprintf("HTTP GET to URL %s", url), retries,
+	_, err := retry.DoWithRetryE(t, fmt.Sprintf("HTTP %s to URL %s", method, url), retries,
 		sleepBetweenRetries, func() (string, error) {
 			bodyReader := bytes.NewReader(body)
 			return "", HTTPDoWithValidationE(t, method, url, bodyReader, headers, expectedStatus, expectedBody, tlsConfig)

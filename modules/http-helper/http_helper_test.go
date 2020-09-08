@@ -103,7 +103,7 @@ func TestRequestTimeout(t *testing.T) {
 	if err == nil {
 		t.Error("handler didn't return a timeout error")
 	}
-	if !strings.Contains(err.Error(), "request canceled") {
+	if !strings.Contains(err.Error(), "Client.Timeout") {
 		t.Errorf("handler didn't return an expected error, got %q", err)
 	}
 }

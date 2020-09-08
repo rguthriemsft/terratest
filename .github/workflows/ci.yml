@@ -42,15 +42,6 @@ jobs:
         with:
           repository: ${{ github.event.inputs.repo }}
           ref: ${{ github.event.inputs.branch }}
-      - name: list module files to lint
-        run: |
-          [ -d "modules/azure" ] && ls -li "modules/azure"
-      - name: lint modules/azure folder
-        id: azure_module_lint
-        uses: golangci/golangci-lint-action@v2.2.0
-        with:
-          version: v1.31
-          working-directory: modules/azure
       - name: list test files to lint
         run: |
           [ -d "test/azure" ] && ls -li "test/azure"
@@ -60,6 +51,15 @@ jobs:
         with:
           version: v1.31
           working-directory: test/azure
+      - name: list module files to lint
+        run: |
+          [ -d "modules/azure" ] && ls -li "modules/azure"
+      - name: lint modules/azure folder
+        id: azure_module_lint
+        uses: golangci/golangci-lint-action@v2.2.0
+        with:
+          version: v1.31
+          working-directory: modules/azure  
       - name: login to azure cli
         uses: azure/login@v1.1
         with:

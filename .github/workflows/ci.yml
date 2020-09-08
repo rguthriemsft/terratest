@@ -51,6 +51,7 @@ jobs:
         with:
           version: v1.31
           working-directory: test/azure
+          args: --build-tags=azure 
       - name: list module files to lint
         run: |
           [ -d "modules/azure" ] && ls -li "modules/azure"

@@ -108,9 +108,21 @@ jobs:
           # if all the previous steps finished successfully, create a comment on the PR with the "success" information
           if [ "$TEST_RESULT" == "success" ] && [ "$TEST_LINT_RESULT" == "success" ] && [ "$MODULE_LINT_RESULT" == "success" ]; then
             BODY_PAYLOAD="[Microsoft CI Bot] TL;DR; success :thumbsup:\n\nYou can check the status of the CI Pipeline logs here ; https://github.com/${CURRENT_REPOSITORY}/actions/runs/$RUN_ID"
-            curl --request POST --header "Authorization: token ${GITHUB_TOKEN}" --header "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${TARGET_REPOSITORY}/issues/${TARGET_PR}/comments --data "{\"body\":\"${BODY_PAYLOAD}\"}"
           # if at least one of the previous steps failed, create a comment on the PR with the "failure" information
           elif [ "$TEST_RESULT" == "failure" ] || [ "$TEST_LINT_RESULT" == "failure" ] || [ "$MODULE_LINT_RESULT" == "failure" ]; then
             BODY_PAYLOAD="[Microsoft CI Bot] TL;DR; failure :facepalm:\n\nYou can check the status of the CI Pipeline logs here ; https://github.com/${CURRENT_REPOSITORY}/actions/runs/$RUN_ID"
-            curl --request POST --header "Authorization: token ${GITHUB_TOKEN}" --header "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${TARGET_REPOSITORY}/issues/${TARGET_PR}/comments --data "{\"body\":\"${BODY_PAYLOAD}\"}"
           fi
+
+          [[ -z "$BODY_PAYLOAD" ]] && {
+            [[ $TARGET_REPOSITORY =~ (.*)/(.*)$ ]]
+            TARGET_REPO_OWNER=${BASH_REMATCH[1]}
+            TARGET_REPO_NAME=${BASH_REMATCH[2]}
+
+            QUERY_PR_ID="query findPRID { repository(owner: \\\"$TARGET_REPO_OWNER\\\", name: \\\"$TARGET_REPO_NAME\\\") { pullRequest(number: $TARGET_PR) { id } } }"
+
+            PR_ID=$(curl --silent --request POST --header "Authorization: Bearer ${GITHUB_TOKEN}" --data-raw "{\"query\":\"${QUERY_PR_ID}\"}" "https://api.github.com/graphql" | jq -r '.data.repository.pullRequest.id')
+
+            MUTATION_ADD_COMMENT="mutation addComment { addComment(input: {subjectId: \\\"${PR_ID}\\\", body: \\\"${BODY_PAYLOAD}\\\"}) { commentEdge { node { createdAt body } } subject { id } } }"
+
+            curl --request POST --header "Authorization: Bearer ${GITHUB_TOKEN}" --data-raw "{\"query\":\"${MUTATION_ADD_COMMENT}\"}" "https://api.github.com/graphql"
+          }

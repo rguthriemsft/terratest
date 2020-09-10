@@ -112,6 +112,9 @@ jobs:
           # if no PR number provided, simply exit...
           [[ -z "$TARGET_PR" ]] && { echo "No PR Number provided, exiting..." ; exit 0; }
 
+          echo "PR Number provided... ${TARGET_REPOSITORY}:#${TARGET_PR}"
+
+          BODY_PAYLOAD=""
           # if all the previous steps finished successfully, create a comment on the PR with the "success" information
           if [ "$TEST_RESULT" == "success" ] && [ "$TEST_LINT_RESULT" == "success" ] && [ "$MODULE_LINT_RESULT" == "success" ]; then
             BODY_PAYLOAD="[Microsoft CI Bot] TL;DR; success :thumbsup:\n\nYou can check the status of the CI Pipeline logs here ; https://github.com/${CURRENT_REPOSITORY}/actions/runs/$RUN_ID"
@@ -120,14 +123,20 @@ jobs:
             BODY_PAYLOAD="[Microsoft CI Bot] TL;DR; failure :facepalm:\n\nYou can check the status of the CI Pipeline logs here ; https://github.com/${CURRENT_REPOSITORY}/actions/runs/$RUN_ID"
           fi
 
+          echo "Comment message is ready..."
+          echo "${BODY_PAYLOAD}"
+
           # if pipeline has something to report back to the PR
           [[ -z "$BODY_PAYLOAD" ]] && {
+            echo "Here is the target repository: ${TARGET_REPOSITORY}"
             # TARGET_REPOSITORY is in {owner}/{repo format}
             [[ $TARGET_REPOSITORY =~ (.*)/(.*)$ ]]
             # take the {owner} piece from the TARGET_REPOSITORY variable
             TARGET_REPO_OWNER=${BASH_REMATCH[1]}
             # take the {repo} piece from the TARGET_REPOSITORY variable
             TARGET_REPO_NAME=${BASH_REMATCH[2]}
+
+            echo "Target repository is parsed: ${TARGET_REPO_OWNER} <-> ${TARGET_REPO_NAME}"
 
             # create the query string to get the pr id
             QUERY_PR_ID="query findPRID { repository(owner: \\\"$TARGET_REPO_OWNER\\\", name: \\\"$TARGET_REPO_NAME\\\") { pullRequest(number: $TARGET_PR) { id } } }"

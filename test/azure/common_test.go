@@ -1,5 +1,4 @@
-// +build azure
-// +build azure,common
+// +build azure azureslim,common
 
 // NOTE: We use build tags to differentiate azure testing because we currently do not have azure access setup for
 // CircleCI.
@@ -17,6 +16,7 @@ import (
 func TestGetTargetAzureSubscription(t *testing.T) {
 	t.Parallel()
 
+	u := "test"
 	//Check that ARM_SUBSCRIPTION_ID env variable is set, CI requires this value to run all test.
 	require.NotEmpty(t, os.Getenv(azure.AzureSubscriptionID), "ARM_SUBSCRIPTION_ID environment variable not set.")
 

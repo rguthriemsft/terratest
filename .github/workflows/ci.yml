@@ -27,11 +27,11 @@ on:
         required: true
       target_repository:
         description: 'Name of the official terratest repo'
-        required: true
+        required: false
         default: 'gruntwork-io/terratest'
       target_pr:
         description: 'PR number on the official terratest repo'
-        required: true
+        required: false
 
 jobs:
   ci-job:
@@ -45,24 +45,25 @@ jobs:
       - name: download go dependencies
         run: |
           go mod download
-      - name: list module files to lint
+      - name: install golangci-lint binary
         run: |
-          [ -d "modules/azure" ] && ls -li "modules/azure"
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ./bin v1.31.0
       - name: lint modules/azure folder
         id: azure_module_lint
-        uses: golangci/golangci-lint-action@v2.2.0
-        with:
-          version: v1.30
-          working-directory: modules/azure
-      - name: list test files to lint
         run: |
-          [ -d "test/azure" ] && ls -li "test/azure"
+          # list files to be linted
+          [ -d "modules/azure" ] && ls -li "modules/azure"
+
+          # run the linter
+          ./bin/golangci-lint run ./modules/azure/ --build-tags=azure
       - name: lint test/azure folder
         id: azure_test_lint
-        uses: golangci/golangci-lint-action@v2.2.0
-        with:
-          version: v1.30
-          working-directory: test/azure
+        run: |
+          # list files to be linted
+          [ -d "test/azure" ] && ls -li "test/azure"
+
+          # run the linter
+          ./bin/golangci-lint run ./test/azure/ --build-tags=azure
       - name: login to azure cli
         uses: azure/login@v1.1
         with:
@@ -108,6 +109,9 @@ jobs:
           TEST_LINT_RESULT: ${{ steps.azure_test_lint.conclusion }}
           MODULE_LINT_RESULT: ${{ steps.azure_module_lint.conclusion }}
         run: |
+          # if no PR number provided, simply exit...
+          [[ -z "$TARGET_PR" ]] && { echo "No PR Number provided, exiting..." ; exit 0; }
+
           # if all the previous steps finished successfully, create a comment on the PR with the "success" information
           if [ "$TEST_RESULT" == "success" ] && [ "$TEST_LINT_RESULT" == "success" ] && [ "$MODULE_LINT_RESULT" == "success" ]; then
             BODY_PAYLOAD="[Microsoft CI Bot] TL;DR; success :thumbsup:\n\nYou can check the status of the CI Pipeline logs here ; https://github.com/${CURRENT_REPOSITORY}/actions/runs/$RUN_ID"

@@ -6,6 +6,7 @@
 package azure
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
@@ -14,6 +15,9 @@ import (
 
 func TestGetTargetAzureSubscription(t *testing.T) {
 	t.Parallel()
+
+	//Check that ARM_SUBSCRIPTION_ID env variable is set, CI requires this value to run all test.
+	require.NotEmpty(t, os.Getenv(azure.AzureSubscriptionID), "ARM_SUBSCRIPTION_ID environment variable not set.")
 
 	type args struct {
 		subID string
@@ -26,7 +30,7 @@ func TestGetTargetAzureSubscription(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "subIDProvidedAsArg", args: args{subID: "test"}, want: "test", wantErr: false},
-		{name: "subIDNotProvided", args: args{subID: ""}, want: "", wantErr: true},
+		{name: "subIDNotProvidedFallbackToEnv", args: args{subID: ""}, want: os.Getenv(azure.AzureSubscriptionID), wantErr: false},
 	}
 
 	for _, tt := range tests {

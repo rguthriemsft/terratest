@@ -50,20 +50,18 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ./bin v1.31.0
       - name: lint modules/azure folder
         id: azure_module_lint
-        run: |
-          # list files to be linted
-          [ -d "modules/azure" ] && ls -li "modules/azure"
-
-          # run the linter
-          ./bin/golangci-lint run -v ./modules/azure/ --build-tags=azure
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.31
+          working-directory: modules/azure
+          args: -v --build-tags=azure
       - name: lint test/azure folder
         id: azure_test_lint
-        run: |
-          # list files to be linted
-          [ -d "test/azure" ] && ls -li "test/azure"
-
-          # run the linter
-          ./bin/golangci-lint run -v ./test/azure/ --build-tags=azure
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.31
+          working-directory: test/azure
+          args: -v --build-tags=azure
       - name: login to azure cli
         uses: azure/login@v1.1
         with:

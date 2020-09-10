@@ -55,7 +55,7 @@ jobs:
           [ -d "modules/azure" ] && ls -li "modules/azure"
 
           # run the linter
-          ./bin/golangci-lint run ./modules/azure/ --build-tags=azure
+          ./bin/golangci-lint run -v ./modules/azure/ --build-tags=azure
       - name: lint test/azure folder
         id: azure_test_lint
         run: |
@@ -63,7 +63,7 @@ jobs:
           [ -d "test/azure" ] && ls -li "test/azure"
 
           # run the linter
-          ./bin/golangci-lint run ./test/azure/ --build-tags=azure
+          ./bin/golangci-lint run -v ./test/azure/ --build-tags=azure
       - name: login to azure cli
         uses: azure/login@v1.1
         with:

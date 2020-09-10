@@ -127,7 +127,11 @@ jobs:
           echo "${BODY_PAYLOAD}"
 
           # if pipeline has something to report back to the PR
-          [[ -z "$BODY_PAYLOAD" ]] && {
+
+          if [ -z "$BODY_PAYLOAD" ]
+          then
+                echo "BODY_PAYLOAD is empty"
+          else
             echo "Here is the target repository: ${TARGET_REPOSITORY}"
             # TARGET_REPOSITORY is in {owner}/{repo format}
             [[ $TARGET_REPOSITORY =~ (.*)/(.*)$ ]]
@@ -149,4 +153,4 @@ jobs:
 
             # call the github api to create the comment
             curl --request POST --header "Authorization: Bearer ${GITHUB_TOKEN}" --data-raw "{\"query\":\"${MUTATION_ADD_COMMENT}\"}" "https://api.github.com/graphql"
-          }
+          fi

@@ -42,6 +42,9 @@ jobs:
         with:
           repository: ${{ github.event.inputs.repo }}
           ref: ${{ github.event.inputs.branch }}
+      - name: download go dependencies
+        run: |
+          go mod download
       - name: list module files to lint
         run: |
           [ -d "modules/azure" ] && ls -li "modules/azure"

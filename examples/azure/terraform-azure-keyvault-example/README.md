@@ -1,18 +1,18 @@
 # Terraform Azure Key Vault Example
 
-This folder contains a complete Terraform KeyVault module that deploys resources in [Azure](https://azure.microsoft.com/) to demonstrate
-how you can use Terratest to write automated tests for your Azure Key Vault Terraform code. This module deploys these resources:
+This folder contains a simple Terraform module that deploys resources in [Azure](https://azure.microsoft.com/) to demonstrate how you can use Terratest to write automated tests for your Azure Terraform code. This module deploys the following:
 
-* A [Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) and gives that Key Vault the following:
-    * `Key Vault Name` with the value specified in the `key_vault_name` output variable.
-    * `Secret Name` with the value specified in the `secret_name` output variable.
-    * `Key Name` with the value specified in the `key_name` output variable.
-    * `Certificate Name` with the value specified in the `certificate_name` output variable.
 
-Check out [test/terraform_azure_vm_test.go](/test/terraform_azure_vm_test.go) to see how you can write
+* A [Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) that gives the module the following:
+    * [Name](https://azure.microsoft.com/en-us/services/key-vault/)  with the value specified in the `key_vault_name`  output variable.
+    * [Secret](https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates)  with the value specified in the `secret_name`  output variable.
+    * [Key](https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates)  with the value specified in the `key_name`  output variable.
+    * [Certificate](https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates)  with the value specified in the `certificate_name`  output variable.
+
+Check out [test/azure/terraform_azure_keyvault_test.go](/test/azure/terraform_azure_keyvault_example_test.go) to see how you can write
 automated tests for this module.
 
-Note that the Virtual Machine madule creates a Microsoft Windows Server Image with and availability set and networking sample configurations for
+Note that the resources deployed in this module don't actually do anything; it just runs the resources for
 demonstration purposes.
 
 **WARNING**: This module and the automated tests for it deploy real resources into your Azure account which can cost you
@@ -38,23 +38,42 @@ it should be free, but you are completely responsible for all Azure charges.
 1. [Review environment variables](#review-environment-variables).
 1. Install [Golang](https://golang.org/) and make sure this code is checked out into your `GOPATH`.
 1. `cd test`
-1. Make sure [the azure-sdk-for-go versions match](#check-go-dependencies) in [/test/go.mod](/test/go.mod) and in [test/terraform_azure_example_test.go](/test/terraform_azure_example_test.go).
-1. `go build terraform_azure_vm_test.go`
-1. `go test -v -run TestTerraformAzureVmExample -timeout 20m` 
-    * Note the extra -timeout flag of 20 minutes ensures proper Azure resource removal time.
+1. Make sure [the azure-sdk-for-go versions match](#check-go-dependencies) in [/test/go.mod](/test/go.mod) and in [test/azure/terraform_azure_@module@_test.go](/test/terraform_azure_nic_test.go).
+1. `go build terraform_azure_@module@_test.go`
+1. `go test -v -run TestTerraformAzure@Module@Example`
 
-## Test Module APIs
+## Module test APIs
 
-* `KeyVaultSecretExists` indicates whether a key vault secret exists; otherwise false
-* `KeyVaultKeyExists` indicates whether a key vault key exists; otherwise false
-* `KeyVaultCertificateExists` indicates whether a key vault certificate exists; otherwise false
-* `KeyVaultSecretExistsE` indicates whether a secret exists in the key vault; otherwise false
-* `KeyVaultKeyExistsE` indicates whether a key exists in the key vault; otherwise false
-* `KeyVaultCertificateExistsE` indicates whether a certificate exists in key vault; otherwise false
-* `NewKeyVaultAuthorizerE` returns an Authorizer for KeyVault
-* `GetKeyVaultClientE` creates a KeyVault client
-* `GetKeyVaultURISuffixE` returns the proper KeyVault URI suffix for the configured Azure environment.
+***Note 3.a: get API methods by running **go doc -all** command from the modules/azure folder, select APIs for **your module only**.***
 
+- func KeyVaultKeyExists(t *testing.T, keyVaultName string, keyName string) bool
+    </br><font color="green">indicates whether a key vault key exists; otherwise false</font>
+
+- func KeyVaultSecretExistsE(keyVaultName, secretName string) (bool, error)
+    </br><font color="green">indicates whether a secret exists in the key vault; otherwise false</font>
+
+- func KeyVaultCertificateExists(t *testing.T, keyVaultName string, certificateName string) bool
+    </br><font color="green">indicates whether a key exists in the key vault; otherwise false or error</font>
+
+- func KeyVaultKeyExists(t *testing.T, keyVaultName string, keyName string) bool
+    </br><font color="green">KeyVaultCertificateExistsE returns true if the Azure Key Vault Certificate exists</font>
+- func KeyVaultSecretExistsE(keyVaultName, secretName string) (bool, error)
+    </br><font color="green">indicates whether a secret exists in the key vault; otherwise false or error</font>
+
+- func KeyVaultKeyExistsE(keyVaultName, keyName string) (bool, error)
+    </br><font color="green">indicates whether a key exists in the key vault; otherwise false or error</font>
+
+- func KeyVaultCertificateExistsE(keyVaultName, certificateName string) (bool, error)
+    </br><font color="green">indicates whether a certificate exists in key vault; otherwise false or error</font>
+
+- func NewKeyVaultAuthorizerE() (*autorest.Authorizer, error)
+    </br><font color="green">NewKeyVaultAuthorizerE will return Authorizer for KeyVault</font>
+
+- func GetKeyVaultURISuffixE() (string, error)
+    </br><font color="green"> GetKeyVaultURISuffixE returns the proper KeyVault URI suffix for the configured Azure environment.</font>
+
+- func GetKeyVaultClientE() (*keyvault.BaseClient, error)
+    </br><font color="green">GetKeyVaultClientE creates a KeyVault client</font>
 
 ## Check Go Dependencies
 
@@ -77,7 +96,7 @@ require (
 If we make changes to either the **go.mod** or the **go test file**, we should make sure that the go build command works still.
 
 ```powershell
-go build terraform_azure_vm_test.go
+go build terraform_azure_@module_test.go
 ```
 
 ## Review Environment Variables
@@ -99,3 +118,10 @@ Note, in a Windows environment, these should be set as **system environment vari
 [System.Environment]::SetEnvironmentVariable("ARM_SUBSCRIPTION_ID",$your_subscription_id,[System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable("ARM_TENANT_ID",$your_tenant_id,[System.EnvironmentVariableTarget]::Machine)
 ```
+
+
+
+
+
+
+ 

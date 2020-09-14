@@ -23,7 +23,7 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 	// loadbalancer::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
-		TerraformDir: "../examples/terraform-azure-loadbalancer-example",
+		TerraformDir: "../../examples/azure/terraform-azure-loadbalancer-example",
 	}
 
 	// config

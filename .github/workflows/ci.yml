@@ -33,7 +33,7 @@ on:
         description: 'PR number on the official terratest repo'
         required: false
       skip_provider_registration:
-        description: 'When set to true, terraform will skip provider registration (see: <a href="https://www.terraform.io/docs/providers/azurerm/index.html#skip_provider_registration">doc</a> for more information)'
+        description: 'Skip terraform provider registration'
         required: true
         default: 'false'
 

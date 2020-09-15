@@ -16,6 +16,7 @@ func (err ResourceGroupNameNotFound) Error() string {
 	return fmt.Sprintf("Could not find an Azure Resource Group name in expected environment variable %s and one was not provided for this test.", AzureResGroupName)
 }
 
+<<<<<<< HEAD
 // NotFoundError is returned when an expected object is not found in the search spa
 type NotFoundError struct {
 	objectType  string
@@ -30,4 +31,10 @@ func (err NotFoundError) Error() string {
 // NewNotFoundError creates a new not found error when an expected object is not found in the search space
 func NewNotFoundError(objectType string, objectID string, region string) NotFoundError {
 	return NotFoundError{objectType, objectID, region}
+=======
+type StorageAccountNotFound struct{}
+
+func (err StorageAccountNotFound) Error() string {
+	return fmt.Sprintf("Storage account not found.")
+>>>>>>> storage module
 }

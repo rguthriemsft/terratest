@@ -8,7 +8,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/recoveryservices/mgmt/2020-02-02/backup"
 )
 
-//RecoveryServicesVaultExists indicates whether a recovery services vault exists; otherwise false or error
+//RecoveryServicesVaultExists indicates whether a recovery services vault exists; otherwise false
 func RecoveryServicesVaultExists(vaultName, resourceGroupName, subscriptionID string) bool {
 	vault, err := GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID)
 	if err != nil {

@@ -40,4 +40,5 @@ func TestTerraformAzureRecoveryServicesExample(t *testing.T) {
 	assert.NotNil(t, policyList, "vault backup policy list is nil")
 	vmPolicyList := azure.GetRecoveryServicesVaultBackupProtectedVMList(policyVmName, vaultName, resourceGroupName, "")
 	assert.NotNil(t, vmPolicyList, "vault backup policy list for protected vm is nil")
+
 }

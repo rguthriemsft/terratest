@@ -9,7 +9,13 @@ import (
 // LoadBalancerExistsE returns true if the load balancer exists, else returns false with err
 func LoadBalancerExistsE(loadBalancerName string, resourceGroupName string, subscriptionID string) (bool, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return false, err
+	}
 	client, err := GetLoadBalancerClientE(subscriptionID)
+	if err != nil {
+		return false, err
+	}
 	lb, err := client.Get(context.Background(), resourceGroupName, loadBalancerName, "")
 	if err != nil {
 		return false, err
@@ -21,7 +27,13 @@ func LoadBalancerExistsE(loadBalancerName string, resourceGroupName string, subs
 // GetLoadBalancerE returns a load balancer resource as specified by name, else returns nil with err
 func GetLoadBalancerE(loadBalancerName string, resourceGroupName string, subscriptionID string) (*network.LoadBalancer, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
 	client, err := GetLoadBalancerClientE(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
 	lb, err := client.Get(context.Background(), resourceGroupName, loadBalancerName, "")
 	if err != nil {
 		return nil, err

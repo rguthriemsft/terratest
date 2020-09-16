@@ -115,6 +115,7 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 		subnetID, err := GetSliceLastValueLocal(*fe02Props.Subnet.ID, "/")
 		require.NoError(t, err, "LB02 Frontend subnet not found")
 		frontendSubnetID, err := GetSliceLastValueLocal(frontendSubnetID, "/")
+		require.NoError(t, err, "LB02 Frontend subnet ID not detected")
 		assert.Equal(t, frontendSubnetID, subnetID, "LB02 Frontend subnet ID")
 	})
 

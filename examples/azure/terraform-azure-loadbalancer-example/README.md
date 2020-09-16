@@ -63,19 +63,20 @@ require (
 )
 ```
 
-We should check that [test/terraform_azure_example_test.go](/test/terraform_azure_example_test.go) includes the corresponding [azure-sdk-for-go package](https://github.com/Azure/azure-sdk-for-go/tree/master/services/compute/mgmt/2019-07-01/compute):
+We should check that [test/terraform_azure_loadbalancer_example_test.go](/test/terraform_azure_loadbalancer_example_test.go) includes the corresponding [azure-sdk-for-go package](https://github.com/Azure/azure-sdk-for-go/services/network/mgmt/2019-09-01/network):
 
 ```go
 import (
-    "github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-07-01/compute"
+    "github.com/Azure/azure-sdk-for-go/services/network/mgmt/2019-09-01/network"
     ...
+    
 )
 ```
 
 If we make changes to either the **go.mod** or the **go test file**, we should make sure that the go build command works still.
 
 ```powershell
-go build terraform_azure_example_test.go
+go build terraform_azure_loadbalancer_example_test.go
 ```
 
 ## Review Environment Variables
@@ -99,8 +100,8 @@ Note, in a Windows environment, these should be set as **system environment vari
 ```
 
 ## Load Balancer Module APIs
-* `LoadBalancerExistsE` checks if the given Load Balancer exists in the given subscription and returns true/false
-* `GetLoadBalancerE` checks if the given Load Balancer exists in the given subscription and returns a Load Balancer resource (or nil if not found)
+* `LoadBalancerExistsE` checks if the given Load Balancer exists in the given subscription and returns true if the load balancer exists, else returns false with err
+* `GetLoadBalancerE` checks if the given Load Balancer exists in the given subscription and returns a load balancer resource as specified by name, else returns nil with err
 * `GetLoadBalancerClientE` checks if the given Load Balancer exists in the given subscription and returns a Load Balancer client object (or nil if not found)
 * `GetPublicIPAddressE` checks if the given Public IP Address resource exists in the given subscription and returns a Public IP Address object (or nil if not found)
 * `GetPublicIPAddressClientE` checks if the given Public IP Address resource exists in the given subscription and returns a Public IP Address client object (or nil if not found)

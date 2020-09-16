@@ -6,12 +6,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2019-09-01/network"
 )
 
-const (
-	AzureEnvironmentEnvName = "AZURE_ENVIRONMENT"
-)
-
-// LoadBalancerExistsE returns an LB client
-func LoadBalancerExistsE(loadBalancerName, resourceGroupName, subscriptionID string) (bool, error) {
+// LoadBalancerExistsE returns true if the load balancer exists, else returns false with err
+func LoadBalancerExistsE(loadBalancerName string, resourceGroupName string, subscriptionID string) (bool, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	client, err := GetLoadBalancerClientE(subscriptionID)
 	lb, err := client.Get(context.Background(), resourceGroupName, loadBalancerName, "")
@@ -22,7 +18,7 @@ func LoadBalancerExistsE(loadBalancerName, resourceGroupName, subscriptionID str
 	return *lb.Name == loadBalancerName, nil
 }
 
-// GetLoadBalancerE returns a load balancer resource as specified by name.
+// GetLoadBalancerE returns a load balancer resource as specified by name, else returns nil with err
 func GetLoadBalancerE(loadBalancerName string, resourceGroupName string, subscriptionID string) (*network.LoadBalancer, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	client, err := GetLoadBalancerClientE(subscriptionID)
@@ -45,8 +41,8 @@ func GetLoadBalancerClientE(subscriptionID string) (*network.LoadBalancersClient
 	return &loadBalancerClient, nil
 }
 
-// GetPublicIPAddressE will return a Public IP Address object and an error object
-func GetPublicIPAddressE(resourceGroupName, publicIPAddressName, subscriptionID string) (*network.PublicIPAddress, error) {
+// GetPublicIPAddressE returns a Public IP Address resource, else returns nil with err
+func GetPublicIPAddressE(publicIPAddressName string, resourceGroupName string, subscriptionID string) (*network.PublicIPAddress, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	client, err := GetPublicIPAddressClientE(subscriptionID)
 	if err != nil {

@@ -21,3 +21,6 @@ vendor
 .DS_Store
 # Intermediate file for testing
 kubeconfig
+
+# dev env config
+.env

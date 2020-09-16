@@ -82,7 +82,7 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 		assert.Nil(t, fe01Props.PrivateIPAddress, "LB01 shouldn't have PrivateIPAddress")
 
 		// Ensure PublicIPAddress Resource exists, no need to check PublicIPAddress value
-		publicIPAddressResource, err := azure.GetPublicIPAddressE(resourceGroupName, publicIPAddressForLB01, "")
+		publicIPAddressResource, err := azure.GetPublicIPAddressE(publicIPAddressForLB01, resourceGroupName, "")
 		require.NoError(t, err)
 		assert.NotNil(t, publicIPAddressResource, fmt.Sprintf("Public IP Resource for LB01 Frontend: %s", publicIPAddressForLB01))
 

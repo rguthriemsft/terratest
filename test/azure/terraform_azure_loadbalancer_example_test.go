@@ -6,9 +6,7 @@
 package test
 
 import (
-	"errors"
 	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
@@ -87,7 +85,7 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 		assert.NotNil(t, publicIPAddressResource, fmt.Sprintf("Public IP Resource for LB01 Frontend: %s", publicIPAddressForLB01))
 
 		// Verify that expected PublicIPAddressResource is assigned to Load Balancer
-		pipResourceName, err := GetSliceLastValueLocal(*fe01Props.PublicIPAddress.ID, "/")
+		pipResourceName, err := azure.GetSliceLastValueE(*fe01Props.PublicIPAddress.ID, "/")
 		require.NoError(t, err)
 		assert.Equal(t, publicIPAddressForLB01, pipResourceName, "LB01 Public IP Address Resource Name")
 
@@ -112,20 +110,11 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 
 		assert.Equal(t, frontendIPConfigForLB02, *fe02Props.PrivateIPAddress, "LB02 Frontend IP address")
 		assert.Equal(t, frontendIPAllocForLB02, string(fe02Props.PrivateIPAllocationMethod), "LB02 Frontend IP allocation method")
-		subnetID, err := GetSliceLastValueLocal(*fe02Props.Subnet.ID, "/")
+		subnetID, err := azure.GetSliceLastValueE(*fe02Props.Subnet.ID, "/")
 		require.NoError(t, err, "LB02 Frontend subnet not found")
-		frontendSubnetID, err := GetSliceLastValueLocal(frontendSubnetID, "/")
+		frontendSubnetID, err := azure.GetSliceLastValueE(frontendSubnetID, "/")
 		require.NoError(t, err, "LB02 Frontend subnet ID not detected")
 		assert.Equal(t, frontendSubnetID, subnetID, "LB02 Frontend subnet ID")
 	})
 
-}
-
-// GetSliceLastValue will take a source string and returns the last value when split by the seperaror char
-func GetSliceLastValueLocal(source string, seperator string) (string, error) {
-	if !(len(source) == 0 || len(seperator) == 0 || !strings.Contains(source, seperator)) {
-		tmp := strings.Split(source, seperator)
-		return tmp[len(tmp)-1], nil
-	}
-	return "", errors.New("invalid input or no slice available")
 }

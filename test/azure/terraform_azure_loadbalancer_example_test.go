@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
-	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -19,17 +18,10 @@ import (
 func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 	t.Parallel()
 
-	prefix := "terratest-lb-" + random.UniqueId()
-
 	// loadbalancer::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../examples/azure/terraform-azure-loadbalancer-example",
-
-		// Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{
-			"prefix": prefix,
-		},
 	}
 
 	// config

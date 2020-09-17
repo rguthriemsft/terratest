@@ -16,8 +16,15 @@ terraform {
 # See test/terraform_azure_example_test.go for how to write automated tests for this code.
 # ---------------------------------------------------------------------------------------------------------------------
 
+resource "random_string" "default" {
+  length = 3  
+  lower = true
+  number = false
+  special = false
+}
+
 resource "azurerm_resource_group" "main" {
-  name     = "${var.prefix}-resources"
+  name     =  format("%s-%s-%s", "terratest", lower(random_string.default.result), "loadbalancer")
   location = "East US"
 }
 
@@ -26,7 +33,7 @@ resource "azurerm_resource_group" "main" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_public_ip" "main" {
-  name                    = "${var.prefix}-pip"
+  name     =  format("%s-%s", lower(random_string.default.result), "pip")
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   allocation_method       = "Static"
@@ -36,13 +43,13 @@ resource "azurerm_public_ip" "main" {
 }
 
 resource "azurerm_lb" "main01" {
-  name                = "${var.prefix}-lb01"
+  name     =  format("%s-%s", lower(random_string.default.result), "lb01")
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   sku                 = "Standard"
 
     frontend_ip_configuration {
-      name                 = "${var.prefix}-frontendip01"
+      name     =  format("%s-%s", lower(random_string.default.result), "frontendip01")
       public_ip_address_id = azurerm_public_ip.main.id
     }
 }
@@ -52,7 +59,7 @@ resource "azurerm_lb" "main01" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_virtual_network" "main" {
-  name                = "${var.prefix}-vnet01"
+  name     =  format("%s-%s", lower(random_string.default.result), "vnet01")
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   address_space       = ["10.200.0.0/21"]
@@ -61,20 +68,20 @@ resource "azurerm_virtual_network" "main" {
 }
 
 resource "azurerm_subnet" "main" {
-  name                = "${var.prefix}-subnet01"
+  name     =  format("%s-%s", lower(random_string.default.result), "subnet01")
   resource_group_name = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefix     = "10.200.2.0/25"
 }
 
 resource "azurerm_lb" "main02" {
-  name                = "${var.prefix}-lb02"
+  name     =  format("%s-%s", lower(random_string.default.result), "lb02")
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   sku                 = "Standard"
 
     frontend_ip_configuration {
-      name                 = "${var.prefix}-frontendip02"
+      name     =  format("%s-%s", lower(random_string.default.result), "frontendip02")
       subnet_id                     = azurerm_subnet.main.id
       private_ip_address            = "10.200.2.10"
       private_ip_address_allocation = "Static"

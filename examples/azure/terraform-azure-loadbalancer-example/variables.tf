@@ -21,5 +21,5 @@
 variable "prefix" {
   description = "The prefix that will be attached to all resources deployed"
   type        = string
-  default     = "terratest-example"
+  default     = "lbtests"
 }

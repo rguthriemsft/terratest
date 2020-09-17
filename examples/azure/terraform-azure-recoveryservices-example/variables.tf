@@ -3,9 +3,3 @@ variable "location" {
   type        = string
   default     = "East US"
 }
-
-variable "backup_policy_vm" {
-  description = "The name of the vm backup policy."
-  type        = string
-  default     = "test"
-}

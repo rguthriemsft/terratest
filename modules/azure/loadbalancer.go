@@ -56,6 +56,9 @@ func GetLoadBalancerClientE(subscriptionID string) (*network.LoadBalancersClient
 // GetPublicIPAddressE returns a Public IP Address resource, else returns nil with err
 func GetPublicIPAddressE(publicIPAddressName string, resourceGroupName string, subscriptionID string) (*network.PublicIPAddress, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
 	client, err := GetPublicIPAddressClientE(subscriptionID)
 	if err != nil {
 		return nil, err

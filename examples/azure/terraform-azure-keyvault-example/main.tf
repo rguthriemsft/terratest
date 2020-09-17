@@ -1,5 +1,12 @@
+resource "random_string" "default" {
+  length = 3  
+  lower = true
+  number = false
+  special = false
+}
+
 resource "azurerm_resource_group" "main" {
-  name     =  "${var.prefix}-resources"
+  name     =  format("%s-%s-%s", "terratest", lower(random_string.default.result), "keyvault")
   location = var.location
 }
 
@@ -14,7 +21,7 @@ data "azurerm_key_vault_access_policy" "contributor" {
 }
 
 resource "azurerm_key_vault" "kvexample" {
-  name                        = format("%s%s", "kv", random_id.server.hex)
+  name                        = format("%s-%s", lower(random_string.default.result), random_id.server.hex)
   location                    = azurerm_resource_group.main.location
   resource_group_name         = azurerm_resource_group.main.name
   enabled_for_disk_encryption = true

@@ -18,12 +18,6 @@
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "prefix" {
-  description = "The prefix that will be attached to all resources deployed."
-  type        = string
-  default     = "kv"
-}
-
 variable "location" {
   description = "The location to set for the storage account."
   type        = string

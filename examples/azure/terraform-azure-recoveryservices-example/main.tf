@@ -1,19 +1,24 @@
-resource "random_string" "default" {
+resource "random_string" "defaultvault" {
   length = 8  
   lower = true
   number = false
   special = false
 }
 
+resource "random_string" "default" {
+  length = 3  
+  lower = true
+  number = false
+  special = false
+}
+
 resource "azurerm_resource_group" "example" {
-  name     =  "${var.prefix}-resources"
+  name     =  format("%s-%s-%s", "terratest", lower(random_string.default.result), "recoveryservices")
   location = var.location
 }
 
-
-// Recovery Services Vault
 resource "azurerm_recovery_services_vault" "example" {
-  name                = lower(random_string.default.result)
+  name                = lower(random_string.defaultvault.result)
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
   sku                 = "Standard"
@@ -21,7 +26,7 @@ resource "azurerm_recovery_services_vault" "example" {
 
 // Recovery Services Vault - Backup Policy 
 resource "azurerm_backup_policy_vm" "example" {
-  name                = var.backup_policy_vm
+  name                = format("%s-%s", lower(random_string.default.result), "backupvmpolicy")
   resource_group_name = azurerm_resource_group.example.name
   recovery_vault_name = azurerm_recovery_services_vault.example.name
 

@@ -1,6 +1,4 @@
-// +build azure
-
-package test
+package azure
 
 import (
 	"testing"

@@ -7,9 +7,11 @@ package test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
+	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,10 +19,17 @@ import (
 func TestTerraformAzureStorageExample(t *testing.T) {
 	t.Parallel()
 
+	expectedResourceGroupName := fmt.Sprintf("terratest-storage-rg-%s", random.UniqueId())
+	expectedStorageAccountName := fmt.Sprintf("store%s", strings.ToLower(random.UniqueId()))
+
 	// website::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../examples/azure/terraform-azure-storage-example",
+		Vars: map[string]interface{}{
+			"resource_group_name":  expectedResourceGroupName,
+			"storage_account_name": expectedStorageAccountName,
+		},
 	}
 
 	// website::tag::4:: At the end of the test, run `terraform destroy` to clean up any resources that were created

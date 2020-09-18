@@ -6,9 +6,11 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
+	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,10 +18,23 @@ import (
 func TestTerraformAzureKeyVaultExample(t *testing.T) {
 	t.Parallel()
 
+	expectedResourceGroupName := fmt.Sprintf("terratest-keyvault-rg-%s", random.UniqueId())
+	expectedKeyVaultName := fmt.Sprintf("keyvault%s", random.UniqueId())
+	expectedSecretName := fmt.Sprintf("secret-%s", random.UniqueId())
+	expectedKeyName := fmt.Sprintf("key-%s", random.UniqueId())
+	expectedCertificateName := fmt.Sprintf("cert-%s", random.UniqueId())
+
 	// website::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../examples/azure/terraform-azure-keyvault-example",
+		Vars: map[string]interface{}{
+			"resource_group_name": expectedResourceGroupName,
+			"key_vault_name":      expectedKeyVaultName,
+			"secret_name":         expectedSecretName,
+			"key_name":            expectedKeyName,
+			"certificate_name":    expectedCertificateName,
+		},
 	}
 
 	// website::tag::4:: At the end of the test, run `terraform destroy` to clean up any resources that were created

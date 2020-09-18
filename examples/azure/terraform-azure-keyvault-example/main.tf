@@ -1,17 +1,7 @@
-resource "random_string" "default" {
-  length = 3  
-  lower = true
-  number = false
-  special = false
-}
 
-resource "azurerm_resource_group" "main" {
-  name     =  format("%s-%s-%s", "terratest", lower(random_string.default.result), "keyvault")
+resource "azurerm_resource_group" "example" {
+  name     =  var.resource_group_name
   location = var.location
-}
-
-resource "random_id" "server" {
-  byte_length = 8
 }
 
 data "azurerm_client_config" "current" {}
@@ -20,10 +10,10 @@ data "azurerm_key_vault_access_policy" "contributor" {
   name = "Key, Secret, & Certificate Management"
 }
 
-resource "azurerm_key_vault" "kvexample" {
-  name                        = format("%s-%s", lower(random_string.default.result), random_id.server.hex)
-  location                    = azurerm_resource_group.main.location
-  resource_group_name         = azurerm_resource_group.main.name
+resource "azurerm_key_vault" "example" {
+  name                        = var.key_vault_name
+  location                    = azurerm_resource_group.example.location
+  resource_group_name         = azurerm_resource_group.example.name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_enabled         = true
@@ -68,14 +58,14 @@ resource "azurerm_key_vault" "kvexample" {
 }
 
 resource "azurerm_key_vault_secret" "example" {
-  name         = "secret1"
+  name         = var.secret_name
   value        = "mysecret"
-  key_vault_id = azurerm_key_vault.kvexample.id
+  key_vault_id = azurerm_key_vault.example.id
 }
 
 resource "azurerm_key_vault_key" "example" {
-  name         = "key1"
-  key_vault_id = azurerm_key_vault.kvexample.id
+  name         = var.key_name
+  key_vault_id = azurerm_key_vault.example.id
   key_type     = "RSA"
   key_size     = 2048
 
@@ -90,8 +80,8 @@ resource "azurerm_key_vault_key" "example" {
 }
 
 resource "azurerm_key_vault_certificate" "example" {
-  name         = "certificate1"
-  key_vault_id = azurerm_key_vault.kvexample.id
+  name         = var.certificate_name
+  key_vault_id = azurerm_key_vault.example.id
 
   certificate {
     contents = filebase64("example.pfx")

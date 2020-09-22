@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
+	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,10 +19,34 @@ import (
 func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 	t.Parallel()
 
+	// initialize resource names, with random unique suffixes
+	resourceGroupName := fmt.Sprintf("terratest-loadbalancer-rg-%s", random.UniqueId())
+	loadBalancer01Name := fmt.Sprintf("terratest-loadbalancer-lb-%s", random.UniqueId())
+	loadBalancer02Name := fmt.Sprintf("terratest-loadbalancer-lb-%s", random.UniqueId())
+
+	frontendIPConfigForLB01 := fmt.Sprintf("terratest-loadbalancer-cfg-%s", random.UniqueId())
+	publicIPAddressForLB01 := fmt.Sprintf("terratest-loadbalancer-pip-%s", random.UniqueId())
+
+	vnetForLB02 := fmt.Sprintf("terratest-loadbalancer-vnet-%s", random.UniqueId())
+	//frontendIPConfigForLB02 := fmt.Sprintf("terratest-loadbalancer-cfg-%s", random.UniqueId())
+	//frontendIPAllocForLB02 := "Static"
+	frontendSubnetID := fmt.Sprintf("terratest-loadbalancer-snt-%s", random.UniqueId())
+
 	// loadbalancer::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../examples/azure/terraform-azure-loadbalancer-example",
+
+		// Variables to pass to our Terraform code using -var options
+		Vars: map[string]interface{}{
+			"resource_group_name": resourceGroupName,
+			"loadbalancer01_name": loadBalancer01Name,
+			"loadbalancer02_name": loadBalancer02Name,
+			"vnet_name":           vnetForLB02,
+			"lb01_feconfig":       frontendIPConfigForLB01,
+			"pip_forlb01":         publicIPAddressForLB01,
+			"feSubnet_forlb02":    frontendSubnetID,
+		},
 	}
 
 	// config
@@ -34,16 +59,16 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	// loadbalancer::tag::3:: Run `terraform output` to get the values of output variables
-	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
-	loadBalancer01Name := terraform.Output(t, terraformOptions, "loadbalancer01_name")
-	loadBalancer02Name := terraform.Output(t, terraformOptions, "loadbalancer02_name")
+	//resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
+	//loadBalancer01Name := terraform.Output(t, terraformOptions, "loadbalancer01_name")
+	//loadBalancer02Name := terraform.Output(t, terraformOptions, "loadbalancer02_name")
 
-	frontendIPConfigForLB01 := terraform.Output(t, terraformOptions, "lb01_feconfig")
-	publicIPAddressForLB01 := terraform.Output(t, terraformOptions, "pip_forlb01")
+	//frontendIPConfigForLB01 := terraform.Output(t, terraformOptions, "lb01_feconfig")
+	//publicIPAddressForLB01 := terraform.Output(t, terraformOptions, "pip_forlb01")
 
 	frontendIPConfigForLB02 := terraform.Output(t, terraformOptions, "feIPConfig_forlb02")
 	frontendIPAllocForLB02 := "Static"
-	frontendSubnetID := terraform.Output(t, terraformOptions, "feSubnet_forlb02")
+	//frontendSubnetID := terraform.Output(t, terraformOptions, "feSubnet_forlb02")
 
 	// loadbalancer::tag::5 Set expected variables for test
 
@@ -112,8 +137,6 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 		assert.Equal(t, frontendIPAllocForLB02, string(fe02Props.PrivateIPAllocationMethod), "LB02 Frontend IP allocation method")
 		subnetID, err := azure.GetSliceLastValueE(*fe02Props.Subnet.ID, "/")
 		require.NoError(t, err, "LB02 Frontend subnet not found")
-		frontendSubnetID, err := azure.GetSliceLastValueE(frontendSubnetID, "/")
-		require.NoError(t, err, "LB02 Frontend subnet ID not detected")
 		assert.Equal(t, frontendSubnetID, subnetID, "LB02 Frontend subnet ID")
 	})
 

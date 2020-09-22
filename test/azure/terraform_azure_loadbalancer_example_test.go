@@ -28,8 +28,6 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 	publicIPAddressForLB01 := fmt.Sprintf("terratest-loadbalancer-pip-%s", random.UniqueId())
 
 	vnetForLB02 := fmt.Sprintf("terratest-loadbalancer-vnet-%s", random.UniqueId())
-	//frontendIPConfigForLB02 := fmt.Sprintf("terratest-loadbalancer-cfg-%s", random.UniqueId())
-	//frontendIPAllocForLB02 := "Static"
 	frontendSubnetID := fmt.Sprintf("terratest-loadbalancer-snt-%s", random.UniqueId())
 
 	// loadbalancer::tag::1:: Configure Terraform setting up a path to Terraform code.
@@ -59,16 +57,9 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	// loadbalancer::tag::3:: Run `terraform output` to get the values of output variables
-	//resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
-	//loadBalancer01Name := terraform.Output(t, terraformOptions, "loadbalancer01_name")
-	//loadBalancer02Name := terraform.Output(t, terraformOptions, "loadbalancer02_name")
-
-	//frontendIPConfigForLB01 := terraform.Output(t, terraformOptions, "lb01_feconfig")
-	//publicIPAddressForLB01 := terraform.Output(t, terraformOptions, "pip_forlb01")
 
 	frontendIPConfigForLB02 := terraform.Output(t, terraformOptions, "feIPConfig_forlb02")
 	frontendIPAllocForLB02 := "Static"
-	//frontendSubnetID := terraform.Output(t, terraformOptions, "feSubnet_forlb02")
 
 	// loadbalancer::tag::5 Set expected variables for test
 
@@ -87,7 +78,6 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 		require.NoError(t, err)
 		lb01Props := lb01.LoadBalancerPropertiesFormat
 		fe01Config := (*lb01Props.FrontendIPConfigurations)[0]
-		//fe01Props := *fe01Config.FrontendIPConfigurationPropertiesFormat
 
 		// Verify settings
 		assert.Equal(t, frontendIPConfigForLB01, *fe01Config.Name, "LB01 Frontend IP config name")
@@ -139,5 +129,4 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 		require.NoError(t, err, "LB02 Frontend subnet not found")
 		assert.Equal(t, frontendSubnetID, subnetID, "LB02 Frontend subnet ID")
 	})
-
 }

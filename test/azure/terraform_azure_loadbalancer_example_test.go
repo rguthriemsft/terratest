@@ -21,14 +21,14 @@ func TestTerraformAzureLoadBalancerExample(t *testing.T) {
 
 	// initialize resource names, with random unique suffixes
 	resourceGroupName := fmt.Sprintf("terratest-loadbalancer-rg-%s", random.UniqueId())
-	loadBalancer01Name := fmt.Sprintf("terratest-loadbalancer-lb-%s", random.UniqueId())
-	loadBalancer02Name := fmt.Sprintf("terratest-loadbalancer-lb-%s", random.UniqueId())
+	loadBalancer01Name := fmt.Sprintf("lb-public-%s", random.UniqueId())
+	loadBalancer02Name := fmt.Sprintf("lb-private-%s", random.UniqueId())
 
-	frontendIPConfigForLB01 := fmt.Sprintf("terratest-loadbalancer-cfg-%s", random.UniqueId())
-	publicIPAddressForLB01 := fmt.Sprintf("terratest-loadbalancer-pip-%s", random.UniqueId())
+	frontendIPConfigForLB01 := fmt.Sprintf("cfg-%s", random.UniqueId())
+	publicIPAddressForLB01 := fmt.Sprintf("pip-%s", random.UniqueId())
 
-	vnetForLB02 := fmt.Sprintf("terratest-loadbalancer-vnet-%s", random.UniqueId())
-	frontendSubnetID := fmt.Sprintf("terratest-loadbalancer-snt-%s", random.UniqueId())
+	vnetForLB02 := fmt.Sprintf("vnet-%s", random.UniqueId())
+	frontendSubnetID := fmt.Sprintf("snt-%s", random.UniqueId())
 
 	// loadbalancer::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{

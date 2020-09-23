@@ -1,5 +1,6 @@
 provider "azurerm" {
-  version = "=1.31.0"
+  version = "~>2.20"
+  features {}
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ resource "azurerm_public_ip" "main" {
   location            = azurerm_resource_group.main.location
   allocation_method       = "Static"
   ip_version              = "IPv4"
-  sku                     = "Standard"
+  sku                     = "Basic"
   idle_timeout_in_minutes = "4"
 }
 
@@ -39,7 +40,7 @@ resource "azurerm_lb" "main01" {
   name     =  "${var.loadbalancer01_name}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  sku                 = "Standard"
+  sku                 = "Basic"
 
     frontend_ip_configuration {
       name     =  "${var.lb01_feconfig}"
@@ -71,7 +72,7 @@ resource "azurerm_lb" "main02" {
   name     =  "${var.loadbalancer02_name}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  sku                 = "Standard"
+  sku                 = "Basic"
 
     frontend_ip_configuration {
       name     =  "${var.feIPConfig_forlb02}"

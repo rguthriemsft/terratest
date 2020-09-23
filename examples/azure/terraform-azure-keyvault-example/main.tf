@@ -1,5 +1,9 @@
+provider "azurerm" {
+  version = "~>2.20"
+  features {}
+}
 
-resource "azurerm_resource_group" "example" {
+resource "azurerm_resource_group" "resourcegroup" {
   name     =  var.resource_group_name
   location = var.location
 }
@@ -10,10 +14,10 @@ data "azurerm_key_vault_access_policy" "contributor" {
   name = "Key, Secret, & Certificate Management"
 }
 
-resource "azurerm_key_vault" "example" {
+resource "azurerm_key_vault" "keyvault" {
   name                        = var.key_vault_name
-  location                    = azurerm_resource_group.example.location
-  resource_group_name         = azurerm_resource_group.example.name
+  location                    = azurerm_resource_group.resourcegroup.location
+  resource_group_name         = azurerm_resource_group.resourcegroup.name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_enabled         = true
@@ -57,15 +61,15 @@ resource "azurerm_key_vault" "example" {
   }
 }
 
-resource "azurerm_key_vault_secret" "example" {
+resource "azurerm_key_vault_secret" "keyvaultsecret" {
   name         = var.secret_name
   value        = "mysecret"
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = azurerm_key_vault.keyvault.id
 }
 
-resource "azurerm_key_vault_key" "example" {
+resource "azurerm_key_vault_key" "keyvaultkey" {
   name         = var.key_name
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = azurerm_key_vault.keyvault.id
   key_type     = "RSA"
   key_size     = 2048
 
@@ -79,9 +83,9 @@ resource "azurerm_key_vault_key" "example" {
   ]
 }
 
-resource "azurerm_key_vault_certificate" "example" {
+resource "azurerm_key_vault_certificate" "keyvaultcertificate" {
   name         = var.certificate_name
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = azurerm_key_vault.keyvault.id
 
   certificate {
     contents = filebase64("example.pfx")

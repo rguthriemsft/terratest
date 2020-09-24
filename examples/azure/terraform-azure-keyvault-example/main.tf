@@ -1,21 +1,56 @@
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY AN AZURE KEY VAULT
+# This is an example of how to deploy a Key Vault 
+# ---------------------------------------------------------------------------------------------------------------------
+# See test/azure/terraform_azure_keyvault_example_test.go for how to write automated tests for this code.
+# ---------------------------------------------------------------------------------------------------------------------
+
 provider "azurerm" {
   version = "~>2.20"
   features {}
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+# PIN TERRAFORM VERSION TO >= 0.12
+# The examples have been upgraded to 0.12 syntax
+# ---------------------------------------------------------------------------------------------------------------------
+
+terraform {
+  # This module is now only being tested with Terraform 0.13.x. However, to make upgrading easier, we are setting
+  # 0.12.26 as the minimum version, as that version added support for required_providers with source URLs, making it
+  # forwards compatible with 0.13.x code.
+  required_version = ">= 0.12.26"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A RESOURCE GROUP
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "azurerm_resource_group" "resourcegroup" {
-  name     =  var.resource_group_name
+  name     =  "terratest-kv-rg-${var.postfix}"
   location = var.location
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+# CONFIGURE A CLIENT FOR KEY VAULT ACCESS
+# ---------------------------------------------------------------------------------------------------------------------
+
 data "azurerm_client_config" "current" {}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CONFIGURE AN ACCESS POLICY TO MANAGE THE SECRET, KEY, AND CERTIFICATE
+# ---------------------------------------------------------------------------------------------------------------------
 
 data "azurerm_key_vault_access_policy" "contributor" {
   name = "Key, Secret, & Certificate Management"
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A KEY VAULT
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "azurerm_key_vault" "keyvault" {
-  name                        = var.key_vault_name
+  name                        = "keyvault-${var.postfix}"
   location                    = azurerm_resource_group.resourcegroup.location
   resource_group_name         = azurerm_resource_group.resourcegroup.name
   enabled_for_disk_encryption = true
@@ -61,11 +96,19 @@ resource "azurerm_key_vault" "keyvault" {
   }
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A SECRET TO THE KEY VAULT
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "azurerm_key_vault_secret" "keyvaultsecret" {
   name         = var.secret_name
   value        = "mysecret"
   key_vault_id = azurerm_key_vault.keyvault.id
 }
+
+# ---------------------------------------------------------------------------------------------------------------------
+#  DEPLOY A KEY TO THE KEY VAULT
+# ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_key_vault_key" "keyvaultkey" {
   name         = var.key_name
@@ -83,6 +126,9 @@ resource "azurerm_key_vault_key" "keyvaultkey" {
   ]
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+#  DEPLOY A CERTIFICATE TO THE KEY VAULT
+# ---------------------------------------------------------------------------------------------------------------------
 resource "azurerm_key_vault_certificate" "keyvaultcertificate" {
   name         = var.certificate_name
   key_vault_id = azurerm_key_vault.keyvault.id

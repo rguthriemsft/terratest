@@ -18,8 +18,8 @@ import (
 func TestTerraformAzureKeyVaultExample(t *testing.T) {
 	t.Parallel()
 
-	expectedResourceGroupName := fmt.Sprintf("terratest-keyvault-rg-%s", random.UniqueId())
-	expectedKeyVaultName := fmt.Sprintf("keyvault%s", random.UniqueId())
+	uniquePostfix := random.UniqueId()
+
 	expectedSecretName := fmt.Sprintf("secret-%s", random.UniqueId())
 	expectedKeyName := fmt.Sprintf("key-%s", random.UniqueId())
 	expectedCertificateName := fmt.Sprintf("cert-%s", random.UniqueId())
@@ -29,11 +29,10 @@ func TestTerraformAzureKeyVaultExample(t *testing.T) {
 		// The path to where our Terraform code is located
 		TerraformDir: "../../examples/azure/terraform-azure-keyvault-example",
 		Vars: map[string]interface{}{
-			"resource_group_name": expectedResourceGroupName,
-			"key_vault_name":      expectedKeyVaultName,
-			"secret_name":         expectedSecretName,
-			"key_name":            expectedKeyName,
-			"certificate_name":    expectedCertificateName,
+			"postfix":          uniquePostfix,
+			"secret_name":      expectedSecretName,
+			"key_name":         expectedKeyName,
+			"certificate_name": expectedCertificateName,
 		},
 	}
 

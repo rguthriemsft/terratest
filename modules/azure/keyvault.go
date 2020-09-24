@@ -19,21 +19,21 @@ func KeyVaultSecretExists(t *testing.T, keyVaultName string, secretName string) 
 	return result
 }
 
-// KeyVaultKeyExists indicates whether a key vault key exists; otherwise false
+// KeyVaultKeyExists indicates whether a key vault key exists; otherwise false.  This function would fail the test if there is an error.
 func KeyVaultKeyExists(t *testing.T, keyVaultName string, keyName string) bool {
 	result, err := KeyVaultKeyExistsE(keyVaultName, keyName)
 	require.NoError(t, err)
 	return result
 }
 
-// KeyVaultCertificateExists indicates whether a key vault certificate exists; otherwise false
+// KeyVaultCertificateExists indicates whether a key vault certificate exists; otherwise false. This function would fail the test if there is an error.
 func KeyVaultCertificateExists(t *testing.T, keyVaultName string, certificateName string) bool {
 	result, err := KeyVaultCertificateExistsE(keyVaultName, certificateName)
 	require.NoError(t, err)
 	return result
 }
 
-// KeyVaultCertificateExistsE indicates whether a certificate exists in key vault; otherwise false
+// KeyVaultCertificateExistsE indicates whether a certificate exists in key vault; otherwise false. This function would fail the test if there is an error.
 func KeyVaultCertificateExistsE(keyVaultName, certificateName string) (bool, error) {
 	keyVaultSuffix, err := GetKeyVaultURISuffixE()
 	if err != nil {
@@ -62,7 +62,7 @@ func KeyVaultCertificateExistsE(keyVaultName, certificateName string) (bool, err
 	return false, nil
 }
 
-// KeyVaultKeyExistsE indicates whether a key exists in the key vault; otherwise false
+// KeyVaultKeyExistsE indicates whether a key exists in the key vault; otherwise false. This function would fail the test if there is an error.
 func KeyVaultKeyExistsE(keyVaultName, keyName string) (bool, error) {
 	keyVaultSuffix, err := GetKeyVaultURISuffixE()
 	if err != nil {
@@ -91,7 +91,7 @@ func KeyVaultKeyExistsE(keyVaultName, keyName string) (bool, error) {
 	return false, nil
 }
 
-// KeyVaultSecretExistsE indicates whether a secret exists in the key vault; otherwise false
+// KeyVaultSecretExistsE indicates whether a secret exists in the key vault; otherwise false. This function would fail the test if there is an error.
 func KeyVaultSecretExistsE(keyVaultName, secretName string) (bool, error) {
 	client, err := GetKeyVaultClientE()
 	if err != nil {
@@ -117,7 +117,7 @@ func KeyVaultSecretExistsE(keyVaultName, secretName string) (bool, error) {
 	return false, nil
 }
 
-// GetKeyVaultClientE creates a KeyVault client
+// GetKeyVaultClientE creates a KeyVault client. This function would fail the test if there is an error.
 func GetKeyVaultClientE() (*keyvault.BaseClient, error) {
 	kvClient := keyvault.New()
 	authorizer, err := NewKeyVaultAuthorizerE()
@@ -128,7 +128,7 @@ func GetKeyVaultClientE() (*keyvault.BaseClient, error) {
 	return &kvClient, nil
 }
 
-// GetKeyVaultURISuffixE returns the proper KeyVault URI suffix for the configured Azure environment.
+// GetKeyVaultURISuffixE returns the proper KeyVault URI suffix for the configured Azure environment.  This function would fail the test if there is an error.
 func GetKeyVaultURISuffixE() (string, error) {
 	env, err := azure.EnvironmentFromName("AzurePublicCloud")
 	if err != nil {
@@ -137,7 +137,7 @@ func GetKeyVaultURISuffixE() (string, error) {
 	return env.KeyVaultDNSSuffix, nil
 }
 
-// NewKeyVaultAuthorizerE will return Authorizer for KeyVault
+// NewKeyVaultAuthorizerE will return Authorizer for KeyVault. This function would fail the test if there is an error.
 func NewKeyVaultAuthorizerE() (*autorest.Authorizer, error) {
 	authorizer, err := kvauth.NewAuthorizerFromCLI()
 	return &authorizer, err

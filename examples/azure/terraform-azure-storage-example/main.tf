@@ -1,21 +1,58 @@
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY AN AZURE AVAILABILITY SET
+# This is an example of how to deploy an Azure Availability Set with a Virtual Machine in the availability set 
+# and the minimum network resources for the VM.
+# ---------------------------------------------------------------------------------------------------------------------
+# See test/azure/terraform_azure_availabilityset_example_test.go for how to write automated tests for this code.
+# ---------------------------------------------------------------------------------------------------------------------
 
+provider "azurerm" {
+  version = "~> 2.20"
+  features {}
+}
 
-resource "azurerm_resource_group" "example" {
-  name     =  var.resource_group_name
+# ---------------------------------------------------------------------------------------------------------------------
+# PIN TERRAFORM VERSION TO >= 0.12
+# The examples have been upgraded to 0.12 syntax
+# ---------------------------------------------------------------------------------------------------------------------
+
+terraform {
+  # This module is now only being tested with Terraform 0.13.x. However, to make upgrading easier, we are setting
+  # 0.12.26 as the minimum version, as that version added support for required_providers with source URLs, making it
+  # forwards compatible with 0.13.x code.
+  required_version = ">= 0.12.26"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A RESOURCE GROUP
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "azurerm_resource_group" "resourcegroup" {
+  name     =  "terratest-storage-rg-${var.postfix}"
   location = var.location
 }
 
-resource "azurerm_storage_account" "example" {
-  name                     = var.storage_account_name
-  resource_group_name      = azurerm_resource_group.example.name
-  location                 = azurerm_resource_group.example.location
+
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A STORAGE ACCOUNT
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "azurerm_storage_account" "storageaccount" {
+  name                     = "storage${var.postfix}"
+  resource_group_name      = azurerm_resource_group.resourcegroup.name
+  location                 = azurerm_resource_group.resourcegroup.location
   account_kind             = var.storage_account_kind
   account_tier             = var.storage_account_tier
   account_replication_type = var.storage_replication_type
 }
 
-resource "azurerm_storage_container" "example" {
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ADD A CONTAINER TO THE STORAGE ACCOUNT
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "azurerm_storage_container" "container" {
   name = "container1"
-  storage_account_name  = azurerm_storage_account.example.name
+  storage_account_name  = azurerm_storage_account.storageaccount.name
   container_access_type = var.container_access_type
 }

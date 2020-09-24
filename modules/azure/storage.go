@@ -32,21 +32,21 @@ func GetStorageBlobContainerPublicAccess(t *testing.T, containerName string, sto
 	return result
 }
 
-// GetStorageAccountKind returns one of Storage, StorageV2, BlobStorage, FileStorage, or BlockBlobStorage; otherwise error.
+// GetStorageAccountKind returns one of Storage, StorageV2, BlobStorage, FileStorage, or BlockBlobStorage.
 func GetStorageAccountKind(t *testing.T, storageAccountName string, resourceGroupName string, subscriptionID string) string {
 	result, err := GetStorageAccountKindE(storageAccountName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
 	return result
 }
 
-// GetStorageAccountSkuTier returns the storage account sku tier as Standard or Premium; otherwise error.
+// GetStorageAccountSkuTier returns the storage account sku tier as Standard or Premium.
 func GetStorageAccountSkuTier(t *testing.T, storageAccountName string, resourceGroupName string, subscriptionID string) string {
 	result, err := GetStorageAccountSkuTierE(storageAccountName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
 	return result
 }
 
-// GetStorageDNSString builds and returns the storage account dns string if the storage account exists; otherwise error.
+// GetStorageDNSString builds and returns the storage account dns string if the storage account exists.
 func GetStorageDNSString(t *testing.T, storageAccountName string, resourceGroupName string, subscriptionID string) string {
 	result, err := GetStorageDNSStringE(storageAccountName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
@@ -54,6 +54,7 @@ func GetStorageDNSString(t *testing.T, storageAccountName string, resourceGroupN
 }
 
 // StorageAccountExistsE indicates whether the storage account name exactly matches; otherwise false.
+// This function would fail the test if there is an error.
 func StorageAccountExistsE(storageAccountName, resourceGroupName, subscriptionID string) (bool, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -70,7 +71,8 @@ func StorageAccountExistsE(storageAccountName, resourceGroupName, subscriptionID
 	return *storageAccount.Name == storageAccountName, nil
 }
 
-// StorageBlobContainerExistsE returns true if the container name exactly matches; otherwise false
+// StorageBlobContainerExistsE returns true if the container name exactly matches; otherwise false.
+// This function would fail the test if there is an error.
 func StorageBlobContainerExistsE(containerName, storageAccountName, resourceGroupName, subscriptionID string) (bool, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -88,6 +90,7 @@ func StorageBlobContainerExistsE(containerName, storageAccountName, resourceGrou
 }
 
 // GetStorageBlobContainerPublicAccessE indicates whether a storage container has public access; otherwise false.
+// This function would fail the test if there is an error.
 func GetStorageBlobContainerPublicAccessE(containerName, storageAccountName, resourceGroupName, subscriptionID string) (bool, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -108,7 +111,8 @@ func GetStorageBlobContainerPublicAccessE(containerName, storageAccountName, res
 	return (string(container.PublicAccess) != "None"), nil
 }
 
-// GetStorageAccountKindE returns one of Storage, StorageV2, BlobStorage, FileStorage, or BlockBlobStorage; otherwise error.
+// GetStorageAccountKindE returns one of Storage, StorageV2, BlobStorage, FileStorage, or BlockBlobStorage.
+// This function would fail the test if there is an error.
 func GetStorageAccountKindE(storageAccountName, resourceGroupName, subscriptionID string) (string, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -125,7 +129,8 @@ func GetStorageAccountKindE(storageAccountName, resourceGroupName, subscriptionI
 	return string(storageAccount.Kind), nil
 }
 
-// GetStorageAccountSkuTierE returns the storage account sku tier as Standard or Premium; otherwise error.
+// GetStorageAccountSkuTierE returns the storage account sku tier as Standard or Premium.
+// This function would fail the test if there is an error.
 func GetStorageAccountSkuTierE(storageAccountName, resourceGroupName, subscriptionID string) (string, error) {
 	storageAccount, err := GetStorageAccountPropertyE(storageAccountName, resourceGroupName, subscriptionID)
 	if err != nil {
@@ -134,7 +139,8 @@ func GetStorageAccountSkuTierE(storageAccountName, resourceGroupName, subscripti
 	return string(storageAccount.Sku.Tier), nil
 }
 
-// GetStorageBlobContainerE returns Blob container
+// GetStorageBlobContainerE returns Blob container client.
+// This function would fail the test if there is an error.
 func GetStorageBlobContainerE(containerName, storageAccountName, resourceGroupName, subscriptionID string) (*storage.BlobContainer, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -155,7 +161,8 @@ func GetStorageBlobContainerE(containerName, storageAccountName, resourceGroupNa
 	return &container, nil
 }
 
-// GetStorageAccountPropertyE return StorageAccount that matches the parameter.
+// GetStorageAccountPropertyE returns StorageAccount properties.
+// This function would fail the test if there is an error.
 func GetStorageAccountPropertyE(storageAccountName, resourceGroupName, subscriptionID string) (*storage.Account, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -177,6 +184,7 @@ func GetStorageAccountPropertyE(storageAccountName, resourceGroupName, subscript
 }
 
 // GetStorageAccountClientE creates a storage account client.
+// This function would fail the test if there is an error.
 func GetStorageAccountClientE(subscriptionID string) (*storage.AccountsClient, error) {
 	storageAccountClient := storage.NewAccountsClient(os.Getenv(AzureSubscriptionID))
 	authorizer, err := NewAuthorizer()
@@ -188,6 +196,7 @@ func GetStorageAccountClientE(subscriptionID string) (*storage.AccountsClient, e
 }
 
 // GetStorageBlobContainerClientE creates a storage container client.
+// This function would fail the test if there is an error.
 func GetStorageBlobContainerClientE(subscriptionID string) (*storage.BlobContainersClient, error) {
 	blobContainerClient := storage.NewBlobContainersClient(os.Getenv(AzureSubscriptionID))
 	authorizer, err := NewAuthorizer()
@@ -199,7 +208,8 @@ func GetStorageBlobContainerClientE(subscriptionID string) (*storage.BlobContain
 	return &blobContainerClient, nil
 }
 
-// GetStorageURISuffixE returns the proper storage URI suffix for the configured Azure environment
+// GetStorageURISuffixE returns the proper storage URI suffix for the configured Azure environment.
+// This function would fail the test if there is an error.
 func GetStorageURISuffixE() (*string, error) {
 	var envName = "AzurePublicCloud"
 	env, err := azure.EnvironmentFromName(envName)
@@ -209,7 +219,8 @@ func GetStorageURISuffixE() (*string, error) {
 	return &env.StorageEndpointSuffix, nil
 }
 
-// GetStorageAccountPrimaryBlobEndpointE gets the storage account blob endpoint as URI string; otherwise error.
+// GetStorageAccountPrimaryBlobEndpointE gets the storage account blob endpoint as URI string.
+// This function would fail the test if there is an error.
 func GetStorageAccountPrimaryBlobEndpointE(storageAccountName, resourceGroupName, subscriptionID string) (string, error) {
 	storageAccount, err := GetStorageAccountPropertyE(storageAccountName, resourceGroupName, subscriptionID)
 	if err != nil {
@@ -219,7 +230,8 @@ func GetStorageAccountPrimaryBlobEndpointE(storageAccountName, resourceGroupName
 	return *storageAccount.AccountProperties.PrimaryEndpoints.Blob, nil
 }
 
-// GetStorageDNSStringE builds and returns the storage account dns string if the storage account exists; otherwise error.
+// GetStorageDNSStringE builds and returns the storage account dns string if the storage account exists.
+// This function would fail the test if there is an error.
 func GetStorageDNSStringE(storageAccountName, resourceGroupName, subscriptionID string) (string, error) {
 	retval, err := StorageAccountExistsE(storageAccountName, resourceGroupName, subscriptionID)
 	if err != nil {
@@ -230,5 +242,5 @@ func GetStorageDNSStringE(storageAccountName, resourceGroupName, subscriptionID 
 		return fmt.Sprintf("https://%s.blob.%s/", storageAccountName, *storageSuffix), nil
 	}
 
-	return "", StorageAccountNotFound{}
+	return "", NewNotFoundError("storage account", storageAccountName, "")
 }

@@ -3,6 +3,8 @@
 # This is an example of how to deploy an Azure AKS cluster with load balancer in front of the service 
 # to handle providing the public interface into the cluster.
 # ---------------------------------------------------------------------------------------------------------------------
+# See test/azure/terraform_azure_aks_example_test.go for how to write automated tests for this code.
+# ---------------------------------------------------------------------------------------------------------------------
 
 terraform {
   # This module is now only being tested with Terraform 0.13.x. However, to make upgrading easier, we are setting
@@ -16,7 +18,7 @@ terraform {
 # ------------------------------------------------------------------------------
 
 provider "azurerm" {
-  version = "1.40.0"
+  features {}
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -49,7 +51,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   default_node_pool {
     name       = "agentpool"
     node_count = var.agent_count
-    vm_size    = "Standard_DS1_v2"
+    vm_size    = "Standard_DS2_v2"
   }
 
   service_principal {

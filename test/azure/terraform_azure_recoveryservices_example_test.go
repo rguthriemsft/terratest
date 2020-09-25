@@ -6,7 +6,6 @@
 package test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
@@ -18,18 +17,17 @@ import (
 func TestTerraformAzureRecoveryServicesExample(t *testing.T) {
 	t.Parallel()
 
-	expectedResourceGroupName := fmt.Sprintf("terratest-rg-%s", random.UniqueId())
-	expectedVaultName := fmt.Sprintf("vault%s", random.UniqueId())
-	expectedPolicyName := fmt.Sprintf("policy-%s", random.UniqueId())
+	// subscriptionID is overridden by the environment variable "ARM_SUBSCRIPTION_ID"
+	subscriptionID := ""
+	uniquePostfix := random.UniqueId()
 
 	// website::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../examples/azure/terraform-azure-recoveryservices-example",
+		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"resource_group_name": expectedResourceGroupName,
-			"vault_name":          expectedVaultName,
-			"policy_name":         expectedPolicyName,
+			"postfix": uniquePostfix,
 		},
 	}
 
@@ -45,10 +43,10 @@ func TestTerraformAzureRecoveryServicesExample(t *testing.T) {
 	policyVmName := terraform.Output(t, terraformOptions, "backup_policy_vm_name")
 
 	// website::tag::4:: Verify the recovery services resources
-	exists := azure.RecoveryServicesVaultExists(vaultName, resourceGroupName, "")
+	exists := azure.RecoveryServicesVaultExists(vaultName, resourceGroupName, subscriptionID)
 	assert.True(t, exists, "vault does not exist")
-	policyList := azure.GetRecoveryServicesVaultBackupPolicyList(vaultName, resourceGroupName, "")
+	policyList := azure.GetRecoveryServicesVaultBackupPolicyList(vaultName, resourceGroupName, subscriptionID)
 	assert.NotNil(t, policyList, "vault backup policy list is nil")
-	vmPolicyList := azure.GetRecoveryServicesVaultBackupProtectedVMList(policyVmName, vaultName, resourceGroupName, "")
+	vmPolicyList := azure.GetRecoveryServicesVaultBackupProtectedVMList(policyVmName, vaultName, resourceGroupName, subscriptionID)
 	assert.NotNil(t, vmPolicyList, "vault backup policy list for protected vm is nil")
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/recoveryservices/mgmt/2020-02-02/backup"
 )
 
-//RecoveryServicesVaultExists indicates whether a recovery services vault exists; otherwise false
+//RecoveryServicesVaultExists indicates whether a recovery services vault exists; otherwise false.
 func RecoveryServicesVaultExists(vaultName, resourceGroupName, subscriptionID string) bool {
 	vault, err := GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID)
 	if err != nil {
@@ -17,7 +17,7 @@ func RecoveryServicesVaultExists(vaultName, resourceGroupName, subscriptionID st
 	return (*vault.Name == vaultName)
 }
 
-// GetRecoveryServicesVaultBackupPolicyList returns a list of backup policies for the given vault
+// GetRecoveryServicesVaultBackupPolicyList returns a list of backup policies for the given vault.
 func GetRecoveryServicesVaultBackupPolicyList(vaultName, resourceGroupName, subscriptionID string) map[string]backup.ProtectionPolicyResource {
 	list, err := GetRecoveryServicesVaultBackupPolicyListE(vaultName, resourceGroupName, subscriptionID)
 	if err != nil {
@@ -26,7 +26,7 @@ func GetRecoveryServicesVaultBackupPolicyList(vaultName, resourceGroupName, subs
 	return list
 }
 
-// GetRecoveryServicesVaultBackupProtectedVMList returns a list of protected VM's on the given vault/policy
+// GetRecoveryServicesVaultBackupProtectedVMList returns a list of protected VM's on the given vault/policy.
 func GetRecoveryServicesVaultBackupProtectedVMList(policyName, vaultName, resourceGroupName, subscriptionID string) map[string]backup.AzureIaaSComputeVMProtectedItem {
 	list, err := GetRecoveryServicesVaultBackupProtectedVMListE(policyName, vaultName, resourceGroupName, subscriptionID)
 	if err != nil {
@@ -35,7 +35,8 @@ func GetRecoveryServicesVaultBackupProtectedVMList(policyName, vaultName, resour
 	return list
 }
 
-// GetRecoveryServicesVaultE returns a vault instance or error
+// GetRecoveryServicesVaultE returns a vault instance.
+// This function would fail the test if there is an error.
 func GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID string) (*recoveryservices.Vault, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -59,7 +60,8 @@ func GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID stri
 	return &vault, nil
 }
 
-// GetRecoveryServicesVaultBackupPolicyListE returns a list of backup policies for the given vault or error
+// GetRecoveryServicesVaultBackupPolicyListE returns a list of backup policies for the given vault.
+// This function would fail the test if there is an error.
 func GetRecoveryServicesVaultBackupPolicyListE(vaultName, resourceGroupName, subscriptionID string) (map[string]backup.ProtectionPolicyResource, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -93,7 +95,8 @@ func GetRecoveryServicesVaultBackupPolicyListE(vaultName, resourceGroupName, sub
 	return policyMap, nil
 }
 
-// GetRecoveryServicesVaultBackupProtectedVMListE returns a list of protected VM's on the given vault/policy or error
+// GetRecoveryServicesVaultBackupProtectedVMListE returns a list of protected VM's on the given vault/policy.
+// This function would fail the test if there is an error.
 func GetRecoveryServicesVaultBackupProtectedVMListE(policyName, vaultName, resourceGroupName, subscriptionID string) (map[string]backup.AzureIaaSComputeVMProtectedItem, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {

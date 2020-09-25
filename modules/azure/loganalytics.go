@@ -17,7 +17,7 @@ func LogAnalyticsWorkspaceExists(workspaceName, resourceGroupName, subscriptionI
 	return (*ws.Name == workspaceName)
 }
 
-// GetLogAnalyticsWorkspaceSku return the log analytics workspace SKU as string as one of the following: Free, Standard, Premium, PerGB2018, CapacityReservation; otherwise empty string ""
+// GetLogAnalyticsWorkspaceSku return the log analytics workspace SKU as string as one of the following: Free, Standard, Premium, PerGB2018, CapacityReservation; otherwise empty string "".
 func GetLogAnalyticsWorkspaceSku(workspaceName, resourceGroupName, subscriptionID string) string {
 	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
 	if err != nil {
@@ -26,7 +26,7 @@ func GetLogAnalyticsWorkspaceSku(workspaceName, resourceGroupName, subscriptionI
 	return string(ws.Sku.Name)
 }
 
-// GetLogAnalyticsWorkspaceRetentionPeriodDays returns the log analytics workspace retention period in days; otherwise -1
+// GetLogAnalyticsWorkspaceRetentionPeriodDays returns the log analytics workspace retention period in days; otherwise -1.
 func GetLogAnalyticsWorkspaceRetentionPeriodDays(workspaceName, resourceGroupName, subscriptionID string) int32 {
 	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
 	if err != nil {
@@ -35,7 +35,8 @@ func GetLogAnalyticsWorkspaceRetentionPeriodDays(workspaceName, resourceGroupNam
 	return *ws.RetentionInDays
 }
 
-// GetLogAnalyticsWorkspaceE gets an operational insights workspace if it exists in a subscription
+// GetLogAnalyticsWorkspaceE gets an operational insights workspace if it exists in a subscription.
+// This function would fail the test if there is an error.
 func GetLogAnalyticsWorkspaceE(workspaceName, resoureGroupName, subscriptionID string) (*operationalinsights.Workspace, error) {
 	client, err := GetLogAnalyticsWorkspacesClientE(subscriptionID)
 	if err != nil {
@@ -48,7 +49,8 @@ func GetLogAnalyticsWorkspaceE(workspaceName, resoureGroupName, subscriptionID s
 	return &ws, nil
 }
 
-// GetLogAnalyticsWorkspacesClientE return workspaces client; otherwise error
+// GetLogAnalyticsWorkspacesClientE return workspaces client; otherwise error.
+// This function would fail the test if there is an error.
 func GetLogAnalyticsWorkspacesClientE(subscriptionID string) (*operationalinsights.WorkspacesClient, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {

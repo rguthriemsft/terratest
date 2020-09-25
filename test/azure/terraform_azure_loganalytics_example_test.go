@@ -6,7 +6,6 @@
 package test
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"testing"
@@ -20,16 +19,17 @@ import (
 func TestTerraformAzureLogAnalyticsExample(t *testing.T) {
 	t.Parallel()
 
-	expectedResourceGroupName := fmt.Sprintf("terratest-rg-%s", random.UniqueId())
-	expectedWorkspaceName := fmt.Sprintf("loganalyticsws-%s", random.UniqueId())
+	// subscriptionID is overridden by the environment variable "ARM_SUBSCRIPTION_ID"
+	subscriptionID := ""
+	uniquePostfix := random.UniqueId()
 
 	// website::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../examples/azure/terraform-azure-loganalytics-example",
+		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"resource_group_name":         expectedResourceGroupName,
-			"loganalytics_workspace_name": expectedWorkspaceName,
+			"postfix": uniquePostfix,
 		},
 	}
 
@@ -46,13 +46,13 @@ func TestTerraformAzureLogAnalyticsExample(t *testing.T) {
 	retentionPeriodString := terraform.Output(t, terraformOptions, "loganalytics_workspace_retention")
 
 	// website::tag::4:: Verify the Log Analytics properties and ensure it matches the output.
-	workspaceExists := azure.LogAnalyticsWorkspaceExists(workspaceName, resourceGroupName, "")
+	workspaceExists := azure.LogAnalyticsWorkspaceExists(workspaceName, resourceGroupName, subscriptionID)
 	assert.True(t, workspaceExists, "log analytics workspace not found.")
 
-	actualSku := azure.GetLogAnalyticsWorkspaceSku(workspaceName, resourceGroupName, "")
+	actualSku := azure.GetLogAnalyticsWorkspaceSku(workspaceName, resourceGroupName, subscriptionID)
 	assert.Equal(t, sku, strings.ToLower(actualSku), "log analytics sku mismatch")
 
-	var actualRetentionPeriod = azure.GetLogAnalyticsWorkspaceRetentionPeriodDays(workspaceName, resourceGroupName, "")
+	var actualRetentionPeriod = azure.GetLogAnalyticsWorkspaceRetentionPeriodDays(workspaceName, resourceGroupName, subscriptionID)
 	expectedPeriod, _ := strconv.ParseInt(retentionPeriodString, 10, 32)
 	assert.Equal(t, int32(expectedPeriod), actualRetentionPeriod, "log analytics retention period mismatch")
 }

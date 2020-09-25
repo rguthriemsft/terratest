@@ -32,12 +32,20 @@ resource "azurerm_resource_group" "resourcegroup" {
   location = var.location
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A RECOVERY SERVICES VAULT
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "azurerm_recovery_services_vault" "vault" {
   name                = "rsvault${var.postfix}"
   location            = azurerm_resource_group.resourcegroup.location
   resource_group_name = azurerm_resource_group.resourcegroup.name
   sku                 = "Standard"
 }
+
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A BACKUP POLICY
+# ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_backup_policy_vm" "vmpolicy" {
   name                = "vmpolicy-${var.postfix}"

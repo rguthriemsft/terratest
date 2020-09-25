@@ -1,9 +1,8 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# DEPLOY AN AZURE AVAILABILITY SET
-# This is an example of how to deploy an Azure Availability Set with a Virtual Machine in the availability set 
-# and the minimum network resources for the VM.
+# DEPLOY A STORAGE ACCOUNT SET
+# This is an example of how to deploy a Storage Account.
 # ---------------------------------------------------------------------------------------------------------------------
-# See test/azure/terraform_azure_availabilityset_example_test.go for how to write automated tests for this code.
+# See test/azure/terraform_azure_storage_example_test.go for how to write automated tests for this code.
 # ---------------------------------------------------------------------------------------------------------------------
 
 provider "azurerm" {

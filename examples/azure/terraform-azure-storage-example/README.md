@@ -4,7 +4,7 @@ This folder contains a simple Terraform module that deploys resources in [Azure]
 how you can use Terratest to write automated tests for your Azure Terraform code. This module deploys a
 Storage Account.
 
-- A [Azure Storage](https://azure.microsoft.com/en-us/services/storage/) that gives the module the following:
+- An [Azure Storage Account](https://azure.microsoft.com/en-us/services/storage/) that gives the module the following:
     - [Stock Account Name](https://azure.microsoft.com/en-us/services/storage/)  with the value specified in the `storage_account_name`  output variable.
     - [Storage Account Tier](https://azure.microsoft.com/en-us/services/storage/)  with the value specified in the `"storage_account_account_tier`  output variable.
     - [Storage Account Kind](https://azure.microsoft.com/en-us/services/storage/)  with the value specified in the `"storage_account_account_kind`  output variable.

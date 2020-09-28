@@ -27,10 +27,9 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_resource_group" "resourcegroup" {
-  name     =  "terratest-storage-rg-${var.postfix}"
+  name     = "terratest-storage-rg-${var.postfix}"
   location = var.location
 }
-
 
 # ---------------------------------------------------------------------------------------------------------------------
 # DEPLOY A STORAGE ACCOUNT
@@ -45,13 +44,13 @@ resource "azurerm_storage_account" "storageaccount" {
   account_replication_type = var.storage_replication_type
 }
 
-
 # ---------------------------------------------------------------------------------------------------------------------
 # ADD A CONTAINER TO THE STORAGE ACCOUNT
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_storage_container" "container" {
-  name = "container1"
+  name                  = "container1"
   storage_account_name  = azurerm_storage_account.storageaccount.name
   container_access_type = var.container_access_type
 }
+

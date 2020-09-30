@@ -30,7 +30,8 @@ func TestTerraformAzureStorageExample(t *testing.T) {
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"postfix": strings.ToLower(uniquePostfix),
+			"postfix":                 strings.ToLower(uniquePostfix),
+			"resource_group_basename": "terratest-storage-rg1",
 		},
 	}
 

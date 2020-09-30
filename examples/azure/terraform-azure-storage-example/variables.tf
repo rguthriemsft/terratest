@@ -24,6 +24,13 @@ variable "location" {
   default     = "East US"
 }
 
+variable "resource_group_basename" {
+  description = "The basename of the resource group."
+  type        = string
+  default     = "terratest-storage-rg"
+}
+
+
 variable "storage_account_name" {
   description = "The name to set for the storage account."
   type        = string

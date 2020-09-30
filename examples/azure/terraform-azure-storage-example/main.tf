@@ -26,8 +26,8 @@ terraform {
 # DEPLOY A RESOURCE GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_resource_group" "resourcegroup" {
-  name     = "terratest-storage-rg-${var.postfix}"
+resource "azurerm_resource_group" "resource_group" {
+  name     = "${var.resource_group_basename}-${var.postfix}"
   location = var.location
 }
 
@@ -35,10 +35,10 @@ resource "azurerm_resource_group" "resourcegroup" {
 # DEPLOY A STORAGE ACCOUNT
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_storage_account" "storageaccount" {
+resource "azurerm_storage_account" "storage_account" {
   name                     = "storage${var.postfix}"
-  resource_group_name      = azurerm_resource_group.resourcegroup.name
-  location                 = azurerm_resource_group.resourcegroup.location
+  resource_group_name      = azurerm_resource_group.resource_group.name
+  location                 = azurerm_resource_group.resource_group.location
   account_kind             = var.storage_account_kind
   account_tier             = var.storage_account_tier
   account_replication_type = var.storage_replication_type
@@ -50,7 +50,7 @@ resource "azurerm_storage_account" "storageaccount" {
 
 resource "azurerm_storage_container" "container" {
   name                  = "container1"
-  storage_account_name  = azurerm_storage_account.storageaccount.name
+  storage_account_name  = azurerm_storage_account.storage_account.name
   container_access_type = var.container_access_type
 }
 

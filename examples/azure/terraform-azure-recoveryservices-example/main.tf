@@ -27,8 +27,8 @@ terraform {
 # DEPLOY A RESOURCE GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_resource_group" "resourcegroup" {
-  name     = "terratest-rs-rg-${var.postfix}"
+resource "azurerm_resource_group" "resource_group" {
+  name     = "${var.resource_group_basename}-${var.postfix}"
   location = var.location
 }
 
@@ -38,8 +38,8 @@ resource "azurerm_resource_group" "resourcegroup" {
 
 resource "azurerm_recovery_services_vault" "vault" {
   name                = "rsvault${var.postfix}"
-  location            = azurerm_resource_group.resourcegroup.location
-  resource_group_name = azurerm_resource_group.resourcegroup.name
+  location            = azurerm_resource_group.resource_group.location
+  resource_group_name = azurerm_resource_group.resource_group.name
   sku                 = "Standard"
 }
 
@@ -47,9 +47,9 @@ resource "azurerm_recovery_services_vault" "vault" {
 # DEPLOY A BACKUP POLICY
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_backup_policy_vm" "vmpolicy" {
+resource "azurerm_backup_policy_vm" "vm_policy" {
   name                = "vmpolicy-${var.postfix}"
-  resource_group_name = azurerm_resource_group.resourcegroup.name
+  resource_group_name = azurerm_resource_group.resource_group.name
   recovery_vault_name = azurerm_recovery_services_vault.vault.name
 
   timezone = "UTC"

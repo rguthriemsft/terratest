@@ -27,7 +27,8 @@ func TestTerraformAzureRecoveryServicesExample(t *testing.T) {
 		TerraformDir: "../../examples/azure/terraform-azure-recoveryservices-example",
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"postfix": uniquePostfix,
+			"postfix":                 uniquePostfix,
+			"resource_group_basename": "terratest-rs-rg1",
 		},
 	}
 

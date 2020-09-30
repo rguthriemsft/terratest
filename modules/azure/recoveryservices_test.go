@@ -9,8 +9,7 @@ import (
 
 /*
 The below tests are currently stubbed out, with the expectation that they will throw errors.
-If/when CRUD methods are introduced for Azure Virtual Machines, these tests can be extended
-(see AWS S3 tests for reference).
+If/when methods to create and delete recovery services resources are added, these tests can be extended.
 */
 
 func TestRecoveryServicesVaultName(t *testing.T) {

@@ -24,6 +24,12 @@ variable "location" {
   default     = "East US"
 }
 
+variable "resource_group_basename" {
+  description = "The base name of the resource group."
+  type        = string
+  default     = "terratest-kv-rg"
+}
+
 variable "secret_name" {
   description = "The name to set for the key vault secret."
   type        = string

@@ -26,8 +26,8 @@ terraform {
 # DEPLOY A RESOURCE GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_resource_group" "resourcegroup" {
-  name     = "terratest-kv-rg-${var.postfix}"
+resource "azurerm_resource_group" "resource_group" {
+  name     = "${var.resource_group_basename}-${var.postfix}"
   location = var.location
 }
 
@@ -49,10 +49,10 @@ data "azurerm_key_vault_access_policy" "contributor" {
 # DEPLOY A KEY VAULT
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_key_vault" "keyvault" {
+resource "azurerm_key_vault" "key_vault" {
   name                        = "keyvault-${var.postfix}"
-  location                    = azurerm_resource_group.resourcegroup.location
-  resource_group_name         = azurerm_resource_group.resourcegroup.name
+  location                    = azurerm_resource_group.resource_group.location
+  resource_group_name         = azurerm_resource_group.resource_group.name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_enabled         = true
@@ -100,19 +100,19 @@ resource "azurerm_key_vault" "keyvault" {
 # DEPLOY A SECRET TO THE KEY VAULT
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_key_vault_secret" "keyvaultsecret" {
+resource "azurerm_key_vault_secret" "key_vault_secret" {
   name         = var.secret_name
   value        = "mysecret"
-  key_vault_id = azurerm_key_vault.keyvault.id
+  key_vault_id = azurerm_key_vault.key_vault.id
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
 #  DEPLOY A KEY TO THE KEY VAULT
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_key_vault_key" "keyvaultkey" {
+resource "azurerm_key_vault_key" "key_vault_key" {
   name         = var.key_name
-  key_vault_id = azurerm_key_vault.keyvault.id
+  key_vault_id = azurerm_key_vault.key_vault.id
   key_type     = "RSA"
   key_size     = 2048
 
@@ -129,9 +129,9 @@ resource "azurerm_key_vault_key" "keyvaultkey" {
 # ---------------------------------------------------------------------------------------------------------------------
 #  DEPLOY A CERTIFICATE TO THE KEY VAULT
 # ---------------------------------------------------------------------------------------------------------------------
-resource "azurerm_key_vault_certificate" "keyvaultcertificate" {
+resource "azurerm_key_vault_certificate" "key_vault_certificate" {
   name         = var.certificate_name
-  key_vault_id = azurerm_key_vault.keyvault.id
+  key_vault_id = azurerm_key_vault.key_vault.id
 
   certificate {
     contents = filebase64("example.pfx")

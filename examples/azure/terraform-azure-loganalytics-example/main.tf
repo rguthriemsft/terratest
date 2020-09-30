@@ -26,15 +26,15 @@ terraform {
 # DEPLOY A RESOURCE GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_resource_group" "resourcegroup" {
-  name     = "terratest-log-rg-${var.postfix}"
+resource "azurerm_resource_group" "resource_group" {
+  name     = "${var.resource_group_basename}-${var.postfix}"
   location = var.location
 }
 
-resource "azurerm_log_analytics_workspace" "loganalyticsworkspace" {
+resource "azurerm_log_analytics_workspace" "log_analytics_workspace" {
   name                = "log-ws-${var.postfix}"
-  location            = azurerm_resource_group.resourcegroup.location
-  resource_group_name = azurerm_resource_group.resourcegroup.name
+  location            = azurerm_resource_group.resource_group.location
+  resource_group_name = azurerm_resource_group.resource_group.name
   sku                 = "PerGB2018"
   retention_in_days   = 30
 }

@@ -101,7 +101,7 @@ resource "azurerm_key_vault" "key_vault" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_key_vault_secret" "key_vault_secret" {
-  name         = var.secret_name
+  name         = "${var.secret_name}-${var.postfix}"
   value        = "mysecret"
   key_vault_id = azurerm_key_vault.key_vault.id
 }
@@ -111,7 +111,7 @@ resource "azurerm_key_vault_secret" "key_vault_secret" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_key_vault_key" "key_vault_key" {
-  name         = var.key_name
+  name         = "${var.key_name}-${var.postfix}"
   key_vault_id = azurerm_key_vault.key_vault.id
   key_type     = "RSA"
   key_size     = 2048
@@ -130,7 +130,7 @@ resource "azurerm_key_vault_key" "key_vault_key" {
 #  DEPLOY A CERTIFICATE TO THE KEY VAULT
 # ---------------------------------------------------------------------------------------------------------------------
 resource "azurerm_key_vault_certificate" "key_vault_certificate" {
-  name         = var.certificate_name
+  name         = "${var.certificate_name}-${var.postfix}"
   key_vault_id = azurerm_key_vault.key_vault.id
 
   certificate {

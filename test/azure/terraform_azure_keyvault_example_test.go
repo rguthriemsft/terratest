@@ -6,7 +6,6 @@
 package test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
@@ -20,20 +19,20 @@ func TestTerraformAzureKeyVaultExample(t *testing.T) {
 
 	uniquePostfix := random.UniqueId()
 
-	expectedSecretName := fmt.Sprintf("secret-%s", random.UniqueId())
-	expectedKeyName := fmt.Sprintf("key-%s", random.UniqueId())
-	expectedCertificateName := fmt.Sprintf("cert-%s", random.UniqueId())
+	//expectedSecretName := fmt.Sprintf("secret-%s", uniquePostfix)
+	//expectedKeyName := fmt.Sprintf("key-%s", uniquePostfix)
+	//expectedCertificateName := fmt.Sprintf("cert-%s", uniquePostfix)
 
 	// website::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../examples/azure/terraform-azure-keyvault-example",
 		Vars: map[string]interface{}{
-			"postfix":                 uniquePostfix,
-			"resource_group_basename": "terratest-kv-rg1",
-			"secret_name":             expectedSecretName,
-			"key_name":                expectedKeyName,
-			"certificate_name":        expectedCertificateName,
+			"postfix": uniquePostfix,
+			//"resource_group_basename": "terratest-kv-rg1",
+			//"secret_name":             expectedSecretName,
+			//"key_name":                expectedKeyName,
+			//"certificate_name":        expectedCertificateName,
 		},
 	}
 

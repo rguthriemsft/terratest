@@ -53,9 +53,6 @@ func KeyVaultCertificateExistsE(keyVaultName, certificateName string) (bool, err
 	if err != nil {
 		return false, err
 	}
-	if err != nil {
-		return false, err
-	}
 	items := versions.Values()
 
 	if len(items) > 0 {
@@ -80,9 +77,6 @@ func KeyVaultKeyExistsE(keyVaultName, keyName string) (bool, error) {
 		fmt.Sprintf("https://%s.%s", keyVaultName, keyVaultSuffix),
 		keyName,
 		&maxVersionsCount)
-	if err != nil {
-		return false, err
-	}
 	if err != nil {
 		return false, err
 	}

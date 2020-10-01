@@ -128,6 +128,8 @@ resource "azurerm_key_vault_key" "key_vault_key" {
 
 # ---------------------------------------------------------------------------------------------------------------------
 #  DEPLOY A CERTIFICATE TO THE KEY VAULT
+#  The example uses a sample pfx file with plain text password to make it easier to test. However, in production modules 
+#  should use a more secure mechanisms for transferring these files.
 # ---------------------------------------------------------------------------------------------------------------------
 resource "azurerm_key_vault_certificate" "key_vault_certificate" {
   name         = "${var.certificate_name}-${var.postfix}"

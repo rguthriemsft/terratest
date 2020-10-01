@@ -29,10 +29,6 @@ func TestTerraformAzureKeyVaultExample(t *testing.T) {
 		TerraformDir: "../../examples/azure/terraform-azure-keyvault-example",
 		Vars: map[string]interface{}{
 			"postfix": uniquePostfix,
-			//"resource_group_basename": "terratest-kv-rg1",
-			//"secret_name":             expectedSecretName,
-			//"key_name":                expectedKeyName,
-			//"certificate_name":        expectedCertificateName,
 		},
 	}
 

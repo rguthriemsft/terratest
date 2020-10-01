@@ -65,6 +65,9 @@ jobs:
 
           # run the linter
           ./bin/golangci-lint run ./test/azure/ --build-tags=azure --timeout 5m0s
+      - name: run terraform format
+        id: azure_terraform_format
+        run: terraform fmt -check -recursive ./examples/azure
       - name: login to azure cli
         uses: azure/login@v1.1
         with:

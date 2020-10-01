@@ -6,6 +6,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+/*
+The below tests are currently stubbed out, with the expectation that they will throw errors.
+If/when methods to create and delete key vault resources are added, these tests can be extended.
+*/
+
 func TestKeyVaultSecretExists(t *testing.T) {
 	t.Parallel()
 

@@ -1,29 +1,58 @@
-resource "random_string" "default" {
-  length = 3  
-  lower = true
-  number = false
-  special = false
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY AN AZURE KEY VAULT
+# This is an example of how to deploy a Key Vault 
+# ---------------------------------------------------------------------------------------------------------------------
+# See test/azure/terraform_azure_keyvault_example_test.go for how to write automated tests for this code.
+# ---------------------------------------------------------------------------------------------------------------------
+
+provider "azurerm" {
+  version = "~>2.20"
+  features {}
 }
 
-resource "azurerm_resource_group" "main" {
-  name     =  format("%s-%s-%s", "terratest", lower(random_string.default.result), "keyvault")
+# ---------------------------------------------------------------------------------------------------------------------
+# PIN TERRAFORM VERSION TO >= 0.12
+# The examples have been upgraded to 0.12 syntax
+# ---------------------------------------------------------------------------------------------------------------------
+
+terraform {
+  # This module is now only being tested with Terraform 0.13.x. However, to make upgrading easier, we are setting
+  # 0.12.26 as the minimum version, as that version added support for required_providers with source URLs, making it
+  # forwards compatible with 0.13.x code.
+  required_version = ">= 0.12.26"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A RESOURCE GROUP
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "azurerm_resource_group" "resource_group" {
+  name     = "${var.resource_group_basename}-${var.postfix}"
   location = var.location
 }
 
-resource "random_id" "server" {
-  byte_length = 8
-}
+# ---------------------------------------------------------------------------------------------------------------------
+# CONFIGURE A CLIENT FOR KEY VAULT ACCESS
+# ---------------------------------------------------------------------------------------------------------------------
 
 data "azurerm_client_config" "current" {}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CONFIGURE AN ACCESS POLICY TO MANAGE THE SECRET, KEY, AND CERTIFICATE
+# ---------------------------------------------------------------------------------------------------------------------
 
 data "azurerm_key_vault_access_policy" "contributor" {
   name = "Key, Secret, & Certificate Management"
 }
 
-resource "azurerm_key_vault" "kvexample" {
-  name                        = format("%s-%s", lower(random_string.default.result), random_id.server.hex)
-  location                    = azurerm_resource_group.main.location
-  resource_group_name         = azurerm_resource_group.main.name
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A KEY VAULT
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "azurerm_key_vault" "key_vault" {
+  name                        = "keyvault-${var.postfix}"
+  location                    = azurerm_resource_group.resource_group.location
+  resource_group_name         = azurerm_resource_group.resource_group.name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_enabled         = true
@@ -67,15 +96,23 @@ resource "azurerm_key_vault" "kvexample" {
   }
 }
 
-resource "azurerm_key_vault_secret" "example" {
-  name         = "secret1"
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A SECRET TO THE KEY VAULT
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "azurerm_key_vault_secret" "key_vault_secret" {
+  name         = "${var.secret_name}-${var.postfix}"
   value        = "mysecret"
-  key_vault_id = azurerm_key_vault.kvexample.id
+  key_vault_id = azurerm_key_vault.key_vault.id
 }
 
-resource "azurerm_key_vault_key" "example" {
-  name         = "key1"
-  key_vault_id = azurerm_key_vault.kvexample.id
+# ---------------------------------------------------------------------------------------------------------------------
+#  DEPLOY A KEY TO THE KEY VAULT
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "azurerm_key_vault_key" "key_vault_key" {
+  name         = "${var.key_name}-${var.postfix}"
+  key_vault_id = azurerm_key_vault.key_vault.id
   key_type     = "RSA"
   key_size     = 2048
 
@@ -89,9 +126,12 @@ resource "azurerm_key_vault_key" "example" {
   ]
 }
 
-resource "azurerm_key_vault_certificate" "example" {
-  name         = "certificate1"
-  key_vault_id = azurerm_key_vault.kvexample.id
+# ---------------------------------------------------------------------------------------------------------------------
+#  DEPLOY A CERTIFICATE TO THE KEY VAULT
+# ---------------------------------------------------------------------------------------------------------------------
+resource "azurerm_key_vault_certificate" "key_vault_certificate" {
+  name         = "${var.certificate_name}-${var.postfix}"
+  key_vault_id = azurerm_key_vault.key_vault.id
 
   certificate {
     contents = filebase64("example.pfx")

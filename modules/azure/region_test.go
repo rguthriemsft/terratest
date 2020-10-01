@@ -3,12 +3,10 @@
 // NOTE: We use build tags to differentiate azure testing because we currently do not have azure access setup for
 // CircleCI.
 
-package test
+package azure
 
 import (
 	"testing"
-
-	"github.com/gruntwork-io/terratest/modules/azure"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +14,7 @@ import (
 func TestGetRandomRegion(t *testing.T) {
 	t.Parallel()
 
-	randomRegion := azure.GetRandomRegion(t, nil, nil, "")
+	randomRegion := GetRandomRegion(t, nil, nil, "")
 	assertLooksLikeRegionName(t, randomRegion)
 }
 
@@ -26,8 +24,8 @@ func TestGetRandomRegionExcludesForbiddenRegions(t *testing.T) {
 	approvedRegions := []string{"canadacentral", "eastus", "eastus2", "westus", "westus2", "westeurope", "northeurope", "uksouth", "southeastasia", "eastasia", "japaneast", "australiacentral"}
 	forbiddenRegions := []string{"westus2", "japaneast"}
 
-	for i := 0; i < 1000; i++ {
-		randomRegion := azure.GetRandomRegion(t, approvedRegions, forbiddenRegions, "")
+	for i := 0; i < 48; i++ {
+		randomRegion := GetRandomRegion(t, approvedRegions, forbiddenRegions, "")
 		assert.NotContains(t, forbiddenRegions, randomRegion)
 	}
 }
@@ -35,7 +33,7 @@ func TestGetRandomRegionExcludesForbiddenRegions(t *testing.T) {
 func TestGetAllAzureRegions(t *testing.T) {
 	t.Parallel()
 
-	regions := azure.GetAllAzureRegions(t, "")
+	regions := GetAllAzureRegions(t, "")
 
 	// The typical subscription had access to 30+ live regions as of July 2019: https://azure.microsoft.com/en-us/global-infrastructure/regions/
 	assert.True(t, len(regions) >= 30, "Number of regions: %d", len(regions))

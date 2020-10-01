@@ -18,34 +18,16 @@
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
 
+variable "avs_fault_domain_count" {
+  description = "Domain Fault Domain Count of the Availability Set"
+  type        = number
+  default     = 3
+}
+
 variable "location" {
-  description = "The location to set for the storage account."
+  description = "The Azure location where to deploy your resources too"
   type        = string
   default     = "East US"
-}
-
-variable "resource_group_basename" {
-  description = "The base name of the resource group."
-  type        = string
-  default     = "terratest-kv-rg"
-}
-
-variable "secret_name" {
-  description = "The name to set for the key vault secret."
-  type        = string
-  default     = "secret1"
-}
-
-variable "key_name" {
-  description = "The name to set for the key vault key."
-  type        = string
-  default     = "key1"
-}
-
-variable "certificate_name" {
-  description = "The name to set for the key vault certificate."
-  type        = string
-  default     = "certificate1"
 }
 
 variable "postfix" {
@@ -53,5 +35,3 @@ variable "postfix" {
   type        = string
   default     = "resource"
 }
-
-

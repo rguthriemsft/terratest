@@ -52,3 +52,19 @@ func getTargetAzureResourceGroupName(resourceGroupName string) (string, error) {
 
 	return resourceGroupName, nil
 }
+
+// safePtrToString converts a string pointer to a non-pointer string value, or to "" if the pointer is nil.
+func safePtrToString(raw *string) string {
+	if raw == nil {
+		return ""
+	}
+	return *raw
+}
+
+// safePtrToInt32 converts a int32 pointer to a non-pointer int32 value, or to 0 if the pointer is nil.
+func safePtrToInt32(raw *int32) int32 {
+	if raw == nil {
+		return 0
+	}
+	return *raw
+}

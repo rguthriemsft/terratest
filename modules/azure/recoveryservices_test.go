@@ -3,7 +3,6 @@ package azure
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,8 +12,8 @@ If/when methods to create and delete recovery services resources are added, thes
 */
 
 func TestRecoveryServicesVaultName(t *testing.T) {
-	exists := RecoveryServicesVaultExists("", "", "")
-	assert.False(t, exists, "vault does not exist")
+	_, err := GetRecoveryServicesVaultE("", "", "")
+	require.Error(t, err, "vault")
 }
 
 func TestRecoveryServicesVaultBackupPolicyList(t *testing.T) {

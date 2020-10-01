@@ -3,35 +3,31 @@ package azure
 import (
 	"context"
 	"fmt"
+	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/services/recoveryservices/mgmt/2016-06-01/recoveryservices"
 	"github.com/Azure/azure-sdk-for-go/services/recoveryservices/mgmt/2020-02-02/backup"
+	"github.com/stretchr/testify/require"
 )
 
 //RecoveryServicesVaultExists indicates whether a recovery services vault exists; otherwise false.
-func RecoveryServicesVaultExists(vaultName, resourceGroupName, subscriptionID string) bool {
+func RecoveryServicesVaultExists(t *testing.T, vaultName, resourceGroupName, subscriptionID string) bool {
 	vault, err := GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID)
-	if err != nil {
-		return false
-	}
+	require.NoError(t, err)
 	return (*vault.Name == vaultName)
 }
 
 // GetRecoveryServicesVaultBackupPolicyList returns a list of backup policies for the given vault.
-func GetRecoveryServicesVaultBackupPolicyList(vaultName, resourceGroupName, subscriptionID string) map[string]backup.ProtectionPolicyResource {
+func GetRecoveryServicesVaultBackupPolicyList(t *testing.T, vaultName, resourceGroupName, subscriptionID string) map[string]backup.ProtectionPolicyResource {
 	list, err := GetRecoveryServicesVaultBackupPolicyListE(vaultName, resourceGroupName, subscriptionID)
-	if err != nil {
-		return nil
-	}
+	require.NoError(t, err)
 	return list
 }
 
 // GetRecoveryServicesVaultBackupProtectedVMList returns a list of protected VM's on the given vault/policy.
-func GetRecoveryServicesVaultBackupProtectedVMList(policyName, vaultName, resourceGroupName, subscriptionID string) map[string]backup.AzureIaaSComputeVMProtectedItem {
+func GetRecoveryServicesVaultBackupProtectedVMList(t *testing.T, policyName, vaultName, resourceGroupName, subscriptionID string) map[string]backup.AzureIaaSComputeVMProtectedItem {
 	list, err := GetRecoveryServicesVaultBackupProtectedVMListE(policyName, vaultName, resourceGroupName, subscriptionID)
-	if err != nil {
-		return nil
-	}
+	require.NoError(t, err)
 	return list
 }
 

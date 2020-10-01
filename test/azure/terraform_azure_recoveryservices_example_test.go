@@ -27,8 +27,7 @@ func TestTerraformAzureRecoveryServicesExample(t *testing.T) {
 		TerraformDir: "../../examples/azure/terraform-azure-recoveryservices-example",
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"postfix":                 uniquePostfix,
-			"resource_group_basename": "terratest-rs-rg1",
+			"postfix": uniquePostfix,
 		},
 	}
 
@@ -44,10 +43,10 @@ func TestTerraformAzureRecoveryServicesExample(t *testing.T) {
 	policyVmName := terraform.Output(t, terraformOptions, "backup_policy_vm_name")
 
 	// website::tag::4:: Verify the recovery services resources
-	exists := azure.RecoveryServicesVaultExists(vaultName, resourceGroupName, subscriptionID)
+	exists := azure.RecoveryServicesVaultExists(t, vaultName, resourceGroupName, subscriptionID)
 	assert.True(t, exists, "vault does not exist")
-	policyList := azure.GetRecoveryServicesVaultBackupPolicyList(vaultName, resourceGroupName, subscriptionID)
+	policyList := azure.GetRecoveryServicesVaultBackupPolicyList(t, vaultName, resourceGroupName, subscriptionID)
 	assert.NotNil(t, policyList, "vault backup policy list is nil")
-	vmPolicyList := azure.GetRecoveryServicesVaultBackupProtectedVMList(policyVmName, vaultName, resourceGroupName, subscriptionID)
+	vmPolicyList := azure.GetRecoveryServicesVaultBackupProtectedVMList(t, policyVmName, vaultName, resourceGroupName, subscriptionID)
 	assert.NotNil(t, vmPolicyList, "vault backup policy list for protected vm is nil")
 }

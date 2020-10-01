@@ -28,7 +28,7 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_resource_group" "resource_group" {
-  name     = "${var.resource_group_basename}-${var.postfix}"
+  name     = "terratest-ars-rg-${var.postfix}"
   location = var.location
 }
 

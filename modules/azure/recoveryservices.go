@@ -84,7 +84,7 @@ func GetRecoveryServicesVaultBackupPolicyListE(vaultName, resourceGroupName, sub
 		policyMap[*v.Name] = v
 		err := listIter.NextWithContext(context.Background())
 		if err != nil {
-			return nil, err
+			return make(map[string]backup.ProtectionPolicyResource, 0), err
 		}
 
 	}
@@ -123,7 +123,7 @@ func GetRecoveryServicesVaultBackupProtectedVMListE(policyName, vaultName, resou
 		vmList[*currentVM.FriendlyName] = *currentVM
 		err := listIter.NextWithContext(context.Background())
 		if err != nil {
-			return nil, err
+			return make(map[string]backup.AzureIaaSComputeVMProtectedItem, 0), err
 		}
 	}
 	return vmList, nil

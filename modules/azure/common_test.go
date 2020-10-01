@@ -9,6 +9,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -73,4 +74,28 @@ func TestGetTargetAzureResourceGroupName(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSafePtrToString(t *testing.T) {
+	// When given a nil, should always return an empty string
+	var nilPtr *string = nil
+	nilResult := safePtrToString(nilPtr)
+	assert.Equal(t, "", nilResult)
+
+	// When given a string, should just de-ref and return
+	stringPtr := "Test"
+	stringResult := safePtrToString(&stringPtr)
+	assert.Equal(t, "Test", stringResult)
+}
+
+func TestSafePtrToInt32(t *testing.T) {
+	// When given a nil, should always return an zero value int32
+	var nilPtr *int32 = nil
+	nilResult := safePtrToInt32(nilPtr)
+	assert.Equal(t, int32(0), nilResult)
+
+	// When given a string, should just de-ref and return
+	intPtr := int32(42)
+	intResult := safePtrToInt32(&intPtr)
+	assert.Equal(t, int32(42), intResult)
 }

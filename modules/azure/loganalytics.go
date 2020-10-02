@@ -14,7 +14,6 @@ import (
 func LogAnalyticsWorkspaceExists(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) bool {
 	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
-
 	return (*ws.Name == workspaceName)
 }
 

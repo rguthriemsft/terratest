@@ -11,6 +11,7 @@ import (
 )
 
 //RecoveryServicesVaultExists indicates whether a recovery services vault exists; otherwise false.
+// This function would fail the test if there is an error.
 func RecoveryServicesVaultExists(t *testing.T, vaultName, resourceGroupName, subscriptionID string) bool {
 	vault, err := GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
@@ -18,6 +19,7 @@ func RecoveryServicesVaultExists(t *testing.T, vaultName, resourceGroupName, sub
 }
 
 // GetRecoveryServicesVaultBackupPolicyList returns a list of backup policies for the given vault.
+// This function would fail the test if there is an error.
 func GetRecoveryServicesVaultBackupPolicyList(t *testing.T, vaultName, resourceGroupName, subscriptionID string) map[string]backup.ProtectionPolicyResource {
 	list, err := GetRecoveryServicesVaultBackupPolicyListE(vaultName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
@@ -25,6 +27,7 @@ func GetRecoveryServicesVaultBackupPolicyList(t *testing.T, vaultName, resourceG
 }
 
 // GetRecoveryServicesVaultBackupProtectedVMList returns a list of protected VM's on the given vault/policy.
+// This function would fail the test if there is an error.
 func GetRecoveryServicesVaultBackupProtectedVMList(t *testing.T, policyName, vaultName, resourceGroupName, subscriptionID string) map[string]backup.AzureIaaSComputeVMProtectedItem {
 	list, err := GetRecoveryServicesVaultBackupProtectedVMListE(policyName, vaultName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
@@ -32,7 +35,6 @@ func GetRecoveryServicesVaultBackupProtectedVMList(t *testing.T, policyName, vau
 }
 
 // GetRecoveryServicesVaultE returns a vault instance.
-// This function would fail the test if there is an error.
 func GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID string) (*recoveryservices.Vault, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -57,7 +59,6 @@ func GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID stri
 }
 
 // GetRecoveryServicesVaultBackupPolicyListE returns a list of backup policies for the given vault.
-// This function would fail the test if there is an error.
 func GetRecoveryServicesVaultBackupPolicyListE(vaultName, resourceGroupName, subscriptionID string) (map[string]backup.ProtectionPolicyResource, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
@@ -92,7 +93,6 @@ func GetRecoveryServicesVaultBackupPolicyListE(vaultName, resourceGroupName, sub
 }
 
 // GetRecoveryServicesVaultBackupProtectedVMListE returns a list of protected VM's on the given vault/policy.
-// This function would fail the test if there is an error.
 func GetRecoveryServicesVaultBackupProtectedVMListE(policyName, vaultName, resourceGroupName, subscriptionID string) (map[string]backup.AzureIaaSComputeVMProtectedItem, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {

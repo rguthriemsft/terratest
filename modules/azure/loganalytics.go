@@ -5,38 +5,36 @@ import (
 	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/services/preview/operationalinsights/mgmt/2020-03-01-preview/operationalinsights"
+	"github.com/gruntwork-io/terratest/modules/testing"
+	"github.com/stretchr/testify/require"
 )
 
-// LogAnalyticsWorkspaceExists indicates whether the operatonal insights workspaces exists; otherwise false or error
-func LogAnalyticsWorkspaceExists(workspaceName, resourceGroupName, subscriptionID string) bool {
+// LogAnalyticsWorkspaceExists indicates whether the operatonal insights workspaces exists.
+// This function would fail the test if there is an error.
+func LogAnalyticsWorkspaceExists(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) bool {
 	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
-	if err != nil {
-		return false
-	}
+	require.NoError(t, err)
 
 	return (*ws.Name == workspaceName)
 }
 
 // GetLogAnalyticsWorkspaceSku return the log analytics workspace SKU as string as one of the following: Free, Standard, Premium, PerGB2018, CapacityReservation; otherwise empty string "".
-func GetLogAnalyticsWorkspaceSku(workspaceName, resourceGroupName, subscriptionID string) string {
+// This function would fail the test if there is an error.
+func GetLogAnalyticsWorkspaceSku(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) string {
 	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
-	if err != nil {
-		return ""
-	}
+	require.NoError(t, err)
 	return string(ws.Sku.Name)
 }
 
-// GetLogAnalyticsWorkspaceRetentionPeriodDays returns the log analytics workspace retention period in days; otherwise -1.
-func GetLogAnalyticsWorkspaceRetentionPeriodDays(workspaceName, resourceGroupName, subscriptionID string) int32 {
+// GetLogAnalyticsWorkspaceRetentionPeriodDays returns the log analytics workspace retention period in days.
+// This function would fail the test if there is an error.
+func GetLogAnalyticsWorkspaceRetentionPeriodDays(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) int32 {
 	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
-	if err != nil {
-		return -1
-	}
+	require.NoError(t, err)
 	return *ws.RetentionInDays
 }
 
 // GetLogAnalyticsWorkspaceE gets an operational insights workspace if it exists in a subscription.
-// This function would fail the test if there is an error.
 func GetLogAnalyticsWorkspaceE(workspaceName, resoureGroupName, subscriptionID string) (*operationalinsights.Workspace, error) {
 	client, err := GetLogAnalyticsWorkspacesClientE(subscriptionID)
 	if err != nil {
@@ -50,7 +48,6 @@ func GetLogAnalyticsWorkspaceE(workspaceName, resoureGroupName, subscriptionID s
 }
 
 // GetLogAnalyticsWorkspacesClientE return workspaces client; otherwise error.
-// This function would fail the test if there is an error.
 func GetLogAnalyticsWorkspacesClientE(subscriptionID string) (*operationalinsights.WorkspacesClient, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {

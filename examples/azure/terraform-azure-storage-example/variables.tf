@@ -24,7 +24,7 @@ variable "location" {
   default     = "East US"
 }
 
-variable "resource_group_basename" {
+variable "resource_group_name" {
   description = "The basename of the resource group."
   type        = string
   default     = "terratest-storage-rg"

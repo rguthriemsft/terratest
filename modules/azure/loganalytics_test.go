@@ -14,20 +14,20 @@ If/when methods to create and delete log analytics resources are added, these te
 func TestLogAnalyticsWorkspace(t *testing.T) {
 	t.Parallel()
 
-	result := LogAnalyticsWorkspaceExists(t, "", "", "")
+	result := LogAnalyticsWorkspaceExists(t, "fake", "", "")
 	assert.False(t, result)
 }
 
 func TestLogAnalyticsSku(t *testing.T) {
 	t.Parallel()
 
-	result := GetLogAnalyticsWorkspaceSku(t, "", "", "")
+	result := GetLogAnalyticsWorkspaceSku(t, "fake", "", "")
 	assert.Equal(t, "", result)
 }
 
 func TestLogAnalyticsRetentionPeriodDays(t *testing.T) {
 	t.Parallel()
 
-	result := GetLogAnalyticsWorkspaceRetentionPeriodDays(t, "", "", "")
+	result := GetLogAnalyticsWorkspaceRetentionPeriodDays(t, "fake", "", "")
 	assert.Equal(t, int32(-1), result)
 }

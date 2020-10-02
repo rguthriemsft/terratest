@@ -25,12 +25,6 @@ variable "location" {
   default     = "East US"
 }
 
-variable "resource_group_basename" {
-  description = "The base name of the resource group."
-  type        = string
-  default     = "terratest-log-rg"
-}
-
 variable "postfix" {
   description = "A postfix string to centrally mitigate resource name collisions"
   type        = string

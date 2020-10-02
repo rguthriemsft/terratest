@@ -29,8 +29,7 @@ func TestTerraformAzureLogAnalyticsExample(t *testing.T) {
 		TerraformDir: "../../examples/azure/terraform-azure-loganalytics-example",
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"postfix":                 uniquePostfix,
-			"resource_group_basename": "terratest-log-rg1",
+			"postfix": uniquePostfix,
 		},
 	}
 

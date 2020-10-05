@@ -35,7 +35,8 @@ func TestGetAllAzureRegions(t *testing.T) {
 
 	regions := GetAllAzureRegions(t, "")
 
-	// The typical subscription had access to 30+ live regions as of July 2019: https://azure.microsoft.com/en-us/global-infrastructure/regions/
+	// The typical subscription had access to 30+ live regions as of
+	// July 2019: https://azure.microsoft.com/en-us/global-infrastructure/regions/
 	assert.True(t, len(regions) >= 30, "Number of regions: %d", len(regions))
 	for _, region := range regions {
 		assertLooksLikeRegionName(t, region)

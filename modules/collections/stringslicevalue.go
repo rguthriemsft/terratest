@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-// GetSliceLastValueE will take a source string and returns the last value when split by the separator char
+// GetSliceLastValueE will take a source string and returns the last value when split by the separator char.
 func GetSliceLastValueE(source string, separator string) (string, error) {
 	if len(source) > 0 && len(separator) > 0 && strings.Contains(source, separator) {
 		tmp := strings.Split(source, separator)
@@ -13,7 +13,8 @@ func GetSliceLastValueE(source string, separator string) (string, error) {
 	return "", NewSliceValueNotFoundError(source)
 }
 
-// GetSliceIndexValueE will take a source string and returns the value at the given index when split by the separator char
+// GetSliceIndexValueE will take a source string and returns the value at the given index when split by
+// the separator char.
 func GetSliceIndexValueE(source string, separator string, index int) (string, error) {
 	if len(source) > 0 && len(separator) > 0 && strings.Contains(source, separator) && index >= 0 {
 		tmp := strings.Split(source, separator)

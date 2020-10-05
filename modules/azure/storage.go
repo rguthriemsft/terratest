@@ -59,71 +59,63 @@ func GetStorageDNSString(t *testing.T, storageAccountName string, resourceGroupN
 	return result
 }
 
-// StorageAccountExistsE indicates whether the storage account name exactly matches; otherwise false.
+// StorageAccountExistsE indicates whether the storage account name exists; otherwise false.
 func StorageAccountExistsE(storageAccountName, resourceGroupName, subscriptionID string) (bool, error) {
+	_, err := GetStorageAccountE(storageAccountName, resourceGroupName, subscriptionID)
+	if err != nil {
+		if ResourceNotFoundErrorExists(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+// GetStorageAccountE gets a storage account; otherwise error
+func GetStorageAccountE(storageAccountName, resourceGroupName, subscriptionID string) (*storage.Account, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	resourceGroupName, err2 := getTargetAzureResourceGroupName((resourceGroupName))
 	if err2 != nil {
-		return false, err2
+		return nil, err2
 	}
 	storageAccount, err3 := GetStorageAccountPropertyE(storageAccountName, resourceGroupName, subscriptionID)
 	if err3 != nil {
-		return false, nil
+		return nil, err3
 	}
-	return *storageAccount.Name == storageAccountName, nil
+	return storageAccount, nil
 }
 
-// StorageBlobContainerExistsE returns true if the container name exactly matches; otherwise false.
+// StorageBlobContainerExistsE returns true if the container name exists; otherwise false.
 func StorageBlobContainerExistsE(containerName, storageAccountName, resourceGroupName, subscriptionID string) (bool, error) {
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	_, err := GetStorageBlobContainerE(containerName, storageAccountName, resourceGroupName, subscriptionID)
 	if err != nil {
+		if ResourceNotFoundErrorExists(err) {
+			return false, nil
+		}
 		return false, err
 	}
-	resourceGroupName, err2 := getTargetAzureResourceGroupName((resourceGroupName))
-	if err2 != nil {
-		return false, err2
-	}
-	container, err := GetStorageBlobContainerE(containerName, storageAccountName, resourceGroupName, subscriptionID)
-	if err != nil {
-		return false, err
-	}
-	return (*container.Name == containerName), nil
+	return true, nil
 }
 
 // GetStorageBlobContainerPublicAccessE indicates whether a storage container has public access; otherwise false.
 func GetStorageBlobContainerPublicAccessE(containerName, storageAccountName, resourceGroupName, subscriptionID string) (bool, error) {
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	container, err := GetStorageBlobContainerE(containerName, storageAccountName, resourceGroupName, subscriptionID)
 	if err != nil {
+		if ResourceNotFoundErrorExists(err) {
+			return false, nil
+		}
 		return false, err
 	}
-	resourceGroupName, err2 := getTargetAzureResourceGroupName((resourceGroupName))
-	if err2 != nil {
-		return false, err2
-	}
-	client, err := GetStorageBlobContainerClientE(subscriptionID)
-	if err != nil {
-		return false, err
-	}
-	container, err := client.Get(context.Background(), resourceGroupName, storageAccountName, containerName)
-	if err != nil {
-		return false, err
-	}
+
 	return (string(container.PublicAccess) != "None"), nil
 }
 
 // GetStorageAccountKindE returns one of Storage, StorageV2, BlobStorage, FileStorage, or BlockBlobStorage.
 func GetStorageAccountKindE(storageAccountName, resourceGroupName, subscriptionID string) (string, error) {
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
-	if err != nil {
-		return "", err
-	}
-	resourceGroupName, err2 := getTargetAzureResourceGroupName((resourceGroupName))
-	if err2 != nil {
-		return "", err2
-	}
+
 	storageAccount, err := GetStorageAccountPropertyE(storageAccountName, resourceGroupName, subscriptionID)
 	if err != nil {
 		return "", err

@@ -10,12 +10,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//RecoveryServicesVaultExists indicates whether a recovery services vault exists; otherwise false.
+// RecoveryServicesVaultExists indicates whether a recovery services vault exists; otherwise false.
 // This function would fail the test if there is an error.
 func RecoveryServicesVaultExists(t *testing.T, vaultName, resourceGroupName, subscriptionID string) bool {
-	vault, err := GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID)
+	exists, err := RecoveryServicesVaultExistsE(vaultName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
-	return (*vault.Name == vaultName)
+	return exists
 }
 
 // GetRecoveryServicesVaultBackupPolicyList returns a list of backup policies for the given vault.
@@ -32,6 +32,18 @@ func GetRecoveryServicesVaultBackupProtectedVMList(t *testing.T, policyName, vau
 	list, err := GetRecoveryServicesVaultBackupProtectedVMListE(policyName, vaultName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
 	return list
+}
+
+// RecoveryServicesVaultExists indicates whether a recovery services vault exists; otherwise false or error.
+func RecoveryServicesVaultExistsE(vaultName, resourceGroupName, subscriptionID string) (bool, error) {
+	_, err := GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID)
+	if err != nil {
+		if ResourceNotFoundErrorExists(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 // GetRecoveryServicesVaultE returns a vault instance.

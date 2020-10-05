@@ -16,6 +16,11 @@ func TestRecoveryServicesVaultName(t *testing.T) {
 	require.Error(t, err, "vault")
 }
 
+func TestRecoveryServicesVaultExists(t *testing.T) {
+	_, err := RecoveryServicesVaultExistsE("", "", "")
+	require.Error(t, err, "vault exists")
+}
+
 func TestRecoveryServicesVaultBackupPolicyList(t *testing.T) {
 	_, err := GetRecoveryServicesVaultBackupPolicyListE("", "", "")
 	require.Error(t, err, "Backup policy list not faulted")

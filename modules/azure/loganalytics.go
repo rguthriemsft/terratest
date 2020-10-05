@@ -20,17 +20,34 @@ func LogAnalyticsWorkspaceExists(t testing.TestingT, workspaceName string, resou
 // GetLogAnalyticsWorkspaceSku return the log analytics workspace SKU as string as one of the following: Free, Standard, Premium, PerGB2018, CapacityReservation; otherwise empty string "".
 // This function would fail the test if there is an error.
 func GetLogAnalyticsWorkspaceSku(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) string {
-	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
+	sku, err := GetLogAnalyticsWorkspaceSkuE(workspaceName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
-	return string(ws.Sku.Name)
+	return string(sku)
+}
+
+func GetLogAnalyticsWorkspaceSkuE(workspaceName string, resourceGroupName string, subscriptionID string) (string, error) {
+	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
+	if err != nil {
+		return "", err
+	}
+	return string(ws.Sku.Name), nil
 }
 
 // GetLogAnalyticsWorkspaceRetentionPeriodDays returns the log analytics workspace retention period in days.
 // This function would fail the test if there is an error.
 func GetLogAnalyticsWorkspaceRetentionPeriodDays(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) int32 {
-	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
+	periodInDays, err := GetLogAnalyticsWorkspaceRetentionPeriodDaysE(workspaceName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
-	return *ws.RetentionInDays
+	return periodInDays
+}
+
+func GetLogAnalyticsWorkspaceRetentionPeriodDaysE(workspaceName string, resourceGroupName string, subscriptionID string) (int32, error) {
+	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
+	if err != nil {
+		return -1, err
+	}
+
+	return *ws.RetentionInDays, nil
 }
 
 // GetLogAnalyticsWorkspaceE gets an operational insights workspace if it exists in a subscription.

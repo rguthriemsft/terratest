@@ -12,9 +12,9 @@ import (
 // LogAnalyticsWorkspaceExists indicates whether the operatonal insights workspaces exists.
 // This function would fail the test if there is an error.
 func LogAnalyticsWorkspaceExists(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) bool {
-	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
+	exists, err := LogAnalyticsWorkspaceExistsE(workspaceName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
-	return (*ws.Name == workspaceName)
+	return exists
 }
 
 // GetLogAnalyticsWorkspaceSku return the log analytics workspace SKU as string as one of the following: Free, Standard, Premium, PerGB2018, CapacityReservation; otherwise empty string "".
@@ -44,6 +44,18 @@ func GetLogAnalyticsWorkspaceE(workspaceName, resoureGroupName, subscriptionID s
 		return nil, err
 	}
 	return &ws, nil
+}
+
+// LogAnalyticsWorkspaceExistsE indicates whether the operatonal insights workspaces exists and may return an error.
+func LogAnalyticsWorkspaceExistsE(workspaceName string, resourceGroupName string, subscriptionID string) (bool, error) {
+	_, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
+	if err != nil {
+		if ResourceNotFoundErrorExists(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 // GetLogAnalyticsWorkspacesClientE return workspaces client; otherwise error.

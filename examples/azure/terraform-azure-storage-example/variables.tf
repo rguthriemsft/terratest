@@ -24,19 +24,6 @@ variable "location" {
   default     = "East US"
 }
 
-variable "resource_group_name" {
-  description = "The basename of the resource group."
-  type        = string
-  default     = "terratest-storage-rg"
-}
-
-
-variable "storage_account_name" {
-  description = "The name to set for the storage account."
-  type        = string
-  default     = "terrateststore"
-}
-
 variable "storage_account_kind" {
   description = "The kind of storage account to set"
   type        = string

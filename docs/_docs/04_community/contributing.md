@@ -27,7 +27,6 @@ process](https://help.github.com/articles/about-pull-requests/) for contribution
 1. [Create a pull request](#create-a-pull-request)
 1. [Merge and release](#merge-and-release)
 
-
 ### Types of contributions
 
 Broadly speaking, Terratest contains two types of helper functions:
@@ -64,7 +63,7 @@ Examples:
 * `http_helper.HttpGetWithRetry`: make an HTTP request, retrying until you get a certain expected response.
 * `ssh.CheckSshCommand`: SSH to a server and execute a command.
 * `aws.CreateS3Bucket`: create an S3 bucket.
-* `aws.GetPrivateIpsOfEc2Instances`:  use the AWS APIs to fetch IPs of some EC2 instances.          
+* `aws.GetPrivateIpsOfEc2Instances`:  use the AWS APIs to fetch IPs of some EC2 instances.
 
 The number of possible such helpers is nearly infinite, so to avoid Terratest becoming a gigantic, sprawling library
 we ask that contributions for new infrastructure helpers are limited to:
@@ -77,7 +76,7 @@ we ask that contributions for new infrastructure helpers are limited to:
    complex to do from scratch. For example, a helper that merely wraps an existing function in the AWS or GCP SDK is
    not a great choice, as the wrapper isn't contributing much value, but is bloating the Terratest API. On the other
    hand, helpers that expose simple APIs for complex logic are great contributions: `ssh.CheckSshCommand` is a great
-   example of this, as it provides a simple one-line interface for dozens of lines of complicated SSH logic.   
+   example of this, as it provides a simple one-line interface for dozens of lines of complicated SSH logic.
 
 1. **Popularity**: Terratest should only contain helpers for common use cases that come up again and again in the
    course of testing. We don't want to bloat the library with lots of esoteric helpers for rarely used tools, so
@@ -92,7 +91,7 @@ we ask that contributions for new infrastructure helpers are limited to:
    Terraform, which already handles all that complexity, to create any infrastructure you need at test time, and
    running Terratest's built-in `terraform` helpers as necessary. If you're considering contributing a function that
    creates infrastructure directly (e.g., using a cloud provider's APIs), please file a GitHub issue to explain why
-   such a function would be a better choice than using a tool like Terraform.   
+   such a function would be a better choice than using a tool like Terraform.
 
 ### File a GitHub issue
 
@@ -150,16 +149,46 @@ to include the following:
    test output so we can verify that everything is working.
 1. Any notes on backwards incompatibility or downtime.
 
+#### Validate the Pull Request for Azure Platform
+
+After [creating a pull request](https://help.github.com/articles/creating-a-pull-request/), please follow the below guideline for [Azure Platform](https://azure.com)
+
+##### To run the CI Pipeline on forked repo
+
+* Run the following command on your preffered Terminal and copy the output
+
+```bash
+az ad sp create-for-rbac --name "terratest-az-cli" --role contributor --sdk-auth
+```
+
+* Go to Secrets page ([https://github.com/<GITHUB_ACCOUNT>/terratest/settings/secrets](https://github.com/<GITHUB_ACCOUNT>/terratest/settings/secrets)) under Settings tab ([https://github.com/<GITHUB_ACCOUNT>/terratest/settings](https://github.com/<GITHUB_ACCOUNT>/terratest/settings)) on GitHub
+
+* Create a new `Secret` named `AZURE_CREDENTIALS` and paste the output as the value
+
+* [New Personal Access Token](https://github.com/settings/tokens/new) page under [Settings](https://github.com/settings/profile) / [Developer Settings](https://github.com/settings/apps), make sure `write:discussion` is checked, click _Generate token_ button and copy the generated PAT (_Personal Access Token_)
+
+* Create a new `Secret` named `PAT` and paste the output as the value
+
+* Go to Actions tab on GitHub ([https://github.com/<GITHUB_ACCOUNT>/terratest/actions](https://github.com/<GITHUB_ACCOUNT>/terratest/actions))
+* Click `ci-workflow` workflow
+* Click `Run workflow` button and fill the fields in the drop down
+  * _Repository Info_ : name of the forked repo (_e.g. xyz/terratest_)
+  * _Name of the branch_ : branch name on the forked repo (_e.g. feature/adding-some-important-module_)
+  * _Name of the official terratest repo_ : home of the target pr (_gruntwork-io/terratest_)
+  * PR number on the official terratest repo : pr number on the official terratest repo (_e.g. 14, 25, etc._)
+  * Skip provider registration : set true if you want to skip terraform provider registration for debug purposes (_false_ or _true_)
+* Wait for the `ci-workflow` to be finished
+* PR with the given _PR Number_ will have the result of the `ci-workflow` as a comment
+
 ### Merge and release
 
 The maintainers for this repo will review your code and provide feedback. If everything looks good, they will merge the
 code and release a new version, which you'll be able to find in the [releases page](https://github.com/gruntwork-io/terratest/releases).
 
-
 ## Developing Terratest
 
-1.  [Running tests](#running-tests)
-1.  [Versioning](#versioning)
+1. [Running tests](#running-tests)
+1. [Versioning](#versioning)
 
 ### Running tests
 
@@ -196,7 +225,6 @@ To run a specific test in a specific folder:
 cd "<FOLDER_PATH>"
 go test -timeout 30m -run "<TEST_NAME>"
 ```
-
 
 ### Versioning
 

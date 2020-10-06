@@ -224,7 +224,10 @@ func GetStorageDNSStringE(storageAccountName, resourceGroupName, subscriptionID 
 		return "", err
 	}
 	if retval {
-		storageSuffix, _ := GetStorageURISuffixE()
+		storageSuffix, err2 := GetStorageURISuffixE()
+		if err2 != nil {
+			return "", err2
+		}
 		return fmt.Sprintf("https://%s.blob.%s/", storageAccountName, *storageSuffix), nil
 	}
 

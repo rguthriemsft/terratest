@@ -4,9 +4,9 @@ This folder contains a simple Terraform module that deploys resources in [Azure]
 how you can use Terratest to write automated tests for your Azure Terraform code. This module deploys a Key Vault with one secret, key, and certificate each.
 
 - A [Key Vault](https://azure.microsoft.com/services/key-vault/) that gives the module the following:
-    - [Secret](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates)  with the value specified in the `secret_name`  output variable.
-    - [Key](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates)  with the value specified in the `key_name`  output variable.
-    - [Certificate](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates)  with the value specified in the `certificate_name`  output variable.
+  - [Secret](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates)  with the value specified in the `secret_name`  output variable.
+  - [Key](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates)  with the value specified in the `key_name`  output variable.
+  - [Certificate](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates)  with the value specified in the `certificate_name`  output variable.
 
 Check out [test/azure/terraform_azure_keyvault_example_test.go](/test/azure/terraform_azure_keyvault_example_test.go) to see how you can write
 automated tests for this module.
@@ -39,6 +39,3 @@ it should be free, but you are completely responsible for all Azure charges.
 1. `cd test/azure`
 1. `go build terraform_azure_keyvault_example_test.go`
 1. `go test -v -run TestTerraformAzureKeyVaultExample`
-
-
-

@@ -1,0 +1,6 @@
+version: '2.0'
+services:
+  bash_script:
+    build:
+      context: .
+    entrypoint: bash_script.sh

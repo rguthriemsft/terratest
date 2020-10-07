@@ -4,6 +4,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/shell"
 	"github.com/gruntwork-io/terratest/modules/testing"
+	"github.com/stretchr/testify/require"
 )
 
 // Options are Docker options.
@@ -16,15 +17,26 @@ type Options struct {
 
 // RunDockerCompose runs docker-compose with the given arguments and options and return stdout/stderr.
 func RunDockerCompose(t testing.TestingT, options *Options, args ...string) string {
-	out, err := RunDockerComposeE(t, options, args...)
+	out, err := runDockerComposeE(t, false, options, args...)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return out
 }
 
+// RunDockerComposeAndGetStdout runs docker-compose with the given arguments and options and returns only stdout.
+func RunDockerComposeAndGetStdOut(t testing.TestingT, options *Options, args ...string) string {
+	out, err := runDockerComposeE(t, true, options, args...)
+	require.NoError(t, err)
+	return out
+}
+
 // RunDockerComposeE runs docker-compose with the given arguments and options and return stdout/stderr.
 func RunDockerComposeE(t testing.TestingT, options *Options, args ...string) (string, error) {
+	return runDockerComposeE(t, false, options, args...)
+}
+
+func runDockerComposeE(t testing.TestingT, stdout bool, options *Options, args ...string) (string, error) {
 	cmd := shell.Command{
 		Command: "docker-compose",
 		// We append --project-name to ensure containers from multiple different tests using Docker Compose don't end
@@ -35,5 +47,8 @@ func RunDockerComposeE(t testing.TestingT, options *Options, args ...string) (st
 		Logger:     options.Logger,
 	}
 
+	if stdout {
+		return shell.RunCommandAndGetStdOut(t, cmd), nil
+	}
 	return shell.RunCommandAndGetOutputE(t, cmd)
 }

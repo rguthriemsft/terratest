@@ -1,17 +1,16 @@
 # Terraform Azure Storage Example
 
 This folder contains a simple Terraform module that deploys resources in [Azure](https://azure.microsoft.com/) to demonstrate
-how you can use Terratest to write automated tests for your Azure Terraform code. This module deploys a
+how you can use TerraTest to write automated tests for your Azure Terraform code. This module deploys a
 Storage Account.
 
 - An [Azure Storage Account](https://azure.microsoft.com/services/storage/) that gives the module the following:
-    - [Stock Account Name](https://azure.microsoft.com/services/storage/)  with the value specified in the `storage_account_name`  output variable.
-    - [Storage Account Tier](https://azure.microsoft.com/services/storage/)  with the value specified in the `"storage_account_account_tier`  output variable.
-    - [Storage Account Kind](https://azure.microsoft.com/services/storage/)  with the value specified in the `"storage_account_account_kind`  output variable.
-    - [Storage Container](https://azure.microsoft.com/services/storage/)  with the value specified in the `"storage_container_name`  output variable.
+  - [Stock Account Name](https://azure.microsoft.com/services/storage/)  with the value specified in the `storage_account_name`  output variable.
+  - [Storage Account Tier](https://azure.microsoft.com/services/storage/)  with the value specified in the `"storage_account_account_tier`  output variable.
+  - [Storage Account Kind](https://azure.microsoft.com/services/storage/)  with the value specified in the `"storage_account_account_kind`  output variable.
+  - [Storage Container](https://azure.microsoft.com/services/storage/)  with the value specified in the `"storage_container_name`  output variable.
 
-
-Check out [test/azure/terraform_azure_sto_example_test.go](/test/azure/terraform_azure_storage_example_test.go) to see how you can write
+Check out [test/azure/terraform_azure_storage_example_test.go](/test/azure/terraform_azure_storage_example_test.go) to see how you can write
 automated tests for this module.
 
 Note that the Storage Account in this module don't actually do anything; it just runs the resources for
@@ -42,5 +41,3 @@ it should be free, but you are completely responsible for all Azure charges.
 1. `cd test/azure`
 1. `go build terraform_azure_storage_example_test.go`
 1. `go test -v -run TestTerraformAzureStorageExample`
-
-

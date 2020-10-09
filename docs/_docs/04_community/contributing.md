@@ -175,7 +175,7 @@ set the credentials as the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SE
 
 **Note #3**: Never hit `CTRL + C` or cancel a build once tests are running or the cleanup tasks won't run!
 
-**Prerequisite**: Most the tests expect Terraform, Packer, and/or Docker to already be installed and in your `PATH`.
+**Prerequisite**: The tests expect Terraform, Terragrunt, Packer, and/or Docker to already be installed and in your `PATH`.
 
 To run all the tests:
 

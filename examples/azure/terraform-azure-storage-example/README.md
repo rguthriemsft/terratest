@@ -37,7 +37,7 @@ it should be free, but you are completely responsible for all Azure charges.
 1. Configure your Azure credentials using one of the [supported methods for Azure CLI
    tools](https://docs.microsoft.com/cli/azure/azure-cli-configuration?view=azure-cli-latest)
 1. Install [Terraform](https://www.terraform.io/) and make sure it's on your `PATH`
-1. Configure your Terratest [Go test environment](../README.md)
+1. Configure your TerraTest [Go test environment](../README.md)
 1. `cd test/azure`
 1. `go build terraform_azure_storage_example_test.go`
 1. `go test -v -run TestTerraformAzureStorageExample`

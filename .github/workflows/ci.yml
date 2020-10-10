@@ -128,7 +128,7 @@ jobs:
         env:
           CURRENT_REPOSITORY: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
           TARGET_REPOSITORY: ${{ github.event.inputs.target_repository }}
           TARGET_PR: ${{ github.event.inputs.target_pr }}
           TEST_RESULT: ${{ steps.azure_test.conclusion }}
@@ -137,6 +137,9 @@ jobs:
         run: |
           # if no PR number provided, simply exit...
           [[ -z "$TARGET_PR" ]] && { echo "No PR Number provided, exiting..." ; exit 0; }
+
+          # if no PAT provided, simply exit...
+          [[ -z "$GITHUB_TOKEN" ]] && { echo "No PAT provided, exiting..." ; exit 0; }
 
           echo "PR Number provided... ${TARGET_REPOSITORY}:#${TARGET_PR}"
 

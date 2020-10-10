@@ -1,12 +1,12 @@
 # Terraform Azure Log Analytics Example
 
-This folder contains a simple Terraform module that deploys resources in [Azure](https://azure.microsoft.com/) to demonstrate
-how you can use Terratest to write automated tests for your Azure Terraform code. This module deploys a Log Analytics Workspace.
+This folder contains a Terraform module that deploys resources in [Azure](https://azure.microsoft.com/) to demonstrate
+how you can use TerraTest to write automated tests for your Azure Terraform code. This module deploys a Log Analytics Workspace.
 
 - A [Log Analytics Workspace](https://docs.microsoft.com/azure/azure-monitor/platform/log-analytics-agent) that gives the module the following:
-    - [Name](https://docs.microsoft.com/azure/azure-monitor/learn/quick-create-workspace#:~:text=%20Create%20a%20Log%20Analytics%20workspace%20in%20the,and%20region%20as%20in%20the%20deleted...%20More%20)  with the value specified in the `loganalytics_workspace_name`  output variable.
-    - [Sku](https://docs.microsoft.com/azure/azure-monitor/learn/quick-create-workspace#:~:text=%20Create%20a%20Log%20Analytics%20workspace%20in%20the,and%20region%20as%20in%20the%20deleted...%20More%20)  with the value specified in the `loganalytics_workspace_sku`  output variable.
-    - [RentionPeriodInDays](https://docs.microsoft.com/azure/azure-monitor/learn/quick-create-workspace#:~:text=%20Create%20a%20Log%20Analytics%20workspace%20in%20the,and%20region%20as%20in%20the%20deleted...%20More%20)  with the value specified in the `loganalytics_workspace_retention`  output variable.
+  - [Name](https://docs.microsoft.com/azure/azure-monitor/learn/quick-create-workspace#:~:text=%20Create%20a%20Log%20Analytics%20workspace%20in%20the,and%20region%20as%20in%20the%20deleted...%20More%20)  with the value specified in the `loganalytics_workspace_name`  output variable.
+  - [Sku](https://docs.microsoft.com/azure/azure-monitor/learn/quick-create-workspace#:~:text=%20Create%20a%20Log%20Analytics%20workspace%20in%20the,and%20region%20as%20in%20the%20deleted...%20More%20)  with the value specified in the `loganalytics_workspace_sku`  output variable.
+  - [RetentionPeriodInDays](https://docs.microsoft.com/azure/azure-monitor/learn/quick-create-workspace#:~:text=%20Create%20a%20Log%20Analytics%20workspace%20in%20the,and%20region%20as%20in%20the%20deleted...%20More%20)  with the value specified in the `loganalytics_workspace_retention`  output variable.
 
 Check out [test/azure/terraform_azure_loganalytics_example_test.go](/test/azure/terraform_azure_loganalytics_example_test.go) to see how you can write
 automated tests for this module.
@@ -35,14 +35,7 @@ it should be free, but you are completely responsible for all Azure charges.
 1. Configure your Azure credentials using one of the [supported methods for Azure CLI
    tools](https://docs.microsoft.com/cli/azure/azure-cli-configuration?view=azure-cli-latest)
 1. Install [Terraform](https://www.terraform.io/) and make sure it's on your `PATH`
-1. Configure your Terratest [Go test environment](../README.md)
+1. Configure your TerraTest [Go test environment](../README.md)
 1. `cd test/azure`
 1. `go build terraform_azure_loganalytics_example_test.go`
 1. `go test -v -run TestTerraformAzureLogAnalyticsExample`
-
-
-
-
-
-
- 

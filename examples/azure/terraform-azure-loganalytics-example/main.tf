@@ -10,10 +10,7 @@ provider "azurerm" {
   features {}
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# PIN TERRAFORM VERSION TO >= 0.12
-# The examples have been upgraded to 0.12 syntax
-# ---------------------------------------------------------------------------------------------------------------------
+# PIN TERRAFORM VERSION
 
 terraform {
   # This module is now only being tested with Terraform 0.13.x. However, to make upgrading easier, we are setting

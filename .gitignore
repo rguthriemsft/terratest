@@ -23,5 +23,5 @@ vendor
 # Intermediate file for testing
 kubeconfig
 
-# environment files
+# Environment variable file
 .env

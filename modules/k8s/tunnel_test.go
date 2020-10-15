@@ -53,7 +53,7 @@ func TestTunnelOpensAPortForwardTunnelToService(t *testing.T) {
 
 	uniqueID := strings.ToLower(random.UniqueId())
 	options := NewKubectlOptions("", "", uniqueID)
-	configData := fmt.Sprintf(EXAMPLE_POD_WITH_SERVICE_YAML_TEMPLATE, uniqueID, uniqueID, uniqueID)
+	configData := fmt.Sprintf(ExamplePodWithServiceYAMLTemplate, uniqueID, uniqueID, uniqueID)
 	defer KubectlDeleteFromString(t, options, configData)
 	KubectlApplyFromString(t, options, configData)
 	WaitUntilPodAvailable(t, options, "nginx-pod", 60, 1*time.Second)
@@ -85,7 +85,7 @@ func verifyNginxWelcomePage(statusCode int, body string) bool {
 	return strings.Contains(body, "Welcome to nginx")
 }
 
-const EXAMPLE_POD_WITH_SERVICE_YAML_TEMPLATE = `---
+const ExamplePodWithServiceYAMLTemplate = `---
 apiVersion: v1
 kind: Namespace
 metadata:

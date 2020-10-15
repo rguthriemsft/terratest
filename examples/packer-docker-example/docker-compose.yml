@@ -17,4 +17,3 @@ services:
     # Expose the sample app's port on the host OS
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-

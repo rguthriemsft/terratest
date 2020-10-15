@@ -71,7 +71,7 @@ func StorageAccountExistsE(storageAccountName, resourceGroupName, subscriptionID
 	return true, nil
 }
 
-// GetStorageAccountE gets a storage account; otherwise error
+// GetStorageAccountE gets a storage account; otherwise error.  See https://docs.microsoft.com/rest/api/storagerp/storageaccounts/getproperties for more information.
 func GetStorageAccountE(storageAccountName, resourceGroupName, subscriptionID string) (*storage.Account, error) {
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {

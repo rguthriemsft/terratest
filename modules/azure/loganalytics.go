@@ -56,6 +56,7 @@ func GetLogAnalyticsWorkspaceE(workspaceName, resoureGroupName, subscriptionID s
 	if err != nil {
 		return nil, err
 	}
+
 	ws, err := client.Get(context.Background(), resoureGroupName, workspaceName)
 	if err != nil {
 		return nil, err
@@ -82,12 +83,14 @@ func GetLogAnalyticsWorkspacesClientE(subscriptionID string) (*operationalinsigh
 		fmt.Println("Workspace client error getting subscription")
 		return nil, err
 	}
+
 	client := operationalinsights.NewWorkspacesClient(subscriptionID)
 	authorizer, err := NewAuthorizer()
 	if err != nil {
 		fmt.Println("authorizer error")
 		return nil, err
 	}
+
 	client.Authorizer = *authorizer
 	return &client, nil
 }

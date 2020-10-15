@@ -66,13 +66,27 @@ type Tunnel struct {
 	kubectlOptions *KubectlOptions
 	resourceType   KubeResourceType
 	resourceName   string
+	logger         logger.TestLogger
 	stopChan       chan struct{}
 	readyChan      chan struct{}
 }
 
-// NewTunnel will create a new Tunnel struct. Note that if you use 0 for the local port, an open port on the host system
-// will be selected automatically, and the Tunnel struct will be updated with the selected port.
+// NewTunnel creates a new tunnel with NewTunnelWithLogger, setting logger.Terratest as the logger.
 func NewTunnel(kubectlOptions *KubectlOptions, resourceType KubeResourceType, resourceName string, local int, remote int) *Tunnel {
+	return NewTunnelWithLogger(kubectlOptions, resourceType, resourceName, local, remote, logger.Terratest)
+}
+
+// NewTunnelWithLogger will create a new Tunnel struct with the provided logger.
+// Note that if you use 0 for the local port, an open port on the host system
+// will be selected automatically, and the Tunnel struct will be updated with the selected port.
+func NewTunnelWithLogger(
+	kubectlOptions *KubectlOptions,
+	resourceType KubeResourceType,
+	resourceName string,
+	local int,
+	remote int,
+	logger logger.TestLogger,
+) *Tunnel {
 	return &Tunnel{
 		out:            ioutil.Discard,
 		localPort:      local,
@@ -80,6 +94,7 @@ func NewTunnel(kubectlOptions *KubectlOptions, resourceType KubeResourceType, re
 		kubectlOptions: kubectlOptions,
 		resourceType:   resourceType,
 		resourceName:   resourceName,
+		logger:         logger,
 		stopChan:       make(chan struct{}, 1),
 		readyChan:      make(chan struct{}, 1),
 	}
@@ -135,7 +150,7 @@ func (tunnel *Tunnel) ForwardPort(t testing.TestingT) {
 
 // ForwardPortE opens a tunnel to a kubernetes resource, as specified by the provided tunnel struct.
 func (tunnel *Tunnel) ForwardPortE(t testing.TestingT) error {
-	logger.Logf(
+	tunnel.logger.Logf(
 		t,
 		"Creating a port forwarding tunnel for resource %s/%s routing local port %d to remote port %d",
 		tunnel.resourceType.String(),
@@ -147,27 +162,27 @@ func (tunnel *Tunnel) ForwardPortE(t testing.TestingT) error {
 	// Prepare a kubernetes client for the client-go library
 	clientset, err := GetKubernetesClientFromOptionsE(t, tunnel.kubectlOptions)
 	if err != nil {
-		logger.Logf(t, "Error creating a new Kubernetes client: %s", err)
+		tunnel.logger.Logf(t, "Error creating a new Kubernetes client: %s", err)
 		return err
 	}
 	kubeConfigPath, err := tunnel.kubectlOptions.GetConfigPath(t)
 	if err != nil {
-		logger.Logf(t, "Error getting kube config path: %s", err)
+		tunnel.logger.Logf(t, "Error getting kube config path: %s", err)
 		return err
 	}
 	config, err := LoadApiClientConfigE(kubeConfigPath, tunnel.kubectlOptions.ContextName)
 	if err != nil {
-		logger.Logf(t, "Error loading Kubernetes config: %s", err)
+		tunnel.logger.Logf(t, "Error loading Kubernetes config: %s", err)
 		return err
 	}
 
 	// Find the pod to port forward to
 	podName, err := tunnel.getAttachablePodForResourceE(t)
 	if err != nil {
-		logger.Logf(t, "Error finding available pod: %s", err)
+		tunnel.logger.Logf(t, "Error finding available pod: %s", err)
 		return err
 	}
-	logger.Logf(t, "Selected pod %s to open port forward to", podName)
+	tunnel.logger.Logf(t, "Selected pod %s to open port forward to", podName)
 
 	// Build a url to the portforward endpoint
 	// example: http://localhost:8080/api/v1/namespaces/helm/pods/tiller-deploy-9itlq/portforward
@@ -180,12 +195,12 @@ func (tunnel *Tunnel) ForwardPortE(t testing.TestingT) error {
 		SubResource("portforward").
 		URL()
 
-	logger.Logf(t, "Using URL %s to create portforward", portForwardCreateURL)
+	tunnel.logger.Logf(t, "Using URL %s to create portforward", portForwardCreateURL)
 
 	// Construct the spdy client required by the client-go portforward library
 	transport, upgrader, err := spdy.RoundTripperFor(config)
 	if err != nil {
-		logger.Logf(t, "Error creating http client: %s", err)
+		tunnel.logger.Logf(t, "Error creating http client: %s", err)
 		return err
 	}
 	dialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, "POST", portForwardCreateURL)
@@ -197,13 +212,13 @@ func (tunnel *Tunnel) ForwardPortE(t testing.TestingT) error {
 	// since there is a brief moment between `GetAvailablePort` and `portforwader.ForwardPorts` where the selected port
 	// is available for selection again.
 	if tunnel.localPort == 0 {
-		logger.Log(t, "Requested local port is 0. Selecting an open port on host system")
+		tunnel.logger.Logf(t, "Requested local port is 0. Selecting an open port on host system")
 		tunnel.localPort, err = GetAvailablePortE(t)
 		if err != nil {
-			logger.Logf(t, "Error getting available port: %s", err)
+			tunnel.logger.Logf(t, "Error getting available port: %s", err)
 			return err
 		}
-		logger.Logf(t, "Selected port %d", tunnel.localPort)
+		tunnel.logger.Logf(t, "Selected port %d", tunnel.localPort)
 		globalMutex.Lock()
 		defer globalMutex.Unlock()
 	}
@@ -212,7 +227,7 @@ func (tunnel *Tunnel) ForwardPortE(t testing.TestingT) error {
 	ports := []string{fmt.Sprintf("%d:%d", tunnel.localPort, tunnel.remotePort)}
 	portforwarder, err := portforward.New(dialer, ports, tunnel.stopChan, tunnel.readyChan, tunnel.out, tunnel.out)
 	if err != nil {
-		logger.Logf(t, "Error creating port forwarding tunnel: %s", err)
+		tunnel.logger.Logf(t, "Error creating port forwarding tunnel: %s", err)
 		return err
 	}
 
@@ -226,10 +241,10 @@ func (tunnel *Tunnel) ForwardPortE(t testing.TestingT) error {
 	// Wait for an error or the tunnel to be ready
 	select {
 	case err = <-errChan:
-		logger.Logf(t, "Error starting port forwarding tunnel: %s", err)
+		tunnel.logger.Logf(t, "Error starting port forwarding tunnel: %s", err)
 		return err
 	case <-portforwarder.Ready:
-		logger.Logf(t, "Successfully created port forwarding tunnel")
+		tunnel.logger.Logf(t, "Successfully created port forwarding tunnel")
 		return nil
 	}
 }

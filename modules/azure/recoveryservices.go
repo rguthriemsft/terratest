@@ -52,16 +52,19 @@ func GetRecoveryServicesVaultE(vaultName, resourceGroupName, subscriptionID stri
 	if err != nil {
 		return nil, err
 	}
+
 	resourceGroupName, err2 := getTargetAzureResourceGroupName((resourceGroupName))
 	if err2 != nil {
 		return nil, err2
 	}
+
 	client := recoveryservices.NewVaultsClient(subscriptionID)
 	// setup auth and create request params
 	authorizer, err := NewAuthorizer()
 	if err != nil {
 		return nil, err
 	}
+
 	client.Authorizer = *authorizer
 	vault, err := client.Get(context.Background(), resourceGroupName, vaultName)
 	if err != nil {
@@ -76,21 +79,25 @@ func GetRecoveryServicesVaultBackupPolicyListE(vaultName, resourceGroupName, sub
 	if err != nil {
 		return nil, err
 	}
+
 	resourceGroupName, err2 := getTargetAzureResourceGroupName(resourceGroupName)
 	if err2 != nil {
 		return nil, err2
 	}
+
 	client := backup.NewPoliciesClient(subscriptionID)
 	// setup authorizer
 	authorizer, err := NewAuthorizer()
 	if err != nil {
 		return nil, err
 	}
+
 	client.Authorizer = *authorizer
 	listIter, err := client.ListComplete(context.Background(), vaultName, resourceGroupName, "")
 	if err != nil {
 		return nil, err
 	}
+
 	policyMap := make(map[string]backup.ProtectionPolicyResource)
 	for listIter.NotDone() {
 		v := listIter.Value()
@@ -110,10 +117,12 @@ func GetRecoveryServicesVaultBackupProtectedVMListE(policyName, vaultName, resou
 	if err != nil {
 		return nil, err
 	}
+
 	resourceGroupName, err2 := getTargetAzureResourceGroupName(resourceGroupName)
 	if err != nil {
 		return nil, err2
 	}
+
 	client := backup.NewProtectedItemsGroupClient(subscriptionID)
 	// setup authorizer
 	authorizer, err := NewAuthorizer()

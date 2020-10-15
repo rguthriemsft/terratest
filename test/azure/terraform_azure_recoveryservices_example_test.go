@@ -45,8 +45,10 @@ func TestTerraformAzureRecoveryServicesExample(t *testing.T) {
 	// website::tag::4:: Verify the recovery services resources
 	exists := azure.RecoveryServicesVaultExists(t, vaultName, resourceGroupName, subscriptionID)
 	assert.True(t, exists, "vault does not exist")
+
 	policyList := azure.GetRecoveryServicesVaultBackupPolicyList(t, vaultName, resourceGroupName, subscriptionID)
 	assert.NotNil(t, policyList, "vault backup policy list is nil")
+
 	vmPolicyList := azure.GetRecoveryServicesVaultBackupProtectedVMList(t, policyVmName, vaultName, resourceGroupName, subscriptionID)
 	assert.NotNil(t, vmPolicyList, "vault backup policy list for protected vm is nil")
 }

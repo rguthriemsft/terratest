@@ -3,11 +3,9 @@
 This folder contains a simple Terraform module that deploys resources in [Azure](https://azure.microsoft.com/) to demonstrate
 how you can use Terratest to write automated tests for your Azure Terraform code. This module deploys a Recovery Services Vault with one backup virtual machine policy.
 
-
 - A [Recovery Services](https://azure.microsoft.com/services/backup/) that gives the module the following:
-    - [Backup Vault](https://docs.microsoft.com/azure/backup/backup-azure-recovery-services-vault-overview)  with the value specified in the `recovery_service_vault_name` output variable.
-    - [Backup VM Policy](https://azure.microsoft.com/en-in/updates/azure-vm-backup-policy-management/)  with the value specified in the `backup_policy_vm_name`  output variable.
-
+  - [Backup Vault](https://docs.microsoft.com/azure/backup/backup-azure-recovery-services-vault-overview)  with the value specified in the `recovery_service_vault_name` output variable.
+  - [Backup VM Policy](https://azure.microsoft.com/en-in/updates/azure-vm-backup-policy-management/)  with the value specified in the `backup_policy_vm_name`  output variable.
 
 Check out [test/azure/terraform_azure_recoveryservices_example_test.go](/test/azure/terraform_azure_recoveryservices_example_test.go) to see how you can write
 automated tests for this module.
@@ -40,6 +38,3 @@ it should be free, but you are completely responsible for all Azure charges.
 1. `cd test/azure`
 1. `go build terraform_azure_recoveryservices_example_test.go`
 1. `go test -v -run TestTerraformAzureRecoveryServicesExample`
-
-
-

@@ -101,6 +101,8 @@ $(document).ready(function () {
       const $activeCodeSnippet = $(activeCodeSnippet)
       const exampleTarget = $(this).data('example')
       const fileId = $(this).data('target')
+      const startLine = $(this).data('start_line')
+      const endLine = $(this).data('end_line')
       if (!$activeCodeSnippet.data('loaded')) {
         try {
           const response = await fetch($activeCodeSnippet.data('url'))
@@ -114,7 +116,14 @@ $(document).ready(function () {
             // Remove the website::tag::xxx:: comment entirely from the code snippet
             content = content.replace(/^.*website::tag.*\n?/mg, '')
           }
-          $activeCodeSnippet.find('code').text(content)
+          if ((startLine >= 0) && (endLine >= 0)) {
+            lines = content.split('\n')
+            range = lines.slice(startLine, endLine)
+            $activeCodeSnippet.find('code').text(range)
+          } else {
+            $activeCodeSnippet.find('code').text(content)
+          }
+
           Prism.highlightAll()
         } catch(err) {
           $activeCodeSnippet.find('code').text('Resource could not be loaded.')

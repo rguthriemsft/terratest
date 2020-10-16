@@ -79,6 +79,8 @@ When using the "AzureStackCloud" setting, you MUST also set the `AZURE_ENVIRONME
 
 In the Azure SDK for GO, each service should have a module that implements that services client.  You can find the correct module [here](https://godoc.org/github.com/Azure/azure-sdk-for-go).  Add that module to the client factory imports.  Below is an example for client imports that shows clients for compute, container service and subscriptions.
 
+{% include examples/example.html example_id='client-factory' file_id='client-factory-code' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true start_line=10 end_line=20 %}
+
 ```go
 import (
     "os"
@@ -94,6 +96,8 @@ import (
 ### Add your client method to instantiate the client
 
 The next step is to add your method to instantiate the client.  Below is an example of adding the method to create a client for Virtual Machines, note that we lookup the environment using `getEnvironmentEndpointE` and then pass that base URI to the actual method on the Virtual Machines Module to create the client `NewVirtualMachinesClientWithBaseURI`.
+
+{% include examples/example.html example_id='client-factory' file_id='client-factory-code' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true start_line=50 end_line=69 %}
 
 ```go
 // CreateVirtualMachinesClientE returns a virtual machines client instance configured with the correct BaseURI depending on
@@ -125,6 +129,8 @@ In order to ensure that your CreateClient method works properly, add a unit test
 - PRs will be rejected if a client is added without a corresponding unit test.
 
 Below is an example of the Virtual Machines client unit test:
+
+{% include examples/example.html example_id='client-factory' file_id='client-factory-test' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true start_line=85 end_line=119 %}
 
 ```go
 func TestVMClientBaseURISetCorrectly(t *testing.T) {

@@ -101,8 +101,8 @@ $(document).ready(function () {
       const $activeCodeSnippet = $(activeCodeSnippet)
       const exampleTarget = $(this).data('example')
       const fileId = $(this).data('target')
-      const startLine = $(this).data('start_line')
-      const endLine = $(this).data('end_line')
+      const startLine = $(this).data('start-line')
+      const endLine = $(this).data('end-line')
       if (!$activeCodeSnippet.data('loaded')) {
         try {
           const response = await fetch($activeCodeSnippet.data('url'))
@@ -116,10 +116,16 @@ $(document).ready(function () {
             // Remove the website::tag::xxx:: comment entirely from the code snippet
             content = content.replace(/^.*website::tag.*\n?/mg, '')
           }
-          if ((startLine >= 0) && (endLine >= 0)) {
-            lines = content.split('\n')
-            range = lines.slice(startLine, endLine)
-            $activeCodeSnippet.find('code').text(range)
+          if ((startLine != "") && (endLine != "")) {
+            startNum = parseInt(startLine)
+            endNum = parseInt(endLine)
+            if ((!isNaN(startNum)) && (!isNaN(endNum))){
+              lines = content.split('\n')
+              range = lines.slice(startLine, endLine)
+              $activeCodeSnippet.find('code').text(range.join('\n'))
+            } else {
+              console.error('Invalid range specified.')
+            }
           } else {
             $activeCodeSnippet.find('code').text(content)
           }

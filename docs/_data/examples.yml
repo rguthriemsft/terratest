@@ -100,7 +100,7 @@
   files:
     - url: /modules/azure/client_factory.go
       id: client_factory_code
-      - url: /modules/azure/client_factory_test.go
+    - url: /modules/azure/client_factory_test.go
       id: client_factory_test
   learn_more:
     - name: Azure Client Factory

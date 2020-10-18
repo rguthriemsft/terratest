@@ -1,3 +1,15 @@
+---
+layout: collection-browser-doc
+title: Azure SDK Client Factory
+category: community
+excerpt: >-
+  TODO - this will need filled in
+tags: ["contributing", "azure"]
+order: 403
+nav_title: Documentation
+nav_title_link: /docs/
+---
+
 # Azure SDK Client Factory
 
 This documentation provides and overview of the `client_factory.go` module, targeted use cases, and behaviors.  This module is intended to provide support for and simplify working with Azure's multiple cloud environments (Azure Public, Azure Government, Azure China, Azure Germany and Azure Stack).  Developers looking to contribute to additional support for Azure to Terratest should leverage client_factory and use the patterns below to add a resource REST client from Azure Go SDK.  By doing so, it provides a consistent means for developers using Terratest to test their Azure Infrastructure to connect to the correct cloud and its associated REST apis.

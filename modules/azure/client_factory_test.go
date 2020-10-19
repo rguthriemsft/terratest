@@ -67,7 +67,7 @@ func TestSubscriptionClientBaseURISetCorrectly(t *testing.T) {
 
 	for _, tt := range cases {
 		// The following is necessary to make sure testCase's values don't
-		// get updated due to concurrency within the scope of t.Run(..) below	
+		// get updated due to concurrency within the scope of t.Run(..) below
 		tt := tt
 		t.Run(tt.CaseName, func(t *testing.T) {
 			// Override env setting
@@ -83,6 +83,7 @@ func TestSubscriptionClientBaseURISetCorrectly(t *testing.T) {
 	}
 }
 
+// snippet-tag-start::client_factory_example.UnitTest
 func TestVMClientBaseURISetCorrectly(t *testing.T) {
 	var cases = []struct {
 		CaseName        string
@@ -101,7 +102,7 @@ func TestVMClientBaseURISetCorrectly(t *testing.T) {
 
 	for _, tt := range cases {
 		// The following is necessary to make sure testCase's values don't
-		// get updated due to concurrency within the scope of t.Run(..) below	
+		// get updated due to concurrency within the scope of t.Run(..) below
 		tt := tt
 		t.Run(tt.CaseName, func(t *testing.T) {
 			// Override env setting
@@ -116,6 +117,8 @@ func TestVMClientBaseURISetCorrectly(t *testing.T) {
 		})
 	}
 }
+
+// snippet-tag-end::client_factory_example.UnitTest
 
 func TestManagedClustersClientBaseURISetCorrectly(t *testing.T) {
 	var cases = []struct {
@@ -135,7 +138,7 @@ func TestManagedClustersClientBaseURISetCorrectly(t *testing.T) {
 
 	for _, tt := range cases {
 		// The following is necessary to make sure testCase's values don't
-		// get updated due to concurrency within the scope of t.Run(..) below	
+		// get updated due to concurrency within the scope of t.Run(..) below
 		tt := tt
 		t.Run(tt.CaseName, func(t *testing.T) {
 			// Override env setting

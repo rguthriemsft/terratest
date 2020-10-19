@@ -8,6 +8,7 @@ rather, additional clients will be added as-needed.
 
 package azure
 
+// snippet-tag-start::client_factory_example.imports
 import (
 	"os"
 	"reflect"
@@ -17,6 +18,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2019-06-01/subscriptions"
 	autorestAzure "github.com/Azure/go-autorest/autorest/azure"
 )
+
+// snippet-tag-end::client_factory_example.imports
 
 const (
 	// AzureEnvironmentEnvName is the name of the Azure environment to use. Set to one of the following:
@@ -48,6 +51,8 @@ func CreateSubscriptionsClientE() (subscriptions.Client, error) {
 	return subscriptions.NewClientWithBaseURI(baseURI), nil
 }
 
+// snippet-tag-start::client_factory_example.CreateClient
+
 // CreateVirtualMachinesClientE returns a virtual machines client instance configured with the correct BaseURI depending on
 // the Azure environment that is currently setup (or "Public", if none is setup).
 func CreateVirtualMachinesClientE(subscriptionID string) (compute.VirtualMachinesClient, error) {
@@ -66,6 +71,8 @@ func CreateVirtualMachinesClientE(subscriptionID string) (compute.VirtualMachine
 	// Create correct client based on type passed
 	return compute.NewVirtualMachinesClientWithBaseURI(baseURI, subscriptionID), nil
 }
+
+// snippet-tag-end::client_factory_example.CreateClient
 
 // CreateManagedClustersClientE returns a virtual machines client instance configured with the correct BaseURI depending on
 // the Azure environment that is currently setup (or "Public", if none is setup).

@@ -118,10 +118,4 @@ Below is an example of the Virtual Machines client unit test:
 
 We now can use this client creation method in our helpers to create a Virtual Machines client.  Below is an example for how to call into this create method from `client_factory`:
 
-```go
-    // Create a new client instance
-    client, err := CreateVirtualMachinesClientE(VirtualMachinesClientType, subscriptionID)
-    if err != nil {
-        return nil, err
-    }
-```
+{% include examples/explorer.html example_id='client-factory' file_id='client_factory_helper' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true range_id='client_factory_example.helper' %}

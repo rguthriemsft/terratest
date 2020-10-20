@@ -17,11 +17,14 @@ func GetVirtualMachineClient(t testing.TestingT, subscriptionID string) *compute
 
 // GetVirtualMachineClientE is a helper function that will setup an Azure Virtual Machine client on your behalf.
 func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesClient, error) {
+
+	// snippet-tag-start::client_factory_example.helper
 	// Create a VM client
 	vmClient, err := CreateVirtualMachinesClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
+	// snippet-tag-end::client_factory_example.helper
 
 	// Create an authorizer
 	authorizer, err := NewAuthorizer()

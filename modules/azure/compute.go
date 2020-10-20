@@ -17,6 +17,8 @@ func GetVirtualMachineClient(t testing.TestingT, subscriptionID string) *compute
 
 // GetVirtualMachineClientE is a helper function that will setup an Azure Virtual Machine client on your behalf.
 func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesClient, error) {
+
+	// snippet-tag-start::client_factory_example.helper
 	// Create a VM client
 	vmClient, err := CreateVirtualMachinesClientE(subscriptionID)
 	if err != nil {
@@ -32,6 +34,7 @@ func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesCl
 	// Attach authorizer to the client
 	vmClient.Authorizer = *authorizer
 	return &vmClient, nil
+	// snippet-tag-end::client_factory_example.helper
 }
 
 // GetSizeOfVirtualMachine gets the size type of the given Azure Virtual Machine.

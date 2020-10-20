@@ -100,7 +100,7 @@ In the Azure SDK for GO, each service should have a module that implements that 
 
 The next step is to add your method to instantiate the client.  Below is an example of adding the method to create a client for Virtual Machines, note that we lookup the environment using `getEnvironmentEndpointE` and then pass that base URI to the actual method on the Virtual Machines Module to create the client `NewVirtualMachinesClientWithBaseURI`.
 
-{% include examples/example.html example_id='client-factory' file_id='client_factory_code' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true range_id='client_factory_example.CreateClient' %}
+{% include examples/explorer.html example_id='client-factory' file_id='client_factory_code' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true range_id='client_factory_example.CreateClient' %}
 
 ### Add a unit test to client_factory_test.go
 
@@ -112,16 +112,10 @@ In order to ensure that your CreateClient method works properly, add a unit test
 
 Below is an example of the Virtual Machines client unit test:
 
-{% include examples/example.html example_id='client-factory' file_id='client_factory_test' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true range_id='client_factory_example.UnitTest' %}
+{% include examples/explorer.html example_id='client-factory' file_id='client_factory_test' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true range_id='client_factory_example.UnitTest' %}
 
 ### Use your CreateClient method in your helper
 
 We now can use this client creation method in our helpers to create a Virtual Machines client.  Below is an example for how to call into this create method from `client_factory`:
 
-```go
-    // Create a new client instance
-    client, err := CreateVirtualMachinesClientE(VirtualMachinesClientType, subscriptionID)
-    if err != nil {
-        return nil, err
-    }
-```
+{% include examples/explorer.html example_id='client-factory' file_id='client_factory_helper' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true range_id='client_factory_example.helper' %}

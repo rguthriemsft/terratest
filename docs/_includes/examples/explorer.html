@@ -4,9 +4,10 @@
       {% for example in site.data.examples %}
         {% if include.example_id == nil or include.example_id == example.id %}
           {% assign render_example = false %}
-          {% if include.test_for_display and example.display_in_examples %}
+          
+          {% if include.test_for_display == true and example.display_in_examples == nil %}
             {% assign render_example = true %}
-          {% elsif include.test_for_display == nil %}
+          {% elsif include.test_for_display == nil and example.display_in_examples == false %}
             {% assign render_example = true %}
           {% endif %}
 
@@ -49,9 +50,10 @@
   {% for example in site.data.examples %}
     {% if include.example_id == nil or include.example_id == example.id %}
       {% assign render_example = false %}
-      {% if include.test_for_display and example.display_in_examples %}
+      
+      {% if include.test_for_display == true and example.display_in_examples == nil %}
         {% assign render_example = true %}
-      {% elsif include.test_for_display == nil %}
+      {% elsif include.test_for_display == nil and example.display_in_examples == false %}
         {% assign render_example = true %}
       {% endif %}
 

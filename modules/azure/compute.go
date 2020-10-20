@@ -19,6 +19,7 @@ func GetVirtualMachineClient(t testing.TestingT, subscriptionID string) *compute
 func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesClient, error) {
 
 	// snippet-tag-start::client_factory_example.helper
+
 	// Create a VM client
 	vmClient, err := CreateVirtualMachinesClientE(subscriptionID)
 	if err != nil {

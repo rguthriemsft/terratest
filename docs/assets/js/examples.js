@@ -120,9 +120,13 @@ $(document).ready(function () {
             // Split the content into an array of lines
             lines = content.split('\n')
             // Search the array for "// snippet-tag-start::{id}" - save location
-            startLine = lines.indexOf(`// snippet-tag-start::${rangeId}`)
+            //startLine = lines.indexOf(`// snippet-tag-start::${rangeId}`)
+            startLine = searchTagInLines(`\/\/ snippet-tag-start::${rangeId}`, lines)
+
             // Search the array for "// snippet-tag-end::{id}" - save location
-            endLine = lines.indexOf(`// snippet-tag-end::${rangeId}`)
+            //endLine = lines.indexOf(`// snippet-tag-end::${rangeId}`)
+            endLine = searchTagInLines(`\/\/ snippet-tag-end::${rangeId}`, lines)
+
             // If you have both a start and end, slice as below
             if ((startLine != -1) && (endLine != -1)) {
               range = lines.slice(startLine, endLine)
@@ -144,6 +148,13 @@ $(document).ready(function () {
       openPopup(exampleTarget, 1)
     })
   }
+
+  function searchTagInLines (tagRegExp, lines) {
+    for (var i=0; i<lines.length; i++) {
+        if (lines[i].match(tagRegExp)) return i;
+    }
+    return -1;
+}
 
   function findTags(content, exampleTarget, fileId) {
     let tags = []

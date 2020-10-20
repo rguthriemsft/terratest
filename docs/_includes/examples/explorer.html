@@ -3,14 +3,25 @@
     <div class="hidden-navs">
       {% for example in site.data.examples %}
         {% if include.example_id == nil or include.example_id == example.id %}
-          <div
-            class="examples__nav-item nav-{{ example.id }}"
-            data-id="{{ example.id }}"
-            data-name="{{ example.name }}"
-            data-url="{{ site.github_api_url }}{{ example.url }}"
-            >
-            <img src="{{ site.baseurl }}{{ example.image }}" alt="{{ example.name }}" />
-          </div>
+          {% if include.test_for_display and example.display_in_examples %}
+            <div
+              class="examples__nav-item nav-{{ example.id }}"
+              data-id="{{ example.id }}"
+              data-name="{{ example.name }}"
+              data-url="{{ site.github_api_url }}{{ example.url }}"
+              >
+              <img src="{{ site.baseurl }}{{ example.image }}" alt="{{ example.name }}" />
+            </div>
+          {% elsif include.test_for_display == nil %}
+            <div
+              class="examples__nav-item nav-{{ example.id }}"
+              data-id="{{ example.id }}"
+              data-name="{{ example.name }}"
+              data-url="{{ site.github_api_url }}{{ example.url }}"
+              >
+              <img src="{{ site.baseurl }}{{ example.image }}" alt="{{ example.name }}" />
+            </div>
+          {% endif %}
         {% endif %}
       {% endfor %}
     </div>
@@ -39,7 +50,9 @@
 
   {% for example in site.data.examples %}
     {% if include.example_id == nil or include.example_id == example.id %}
-      {% if example.display_in_examples %}
+      {% if include.test_for_display and example.display_in_examples %}
+        {% include examples/example.html example=example file_id=include.file_id skip_learn_more=include.skip_learn_more skip_view_on_github=include.skip_view_on_github skip_tags=include.skip_tags range_id=include.range_id %}
+      {% elsif include.test_for_display == nil %}
         {% include examples/example.html example=example file_id=include.file_id skip_learn_more=include.skip_learn_more skip_view_on_github=include.skip_view_on_github skip_tags=include.skip_tags range_id=include.range_id %}
       {% endif %}
     {% endif %}

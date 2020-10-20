@@ -125,7 +125,7 @@ $(document).ready(function () {
             endLine = lines.indexOf(`// snippet-tag-end::${rangeId}`)
             // If you have both a start and end, slice as below
             if ((startLine != -1) && (endLine != -1)) {
-              range = lines.slice(startLine, endLine)
+              range = lines.slice(startLine + 2, endLine)
               $activeCodeSnippet.find('code').text(range.join('\n'))
             } else {
               console.error('Could not find specified range.')

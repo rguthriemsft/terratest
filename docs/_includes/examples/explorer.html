@@ -39,7 +39,9 @@
 
   {% for example in site.data.examples %}
     {% if include.example_id == nil or include.example_id == example.id %}
-      {% include examples/example.html example=example file_id=include.file_id skip_learn_more=include.skip_learn_more skip_view_on_github=include.skip_view_on_github skip_tags=include.skip_tags range_id=include.range_id %}
+      {% if example.display_in_examples %}
+        {% include examples/example.html example=example file_id=include.file_id skip_learn_more=include.skip_learn_more skip_view_on_github=include.skip_view_on_github skip_tags=include.skip_tags range_id=include.range_id %}
+      {% endif %}
     {% endif %}
   {% endfor %}
 

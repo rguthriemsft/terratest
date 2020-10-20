@@ -1,5 +1,6 @@
 - id: terraform-hello-world
   name: Terraform Hello, World Example
+  display_in_examples: true
   image: /assets/img/logos/terraform-logo.png
   files:
     - url: /examples/terraform-hello-world-example/main.tf
@@ -13,6 +14,7 @@
 
 - id: packer-hello-world
   name: Packer Hello, World Example
+  display_in_examples: true
   image: /assets/img/logos/packer-logo.png
   files:
     - url: /examples/packer-hello-world-example/build.json
@@ -26,6 +28,7 @@
 
 - id: docker-hello-world
   name: Docker Hello, World Example
+  display_in_examples: true
   image: /assets/img/logos/docker-logo.png
   files:
     - url: /examples/docker-hello-world-example/Dockerfile
@@ -40,6 +43,7 @@
 
 - id: kubernetes-hello-world
   name: Kubernetes Hello, World Example
+  display_in_examples: true
   image: /assets/img/logos/kubernetes-logo.png
   files:
     - url: /examples/kubernetes-hello-world-example/hello-world-deployment.yml
@@ -53,6 +57,7 @@
 
 - id: aws-hello-world
   name: AWS Hello, World Example
+  display_in_examples: true
   image: /assets/img/logos/aws-logo.png
   files:
     - url: /examples/terraform-aws-hello-world-example/main.tf
@@ -66,6 +71,7 @@
 
 - id: gcp-hello-world
   name: GCP Hello, World Example
+  display_in_examples: true
   image: /assets/img/logos/gcp-logo.png
   files:
     - url: /examples/terraform-gcp-hello-world-example/main.tf
@@ -79,6 +85,7 @@
 
 - id: azure-basic
   name: Azure Hello, World Example
+  display_in_examples: true
   image: /assets/img/logos/azure-logo.png
   files:
     - url: /examples/azure/terraform-azure-example/main.tf
@@ -96,13 +103,9 @@
 
 - id: client-factory
   name: Azure Client Factory
-  image: /assets/img/logos/azure-logo.png
+  display_in_examples: false
   files:
     - url: /modules/azure/client_factory.go
       id: client_factory_code
     - url: /modules/azure/client_factory_test.go
       id: client_factory_test
-  learn_more:
-    - name: Azure Client Factory
-      url: https://github.com/gruntwork-io/terratest/tree/master/modules/azure/client_factory.go
-

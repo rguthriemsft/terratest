@@ -3,7 +3,7 @@ layout: collection-browser-doc
 title: Azure SDK Client Factory
 category: community
 excerpt: >-
-  TODO - this will need filled in
+  Overview of the client factory pattern to be used with the Azure SDK when creating test modules.
 tags: ["contributing", "azure"]
 order: 403
 nav_title: Documentation
@@ -11,6 +11,9 @@ nav_title_link: /docs/
 custom_js:
   - examples
   - prism
+  - collection-browser_scroll
+  - collection-browser_search
+  - collection-browser_toc
 ---
 
 # Azure SDK Client Factory

@@ -84,6 +84,7 @@ func TestSubscriptionClientBaseURISetCorrectly(t *testing.T) {
 }
 
 // snippet-tag-start::client_factory_example.UnitTest
+
 func TestVMClientBaseURISetCorrectly(t *testing.T) {
 	var cases = []struct {
 		CaseName        string

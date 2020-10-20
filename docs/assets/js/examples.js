@@ -101,8 +101,7 @@ $(document).ready(function () {
       const $activeCodeSnippet = $(activeCodeSnippet)
       const exampleTarget = $(this).data('example')
       const fileId = $(this).data('target')
-      const startLine = $(this).data('start-line')
-      const endLine = $(this).data('end-line')
+      const rangeId = $(this).data('range-id')
       if (!$activeCodeSnippet.data('loaded')) {
         try {
           const response = await fetch($activeCodeSnippet.data('url'))
@@ -116,15 +115,20 @@ $(document).ready(function () {
             // Remove the website::tag::xxx:: comment entirely from the code snippet
             content = content.replace(/^.*website::tag.*\n?/mg, '')
           }
-          if ((startLine != "") && (endLine != "")) {
-            startNum = parseInt(startLine)
-            endNum = parseInt(endLine)
-            if ((!isNaN(startNum)) && (!isNaN(endNum))){
-              lines = content.split('\n')
+          // Find the range specified by range-id if specified
+          if (rangeId != "") {
+            // Split the content into an array of lines
+            lines = content.split('\n')
+            // Search the array for "// snippet-tag-start::{id}" - save location
+            startLine = lines.indexOf(`// snippet-tag-start::${rangeId}`)
+            // Search the array for "// snippet-tag-end::{id}" - save location
+            endLine = lines.indexOf(`// snippet-tag-end::${rangeId}`)
+            // If you have both a start and end, slice as below
+            if ((startLine != -1) && (endLine != -1)) {
               range = lines.slice(startLine, endLine)
               $activeCodeSnippet.find('code').text(range.join('\n'))
             } else {
-              console.error('Invalid range specified.')
+              console.error('Could not find specified range.')
             }
           } else {
             $activeCodeSnippet.find('code').text(content)

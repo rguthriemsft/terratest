@@ -44,7 +44,13 @@ type NotFoundError struct {
 }
 
 func (err NotFoundError) Error() string {
-	return fmt.Sprintf("Object of type %s with id %s not found in %s", err.objectType, err.objectID, err.searchSpace)
+	var objIDMsg string
+
+	if err.objectID != "Any" {
+		objIDMsg = fmt.Sprintf(" with id %s", err.objectID)
+	}
+
+	return fmt.Sprintf("Object of type %s%s not found in %s", err.objectType, objIDMsg, err.searchSpace)
 }
 
 // NewNotFoundError creates a new not found error when an expected object is not found in the search space

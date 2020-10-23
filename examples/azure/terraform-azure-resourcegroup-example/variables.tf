@@ -19,20 +19,16 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "location" {
-  description = "The Azure location where to deploy your resources too"
+  description = "The location to set for the resource group."
   type        = string
   default     = "East US"
 }
 
 variable "postfix" {
-  description = "A postfix string to centrally mitigate resource name collisions"
+  description = "A postfix string to centrally mitigate resource name collisions."
   type        = string
   default     = "resource"
 }
 
-variable "username" {
-  description = "The username to be provisioned into your VM"
-  type        = string
-  default     = "testadmin"
-}
+
 

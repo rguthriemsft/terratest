@@ -27,7 +27,7 @@ func TestTerraformBackendExample(t *testing.T) {
 	data := fmt.Sprintf("data-for-test-%s", uniqueId)
 
 	// Deploy the module, configuring it to use the S3 bucket as an S3 backend
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/terraform-backend-example",
 		Vars: map[string]interface{}{
 			"foo": data,
@@ -37,7 +37,7 @@ func TestTerraformBackendExample(t *testing.T) {
 			"key":    key,
 			"region": awsRegion,
 		},
-	}
+	})
 
 	defer terraform.Destroy(t, terraformOptions)
 	terraform.InitAndApply(t, terraformOptions)

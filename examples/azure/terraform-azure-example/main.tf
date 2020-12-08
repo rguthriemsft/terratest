@@ -1,13 +1,15 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # DEPLOY AN AZURE VIRTUAL MACHINE
-# This is a basic example of how to deploy an Azure Virtual Machine with the minimum network resources.
+# This is an example of how to deploy an Azure Virtual Machine with the minimum network resources.
 # ---------------------------------------------------------------------------------------------------------------------
 # See test/azure/terraform_azure_example_test.go for how to write automated tests for this code.
 # ---------------------------------------------------------------------------------------------------------------------
 
 provider "azurerm" {
+  version = "~> 2.29"
   features {}
 }
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 # PIN TERRAFORM VERSION TO >= 0.12
@@ -22,25 +24,11 @@ terraform {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# GENERATE RANDOMIZATION STRING
-# This random password is used to improve test security
-# ---------------------------------------------------------------------------------------------------------------------
-
-resource "random_password" "main" {
-  length           = 16
-  override_special = "-_%@"
-  min_upper        = "1"
-  min_lower        = "1"
-  min_numeric      = "1"
-  min_special      = "1"
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
 # DEPLOY A RESOURCE GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_resource_group" "main" {
-  name     = "${var.prefix}-resources"
+  name     = "terratest-rg-${var.postfix}"
   location = "East US"
 }
 
@@ -49,21 +37,21 @@ resource "azurerm_resource_group" "main" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_virtual_network" "main" {
-  name                = "${var.prefix}-network"
+  name                = "vnet-${var.postfix}"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 }
 
 resource "azurerm_subnet" "internal" {
-  name                 = "internal"
+  name                 = "subnet-${var.postfix}"
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefix       = "10.0.17.0/24"
+  address_prefixes     = ["10.0.17.0/24"]
 }
 
 resource "azurerm_network_interface" "main" {
-  name                = "${var.prefix}-nic"
+  name                = "nic-${var.postfix}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
@@ -79,7 +67,7 @@ resource "azurerm_network_interface" "main" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_virtual_machine" "main" {
-  name                             = "${var.prefix}-vm"
+  name                             = "vm-${var.postfix}"
   location                         = azurerm_resource_group.main.location
   resource_group_name              = azurerm_resource_group.main.name
   network_interface_ids            = [azurerm_network_interface.main.id]
@@ -102,7 +90,7 @@ resource "azurerm_virtual_machine" "main" {
   }
 
   os_profile {
-    computer_name  = var.hostname
+    computer_name  = "vm-${var.postfix}"
     admin_username = var.username
     admin_password = random_password.main.result
   }
@@ -110,5 +98,17 @@ resource "azurerm_virtual_machine" "main" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
+
+  depends_on = [random_password.main]
 }
 
+# Random password is used as an example to simplify the deployment and improve the security of the remote VM.
+# This is not as a production recommendation as the password is stored in the Terraform state file.
+resource "random_password" "main" {
+  length           = 16
+  override_special = "-_%@"
+  min_upper        = "1"
+  min_lower        = "1"
+  min_numeric      = "1"
+  min_special      = "1"
+}

@@ -9,7 +9,7 @@ import (
 type TgInvalidBinary string
 
 func (err TgInvalidBinary) Error() string {
-	return fmt.Sprintf("terragrunt must be set as TerraformBinary to use this function. [ TerraformBinary : %s ]", err)
+	return fmt.Sprintf("terragrunt must be set as TerraformBinary to use this function. [ TerraformBinary : %s ]", string(err))
 }
 
 // OutputKeyNotFound occurs when terraform output does not contain a value for the key
@@ -17,7 +17,7 @@ func (err TgInvalidBinary) Error() string {
 type OutputKeyNotFound string
 
 func (err OutputKeyNotFound) Error() string {
-	return fmt.Sprintf("output doesn't contain a value for the key %q", err)
+	return fmt.Sprintf("output doesn't contain a value for the key %q", string(err))
 }
 
 // OutputValueNotMap occures when casting a found output value to a map fails

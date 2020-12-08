@@ -1,9 +1,12 @@
 package terraform
 
 import (
+	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/files"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -39,6 +42,46 @@ func TestInitAndPlanWithNoError(t *testing.T) {
 	out, err := PlanE(t, options)
 	require.NoError(t, err)
 	require.Contains(t, out, "No changes. Infrastructure is up-to-date.")
+}
+
+func TestInitAndPlanWithOutput(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-basic-configuration", t.Name())
+	require.NoError(t, err)
+
+	options := &Options{
+		TerraformDir: testFolder,
+		Vars: map[string]interface{}{
+			"cnt": 1,
+		},
+	}
+
+	out, err := InitAndPlanE(t, options)
+	require.NoError(t, err)
+	require.Contains(t, out, "1 to add, 0 to change, 0 to destroy.")
+}
+
+func TestInitAndPlanWithPlanFile(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-basic-configuration", t.Name())
+	require.NoError(t, err)
+	planFilePath := filepath.Join(testFolder, "plan.out")
+
+	options := &Options{
+		TerraformDir: testFolder,
+		Vars: map[string]interface{}{
+			"cnt": 1,
+		},
+		PlanFilePath: planFilePath,
+	}
+
+	out, err := InitAndPlanE(t, options)
+	require.NoError(t, err)
+	assert.Contains(t, out, "1 to add, 0 to change, 0 to destroy.")
+	assert.Contains(t, out, fmt.Sprintf("This plan was saved to: %s", planFilePath))
+	assert.FileExists(t, planFilePath, "Plan file was not saved to expected location:", planFilePath)
 }
 
 func TestPlanWithExitCodeWithNoChanges(t *testing.T) {

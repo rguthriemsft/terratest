@@ -8,6 +8,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestOutputString(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-output", t.Name())
+	require.NoError(t, err)
+
+	options := &Options{
+		TerraformDir: testFolder,
+	}
+
+	InitAndApply(t, options)
+
+	b := Output(t, options, "bool")
+	require.Equal(t, b, "true", "Bool %q should match %q", "true", b)
+
+	str := Output(t, options, "string")
+	require.Equal(t, str, "This is a string.", "String %q should match %q", "This is a string.", str)
+
+	num := Output(t, options, "number")
+	require.Equal(t, num, "3.14", "Number %q should match %q", "3.14", num)
+
+	num1 := Output(t, options, "number1")
+	require.Equal(t, num1, "3", "Number %q should match %q", "3", num1)
+}
+
 func TestOutputList(t *testing.T) {
 	t.Parallel()
 
@@ -251,6 +276,45 @@ func TestOutputsForKeys(t *testing.T) {
 	outputNotPresentMap, ok := out["constellations"].(map[string]interface{})
 	require.False(t, ok)
 	require.Nil(t, outputNotPresentMap)
+}
+
+func TestOutputJson(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-output", t.Name())
+	require.NoError(t, err)
+
+	options := &Options{
+		TerraformDir: testFolder,
+	}
+
+	InitAndApply(t, options)
+
+	expected := `{
+  "bool": {
+    "sensitive": false,
+    "type": "bool",
+    "value": true
+  },
+  "number": {
+    "sensitive": false,
+    "type": "number",
+    "value": 3.14
+  },
+  "number1": {
+    "sensitive": false,
+    "type": "number",
+    "value": 3
+  },
+  "string": {
+    "sensitive": false,
+    "type": "string",
+    "value": "This is a string."
+  }
+}`
+
+	str := OutputJson(t, options, "")
+	require.Equal(t, str, expected, "JSON %q should match %q", expected, str)
 }
 
 func TestOutputStruct(t *testing.T) {

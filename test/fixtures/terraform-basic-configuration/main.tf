@@ -1,5 +1,5 @@
-variable cnt {}
+variable "cnt" {}
 
-resource "null_resource" test {
+resource "null_resource" "test" {
   count = var.cnt
 }

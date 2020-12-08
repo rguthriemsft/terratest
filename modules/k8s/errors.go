@@ -152,3 +152,42 @@ func (err MalformedNodeID) Error() string {
 func NewMalformedNodeIDError(node *corev1.Node) MalformedNodeID {
 	return MalformedNodeID{node}
 }
+
+// JSONPathMalformedJSONErr is returned when the jsonpath unmarshal routine fails to parse the given JSON blob.
+type JSONPathMalformedJSONErr struct {
+	underlyingErr error
+}
+
+func (err JSONPathMalformedJSONErr) Error() string {
+	return fmt.Sprintf("Error unmarshaling original json blob: %s", err.underlyingErr)
+}
+
+// JSONPathMalformedJSONPathErr is returned when the jsonpath unmarshal routine fails to parse the given JSON path
+// string.
+type JSONPathMalformedJSONPathErr struct {
+	underlyingErr error
+}
+
+func (err JSONPathMalformedJSONPathErr) Error() string {
+	return fmt.Sprintf("Error parsing json path: %s", err.underlyingErr)
+}
+
+// JSONPathExtractJSONPathErr is returned when the jsonpath unmarshal routine fails to extract the given JSON path from
+// the JSON blob.
+type JSONPathExtractJSONPathErr struct {
+	underlyingErr error
+}
+
+func (err JSONPathExtractJSONPathErr) Error() string {
+	return fmt.Sprintf("Error extracting json path from blob: %s", err.underlyingErr)
+}
+
+// JSONPathMalformedJSONPathResultErr is returned when the jsonpath unmarshal routine fails to unmarshal the resulting
+// data from extraction.
+type JSONPathMalformedJSONPathResultErr struct {
+	underlyingErr error
+}
+
+func (err JSONPathMalformedJSONPathResultErr) Error() string {
+	return fmt.Sprintf("Error unmarshaling json path output: %s", err.underlyingErr)
+}

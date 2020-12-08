@@ -9,7 +9,8 @@ import (
 	"github.com/gruntwork-io/terratest/modules/collections"
 )
 
-// TerraformDefaultLockingStatus - The terratest default command lock status (backwards compatibility)
+// TerraformCommandsWithLockSupport is a list of all the Terraform commands that
+// can obtain locks on Terraform state
 var TerraformCommandsWithLockSupport = []string{
 	"plan",
 	"apply",
@@ -21,12 +22,22 @@ var TerraformCommandsWithLockSupport = []string{
 	"import",
 }
 
+// TerraformCommandsWithPlanFileSupport is a list of all the Terraform commands that support interacting with plan
+// files.
+var TerraformCommandsWithPlanFileSupport = []string{
+	"plan",
+	"apply",
+	"show",
+	"graph",
+}
+
 // FormatArgs converts the inputs to a format palatable to terraform. This includes converting the given vars to the
 // format the Terraform CLI expects (-var key=value).
 func FormatArgs(options *Options, args ...string) []string {
 	var terraformArgs []string
 	commandType := args[0]
 	lockSupported := collections.ListContains(TerraformCommandsWithLockSupport, commandType)
+	planFileSupported := collections.ListContains(TerraformCommandsWithPlanFileSupport, commandType)
 
 	terraformArgs = append(terraformArgs, args...)
 	terraformArgs = append(terraformArgs, FormatTerraformVarsAsArgs(options.Vars)...)
@@ -38,7 +49,25 @@ func FormatArgs(options *Options, args ...string) []string {
 		terraformArgs = append(terraformArgs, FormatTerraformLockAsArgs(options.Lock, options.LockTimeout)...)
 	}
 
+	if planFileSupported {
+		// The plan file arg should be last in the terraformArgs slice. Some commands use it as an input (e.g. show, apply)
+		terraformArgs = append(terraformArgs, FormatTerraformPlanFileAsArg(commandType, options.PlanFilePath)...)
+	}
+
 	return terraformArgs
+}
+
+// FormatTerraformPlanFileAsArg formats the out variable as a command-line arg for Terraform (e.g. of the format
+// -out=/some/path/to/plan.out or /some/path/to/plan.out). Only plan supports passing in the plan file as -out; the
+// other commands expect it as the first positional argument. This returns an empty string if outPath is empty string.
+func FormatTerraformPlanFileAsArg(commandType string, outPath string) []string {
+	if outPath == "" {
+		return nil
+	}
+	if commandType == "plan" {
+		return []string{fmt.Sprintf("%s=%s", "-out", outPath)}
+	}
+	return []string{outPath}
 }
 
 // FormatTerraformVarsAsArgs formats the given variables as command-line args for Terraform (e.g. of the format

@@ -118,7 +118,9 @@ func deployUsingTerraform(t *testing.T, awsRegion string, workingDir string) {
 	// Load the AMI ID saved by the earlier build_ami stage
 	amiID := test_structure.LoadAmiId(t, workingDir)
 
-	terraformOptions := &terraform.Options{
+	// Construct the terraform options with default retryable errors to handle the most common retryable errors in
+	// terraform testing.
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: workingDir,
 
@@ -129,7 +131,7 @@ func deployUsingTerraform(t *testing.T, awsRegion string, workingDir string) {
 			"instance_text": instanceText,
 			"ami_id":        amiID,
 		},
-	}
+	})
 
 	// Save the Terraform Options struct, instance name, and instance text so future test stages can use it
 	test_structure.SaveTerraformOptions(t, workingDir, terraformOptions)

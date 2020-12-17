@@ -33,8 +33,8 @@ func AutomationAccountExistsE(t testing.TestingT, automationAccountName string, 
 
 // AutomationAccountDSCExists indicates whether the specified Azure Automation Account DSC exists.
 // This function would fail the test if there is an error.
-func AutomationAccountDSCExists(t testing.TestingT, automationAccountName string, dscConfiguraitonName string, resourceGroupName string, subscriptionID string) bool {
-	exists, err := AutomationAccountDSCExistsE(t, automationAccountName, dscConfiguraitonName, resourceGroupName, subscriptionID)
+func AutomationAccountDSCExists(t testing.TestingT, dscConfiguraitonName string, automationAccountName string, resourceGroupName string, subscriptionID string) bool {
+	exists, err := AutomationAccountDSCExistsE(t, dscConfiguraitonName, automationAccountName, resourceGroupName, subscriptionID)
 	if err != nil {
 		panic(err)
 	}
@@ -42,8 +42,8 @@ func AutomationAccountDSCExists(t testing.TestingT, automationAccountName string
 }
 
 // AutomationAccountDSCExistsE indicates whether the specified Azure Automation Account exists.
-func AutomationAccountDSCExistsE(t testing.TestingT, automationAccountName string, dscConfiguraitonName string, resourceGroupName string, subscriptionID string) (bool, error) {
-	_, err := GetAutomationAccountDSCConfigurationE(t, automationAccountName, dscConfiguraitonName, resourceGroupName, subscriptionID)
+func AutomationAccountDSCExistsE(t testing.TestingT, dscConfiguraitonName string, automationAccountName string, resourceGroupName string, subscriptionID string) (bool, error) {
+	_, err := GetAutomationAccountDSCConfigurationE(t, dscConfiguraitonName, automationAccountName, resourceGroupName, subscriptionID)
 	if err != nil {
 		if ResourceNotFoundErrorExists(err) {
 			return false, nil
@@ -55,8 +55,8 @@ func AutomationAccountDSCExistsE(t testing.TestingT, automationAccountName strin
 
 // AutomationAccountDSCCompiled indicates whether the specified Azure Automation Account DSC compiled successfully.
 // This function would fail the test if there is an error.
-func AutomationAccountDSCCompiled(t testing.TestingT, automationAccountName string, dscConfiguraitonName string, resourceGroupName string, subscriptionID string) bool {
-	compiled, err := AutomationAccountDSCCompiledE(t, automationAccountName, dscConfiguraitonName, resourceGroupName, subscriptionID)
+func AutomationAccountDSCCompiled(t testing.TestingT, dscConfiguraitonName string, automationAccountName string, resourceGroupName string, subscriptionID string) bool {
+	compiled, err := AutomationAccountDSCCompiledE(t, dscConfiguraitonName, automationAccountName, resourceGroupName, subscriptionID)
 	if err != nil {
 		panic(err)
 	}
@@ -64,15 +64,14 @@ func AutomationAccountDSCCompiled(t testing.TestingT, automationAccountName stri
 }
 
 // AutomationAccountDSCCompiledE indicates whether the specified Azure Automation Account DSC compiled successfully.
-// DSC Compilation requires the Automation Account to spin-up resources, taking time to complete.
-func AutomationAccountDSCCompiledE(t testing.TestingT, automationAccountName string, dscConfiguraitonName string, resourceGroupName string, subscriptionID string) (bool, error) {
+func AutomationAccountDSCCompiledE(t testing.TestingT, dscConfiguraitonName string, automationAccountName string, resourceGroupName string, subscriptionID string) (bool, error) {
 	seconds := 30 // 30 second initial delay
 	sleep := time.Duration(seconds) * time.Second
 	maxAttempts := 5 // try 5 times, doubling the delay each time.
 
 	for i := 1; i < maxAttempts; i++ {
 		time.Sleep(sleep)
-		dscCompileJobStatus, err := AutomationAccountDSCCompileJobStatus(t, automationAccountName, dscConfiguraitonName, resourceGroupName, subscriptionID)
+		dscCompileJobStatus, err := AutomationAccountDSCCompileJobStatusE(t, dscConfiguraitonName, automationAccountName, resourceGroupName, subscriptionID)
 		if err != nil {
 			return false, err
 		}
@@ -85,10 +84,26 @@ func AutomationAccountDSCCompiledE(t testing.TestingT, automationAccountName str
 	return false, nil
 }
 
-// AutomationAccountHasRunAsCertificate indicates whether the specified Azure Automation Account RunAs Certificate exists.
-// This function would fail the test if there is an error.
-func AutomationAccountHasRunAsCertificate() {
+// AutomationAccountRunAsCertificateThumbprintMatchesE indicates whether the specified Azure Automation Account RunAs Certificate exists.
+func AutomationAccountRunAsCertificateThumbprintMatchesE(t testing.TestingT, runAsCertificateThumbprint string, runAsCertificateName string, automationAccountName string, resourceGroupName string, subscriptionID string) (bool, error) {
+	certificate, err := GetAutomationAccountCertificateE(t, runAsCertificateName, automationAccountName, resourceGroupName, subscriptionID)
+	if err != nil {
+		if ResourceNotFoundErrorExists(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return *certificate.CertificateProperties.Thumbprint == runAsCertificateThumbprint, nil
+}
 
+// AutomationAccountRunAsCertificateExists indicates whether the specified Azure Automation Account RunAs Certificate exists.
+// This function would fail the test if there is an error.
+func AutomationAccountRunAsCertificateExists(t testing.TestingT, runAsCertificateName string, automationAccountName string, resourceGroupName string, subscriptionID string) bool {
+	exists, err := AutomationAccountDSCExistsE(t, runAsCertificateName, automationAccountName, resourceGroupName, subscriptionID)
+	if err != nil {
+		panic(err)
+	}
+	return exists
 }
 
 // AutomationAccountHasRunAsAccount indicates whether the specified Azure Automation Account RunAs Account exists.
@@ -101,6 +116,27 @@ func AutomationAccountHasRunAsAccount() {
 // This function would fail the test if there is an error.
 func DSCAppliedSuccessfullyToVM() {
 
+}
+
+// GetCertificateClientE returns the Azure Automation Account Certfiicate client
+func GetCertificateClientE(subscriptionID string) (*automation.CertificateClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the Automation Account Certificate client
+	client := automation.NewCertificateClient(subscriptionID)
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+	client.Authorizer = *authorizer
+
+	return &client, nil
 }
 
 // GetAutomationAccountE returns the Azure Automation Account by name if it exists in the subscription
@@ -146,7 +182,7 @@ func GetAutomationAccountClientE(subscriptionID string) (*automation.AccountClie
 }
 
 // GetAutomationAccountDSCConfigurationE returns the Azure Automation Account DscConfiguration by Automation Account name if it exists in the subscription
-func GetAutomationAccountDSCConfigurationE(t testing.TestingT, automationAccountName string, dscConfigurationName string, resourceGroupName string, subscriptionID string) (*automation.DscConfiguration, error) {
+func GetAutomationAccountDSCConfigurationE(t testing.TestingT, dscConfigurationName string, automationAccountName string, resourceGroupName string, subscriptionID string) (*automation.DscConfiguration, error) {
 	resourceGroupName, err := getTargetAzureResourceGroupName(resourceGroupName)
 	if err != nil {
 		return nil, err
@@ -186,8 +222,8 @@ func GetDscConfigurationClientE(subscriptionID string) (*automation.DscConfigura
 	return &client, nil
 }
 
-// AutomationAccountDSCCompileJobStatus returns the Azure Automation Account DscConfiguration by Automation Account name if it exists in the subscription
-func AutomationAccountDSCCompileJobStatus(t testing.TestingT, automationAccountName string, dscConfigurationName string, resourceGroupName string, subscriptionID string) (string, error) {
+// AutomationAccountDSCCompileJobStatusE returns the Azure Automation Account DscConfiguration by Automation Account name if it exists in the subscription
+func AutomationAccountDSCCompileJobStatusE(t testing.TestingT, dscConfigurationName string, automationAccountName string, resourceGroupName string, subscriptionID string) (string, error) {
 	resourceGroupName, err := getTargetAzureResourceGroupName(resourceGroupName)
 	if err != nil {
 		return "", err
@@ -250,7 +286,7 @@ func GetDscCompilationJobClientE(subscriptionID string) (*automation.DscCompilat
 
 // GetAutomationAccountConnection gets the RunAs Connection if it exists in the Azure Automation Account
 // This function would fail the test if there is an error.
-func GetAutomationAccountConnection(automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountConnectionName string) *automation.Connection {
+func GetAutomationAccountConnection(t testing.TestingT, automationAccountConnectionName string, automationAccountName string, resourceGroupName string, subscriptionID string) *automation.Connection {
 	client, err := GetAutomationAccountConnectionClientE(subscriptionID)
 	if err != nil {
 		panic("error")
@@ -266,7 +302,7 @@ func GetAutomationAccountConnection(automationAccountName string, resourceGroupN
 }
 
 // GetAutomationAccountConnectionE gets the RunAs Connection if it exists in the Azure Automation Account
-func GetAutomationAccountConnectionE(automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountConnectionName string) (*automation.Connection, error) {
+func GetAutomationAccountConnectionE(t testing.TestingT, automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountConnectionName string) (*automation.Connection, error) {
 	client, err := GetAutomationAccountConnectionClientE(subscriptionID)
 	if err != nil {
 		return nil, err
@@ -281,25 +317,8 @@ func GetAutomationAccountConnectionE(automationAccountName string, resourceGroup
 	return &automationAccountConnection, nil
 }
 
-// GetAutomationAccountCertificate gets the RunAs Connection Certificate if it exists in the Azure Automation Account
-// This function would fail the test if there is an error.
-func GetAutomationAccountCertificate(automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountCertificateName *string) *automation.Certificate {
-	client, err := GetAutomationAccountCertficateClientE(subscriptionID)
-	if err != nil {
-		panic("error")
-	}
-
-	// Get Automation Account Connection
-	automationAccountCertificate, err := client.Get(context.Background(), resourceGroupName, automationAccountName, *automationAccountCertificateName)
-	if err != nil {
-		panic("error")
-	}
-
-	return &automationAccountCertificate
-}
-
 // GetAutomationAccountCertificateE gets the RunAs Connection Certificate if it exists in the Azure Automation Account
-func GetAutomationAccountCertificateE(automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountCertificateName string) (*automation.Certificate, error) {
+func GetAutomationAccountCertificateE(t testing.TestingT, automationAccountCertificateName string, automationAccountName string, resourceGroupName string, subscriptionID string) (*automation.Certificate, error) {
 	client, err := GetAutomationAccountCertficateClientE(subscriptionID)
 	if err != nil {
 		return nil, err

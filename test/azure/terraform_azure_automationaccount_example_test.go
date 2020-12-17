@@ -22,15 +22,18 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 	uniquePostfix := random.UniqueId()
 	expectedAutomationAccountName := "terratest-AutomationAccount"
 	expectedSampleDSCName := "SampleDSC"
-
+	expectedRunAsCertificateName := "terratest-AutomationConnectionCertificateName"
+	expectedRunAsCertificateThumbprint := `env:"TF_VAR_AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT"`
 	// Construct options for TF apply
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../examples/azure/terraform-azure-automationaccount-example",
 		Vars: map[string]interface{}{
-			"postfix":                 uniquePostfix,
-			"automation_account_name": expectedAutomationAccountName,
-			"sample_dsc_name":         expectedSampleDSCName,
+			"postfix":                                  uniquePostfix,
+			"automation_account_name":                  expectedAutomationAccountName,
+			"sample_dsc_name":                          expectedSampleDSCName,
+			"automation_run_as_certificate_name":       expectedRunAsCertificateName,
+			"AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT": expectedRunAsCertificateThumbprint,
 		},
 	}
 
@@ -50,9 +53,9 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 	actualAutomationAccountExists := azure.AutomationAccountExists(t, automationAccountName, resourceGroupName, subscriptionID)
 	assert.True(t, actualAutomationAccountExists)
 	//Check that the sample DSC was uploaded successfully into the deployed automation account
-	actualDSCExists := azure.AutomationAccountDSCExists(t, automationAccountName, expectedSampleDSCName, resourceGroupName, subscriptionID)
+	actualDSCExists := azure.AutomationAccountDSCExists(t, expectedSampleDSCName, automationAccountName, resourceGroupName, subscriptionID)
 	assert.True(t, actualDSCExists)
 	// Check that the DSC in the automation account successfully compiled
-	dscCompiled := azure.AutomationAccountDSCCompiled(t, automationAccountName, expectedSampleDSCName, resourceGroupName, subscriptionID)
+	dscCompiled := azure.AutomationAccountDSCCompiled(t, expectedSampleDSCName, automationAccountName, resourceGroupName, subscriptionID)
 	assert.True(t, dscCompiled)
 }

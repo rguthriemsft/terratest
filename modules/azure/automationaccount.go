@@ -3,17 +3,19 @@ package azure
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Azure/azure-sdk-for-go/profiles/latest/automation/mgmt/automation"
 	"github.com/gruntwork-io/terratest/modules/testing"
-	"github.com/stretchr/testify/require"
 )
 
 // AutomationAccountExists indicates whether the specified Azure Automation Account exists.
 // This function would fail the test if there is an error.
 func AutomationAccountExists(t testing.TestingT, automationAccountName string, resourceGroupName string, subscriptionID string) bool {
 	exists, err := AutomationAccountExistsE(t, automationAccountName, resourceGroupName, subscriptionID)
-	require.NoError(t, err)
+	if err != nil {
+		panic("error")
+	}
 	return exists
 }
 
@@ -33,7 +35,9 @@ func AutomationAccountExistsE(t testing.TestingT, automationAccountName string, 
 // This function would fail the test if there is an error.
 func AutomationAccountDSCExists(t testing.TestingT, automationAccountName string, dscConfiguraitonName string, resourceGroupName string, subscriptionID string) bool {
 	exists, err := AutomationAccountDSCExistsE(t, automationAccountName, dscConfiguraitonName, resourceGroupName, subscriptionID)
-	require.NoError(t, err)
+	if err != nil {
+		panic(err)
+	}
 	return exists
 }
 
@@ -53,34 +57,49 @@ func AutomationAccountDSCExistsE(t testing.TestingT, automationAccountName strin
 // This function would fail the test if there is an error.
 func AutomationAccountDSCCompiled(t testing.TestingT, automationAccountName string, dscConfiguraitonName string, resourceGroupName string, subscriptionID string) bool {
 	compiled, err := AutomationAccountDSCCompiledE(t, automationAccountName, dscConfiguraitonName, resourceGroupName, subscriptionID)
-	require.NoError(t, err)
+	if err != nil {
+		panic(err)
+	}
 	return compiled
 }
 
 // AutomationAccountDSCCompiledE indicates whether the specified Azure Automation Account DSC compiled successfully.
+// DSC Compilation requires the Automation Account to spin-up resources, taking time to complete.
 func AutomationAccountDSCCompiledE(t testing.TestingT, automationAccountName string, dscConfiguraitonName string, resourceGroupName string, subscriptionID string) (bool, error) {
-	dscCompilatinoJob, err := GetAutomationAccountDscCompilationJobE(t, automationAccountName, dscConfiguraitonName, resourceGroupName, subscriptionID)
-	if err != nil {
+	seconds := 30 // 30 second initial delay
+	sleep := time.Duration(seconds) * time.Second
+	maxAttempts := 5 // try 5 times, doubling the delay each time.
+
+	for i := 1; i < maxAttempts; i++ {
+		time.Sleep(sleep)
+		dscCompileJobStatus, err := AutomationAccountDSCCompileJobStatus(t, automationAccountName, dscConfiguraitonName, resourceGroupName, subscriptionID)
+		if err != nil {
+			return false, err
+		}
+		// check if status === Completed
+		if dscCompileJobStatus == "Completed" {
+			return true, nil
+		}
+		sleep = 2 * sleep
 	}
-
-	return dscCompilatinoJob.HasHTTPStatus(), nil
-}
-
-// DSCAppliedSuccessfullyToVM indicates whether the specified Azure Automation Account compiled DSC has successfully been applied to the target VM.
-// This function would fail the test if there is an error.
-func DSCAppliedSuccessfullyToVM(t testing.TestingT) {
-
+	return false, nil
 }
 
 // AutomationAccountHasRunAsCertificate indicates whether the specified Azure Automation Account RunAs Certificate exists.
 // This function would fail the test if there is an error.
-func AutomationAccountHasRunAsCertificate(t testing.TestingT) {
+func AutomationAccountHasRunAsCertificate() {
 
 }
 
 // AutomationAccountHasRunAsAccount indicates whether the specified Azure Automation Account RunAs Account exists.
 // This function would fail the test if there is an error.
-func AutomationAccountHasRunAsAccount(t testing.TestingT) {
+func AutomationAccountHasRunAsAccount() {
+
+}
+
+// DSCAppliedSuccessfullyToVM indicates whether the specified Azure Automation Account compiled DSC has successfully been applied to the target VM.
+// This function would fail the test if there is an error.
+func DSCAppliedSuccessfullyToVM() {
 
 }
 
@@ -167,37 +186,45 @@ func GetDscConfigurationClientE(subscriptionID string) (*automation.DscConfigura
 	return &client, nil
 }
 
-// GetAutomationAccountDscCompilationJobE returns the Azure Automation Account DscConfiguration by Automation Account name if it exists in the subscription
-func GetAutomationAccountDscCompilationJobE(t testing.TestingT, automationAccountName string, dscConfigurationName string, resourceGroupName string, subscriptionID string) (*automation.DscCompilationJob, error) {
+// AutomationAccountDSCCompileJobStatus returns the Azure Automation Account DscConfiguration by Automation Account name if it exists in the subscription
+func AutomationAccountDSCCompileJobStatus(t testing.TestingT, automationAccountName string, dscConfigurationName string, resourceGroupName string, subscriptionID string) (string, error) {
 	resourceGroupName, err := getTargetAzureResourceGroupName(resourceGroupName)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	client, err := GetDscCompilationJobClientE(subscriptionID)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	filter := fmt.Sprintf("properties/configuration/name eq '%s'", dscConfigurationName)
 	dscCompilationJobListResultPage, err := client.ListByAutomationAccount(context.Background(), resourceGroupName, automationAccountName, filter)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	var dscCompilatinoJob automation.DscCompilationJob
+	var dscCompilationJob []automation.DscCompilationJob
+	var mostRecentCompileJobTick int64
+	var mostRecentCompileJobStatus string
+	// Loop through filtered pages of DSC compilation jobs to find latest compilation job
 	for dscCompilationJobListResultPage.NotDone() {
-		dscCompilatinoJob = dscCompilationJobListResultPage.Values()[0]
-		//dscCompilatinoJob.DscCompilationJobProperties
-		//dscCompilatinoJob.DscCompilationJobProperties.ProvisioningState == automation.JobProvisioningState.JobProvisioningStateSucceeded
-
+		dscCompilationJob = dscCompilationJobListResultPage.Values()
+		// Loop through compilation jobs in the current page
+		for _, element := range dscCompilationJob {
+			if element.CreationTime.Unix() > mostRecentCompileJobTick {
+				mostRecentCompileJobTick = element.CreationTime.Unix()
+				mostRecentCompileJobStatus = (string)(element.Status)
+			}
+		}
+		dscCompilationJobListResultPage.Next()
 	}
-	// //*dscCompilatinoJob.DscCompilationJobProperties.Configuration.Name
-	// if dscCompilatinoJob.DscCompilationJobProperties.Status == "JobStatusCompleting" {
-
-	// }
-
-	return &dscCompilatinoJob, nil
+	// Check to ensure  DSC compilation jobs are present (i.e. mostRecentCompileJobTick is non zero)
+	if mostRecentCompileJobTick == 0 {
+		panic("No compilation jobs present for this DSC configuraiton, or compilation jobs are 'suspeneded' in the Automation Account.")
+	} else {
+		return mostRecentCompileJobStatus, nil
+	}
 }
 
 // GetDscCompilationJobClientE returns the Azure Automation Account DscCompilationJobClient
@@ -223,19 +250,23 @@ func GetDscCompilationJobClientE(subscriptionID string) (*automation.DscCompilat
 
 // GetAutomationAccountConnection gets the RunAs Connection if it exists in the Azure Automation Account
 // This function would fail the test if there is an error.
-func GetAutomationAccountConnection(t testing.TestingT, automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountConnectionName string) *automation.Connection {
+func GetAutomationAccountConnection(automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountConnectionName string) *automation.Connection {
 	client, err := GetAutomationAccountConnectionClientE(subscriptionID)
-	require.NoError(t, err)
+	if err != nil {
+		panic("error")
+	}
 
 	// Get Automation Account Connection
 	automationAccountConnection, err := client.Get(context.Background(), resourceGroupName, automationAccountName, automationAccountConnectionName)
-	require.NoError(t, err)
+	if err != nil {
+		panic("error")
+	}
 
 	return &automationAccountConnection
 }
 
 // GetAutomationAccountConnectionE gets the RunAs Connection if it exists in the Azure Automation Account
-func GetAutomationAccountConnectionE(t testing.TestingT, automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountConnectionName string) (*automation.Connection, error) {
+func GetAutomationAccountConnectionE(automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountConnectionName string) (*automation.Connection, error) {
 	client, err := GetAutomationAccountConnectionClientE(subscriptionID)
 	if err != nil {
 		return nil, err
@@ -252,19 +283,23 @@ func GetAutomationAccountConnectionE(t testing.TestingT, automationAccountName s
 
 // GetAutomationAccountCertificate gets the RunAs Connection Certificate if it exists in the Azure Automation Account
 // This function would fail the test if there is an error.
-func GetAutomationAccountCertificate(t testing.TestingT, automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountCertificateName *string) *automation.Certificate {
+func GetAutomationAccountCertificate(automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountCertificateName *string) *automation.Certificate {
 	client, err := GetAutomationAccountCertficateClientE(subscriptionID)
-	require.NoError(t, err)
+	if err != nil {
+		panic("error")
+	}
 
 	// Get Automation Account Connection
 	automationAccountCertificate, err := client.Get(context.Background(), resourceGroupName, automationAccountName, *automationAccountCertificateName)
-	require.NoError(t, err)
+	if err != nil {
+		panic("error")
+	}
 
 	return &automationAccountCertificate
 }
 
 // GetAutomationAccountCertificateE gets the RunAs Connection Certificate if it exists in the Azure Automation Account
-func GetAutomationAccountCertificateE(t testing.TestingT, automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountCertificateName string) (*automation.Certificate, error) {
+func GetAutomationAccountCertificateE(automationAccountName string, resourceGroupName string, subscriptionID string, automationAccountCertificateName string) (*automation.Certificate, error) {
 	client, err := GetAutomationAccountCertficateClientE(subscriptionID)
 	if err != nil {
 		return nil, err

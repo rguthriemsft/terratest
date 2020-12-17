@@ -6,7 +6,6 @@
 package test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
@@ -21,7 +20,9 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 	// subscriptionID is overridden by the environment variable "ARM_SUBSCRIPTION_ID"
 	subscriptionID := ""
 	uniquePostfix := random.UniqueId()
-	expectedAutomationAccountName := fmt.Sprintf("terratest-AutomationAccount-%s", uniquePostfix)
+	expectedAutomationAccountName := "terratest-AutomationAccount"
+	expectedSampleDSCName := "SampleDSC"
+
 	// Construct options for TF apply
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
@@ -29,7 +30,7 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 		Vars: map[string]interface{}{
 			"postfix":                 uniquePostfix,
 			"automation_account_name": expectedAutomationAccountName,
-			// "location": "East US",
+			"sample_dsc_name":         expectedSampleDSCName,
 		},
 	}
 
@@ -42,7 +43,6 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 	// Run `terraform output` to get the values of output variables
 	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
 	automationAccountName := terraform.Output(t, terraformOptions, "automation_account_name")
-	dscConfiguraitonName := terraform.Output(t, terraformOptions, "sample_dsc_name")
 	// runAsAccountName := terraform.Output(t, terraformOptions, "runas_account_name")
 	// runAsCetificateName := terraform.Output(t, terraformOptions, "runas_certificate_name")
 
@@ -50,7 +50,9 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 	actualAutomationAccountExists := azure.AutomationAccountExists(t, automationAccountName, resourceGroupName, subscriptionID)
 	assert.True(t, actualAutomationAccountExists)
 	//Check that the sample DSC was uploaded successfully into the deployed automation account
-	actualDSCExists := azure.AutomationAccountDSCExists(t, automationAccountName, dscConfiguraitonName, resourceGroupName, subscriptionID)
+	actualDSCExists := azure.AutomationAccountDSCExists(t, automationAccountName, expectedSampleDSCName, resourceGroupName, subscriptionID)
 	assert.True(t, actualDSCExists)
 	// Check that the DSC in the automation account successfully compiled
+	dscCompiled := azure.AutomationAccountDSCCompiled(t, automationAccountName, expectedSampleDSCName, resourceGroupName, subscriptionID)
+	assert.True(t, dscCompiled)
 }

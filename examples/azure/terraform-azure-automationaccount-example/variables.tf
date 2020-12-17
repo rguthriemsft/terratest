@@ -12,21 +12,26 @@
 # ARM_CLIENT_SECRET
 # ARM_SUBSCRIPTION_ID
 # ARM_TENANT_ID
+# ARM_ENVIRONMENT
 # TF_VAR_ARM_SUBSCRIPTION_ID
 # TF_VAR_ARM_TENANT_ID
+# TF_VAR_POWERSHELL_CLIENT_ID
+# TF_VAR_POWERSHELL_CLIENT_SECRET
 # TF_VAR_AUTOMATION_ACCOUNT_CLIENT_ID
 # TF_VAR_AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT
 
-variable ARM_SUBSCRIPTION_ID {}
-variable ARM_CLIENT_ID {}
-variable ARM_CLIENT_SECRET {}
-variable ARM_TENANT_ID {}
-variable AUTOMATION_ACCOUNT_CLIENT_ID {}
-variable AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT {}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # REQUIRED PARAMETERS
 # You must provide a value for each of these parameters.
 # ---------------------------------------------------------------------------------------------------------------------
+
+variable ARM_SUBSCRIPTION_ID {}
+variable POWERSHELL_CLIENT_ID {}
+variable POWERSHELL_CLIENT_SECRET {}
+variable ARM_TENANT_ID {}
+variable AUTOMATION_ACCOUNT_CLIENT_ID {}
+variable AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT {}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS

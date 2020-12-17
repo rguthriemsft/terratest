@@ -12,6 +12,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+/*
+The below tests are currently stubbed out, with the expectation that they will throw errors.
+If/when methods to create and delete network resources are added, these tests can be extended.
+*/
+
 func TestGetAutomationAccountClientE(t *testing.T) {
 	t.Parallel()
 
@@ -21,4 +26,16 @@ func TestGetAutomationAccountClientE(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.NotEmpty(t, *client)
+}
+
+func TestGetAutomationAccountE(t *testing.T) {
+	t.Parallel()
+
+	automationAccountName := ""
+	resourceGroupName := ""
+	subscriptionID := ""
+
+	_, err := GetAutomationAccountE(t, automationAccountName, resourceGroupName, subscriptionID)
+
+	require.NoError(t, err)
 }

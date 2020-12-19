@@ -83,115 +83,115 @@ resource "null_resource" "compileSampleDSC" {
   depends_on = [null_resource.azureSignInPWSH]
 }
 
-# resource "azurerm_automation_certificate" "automationAccountCertificate" {
-#   name                    = "${var.automation_run_as_certificate_name}-${var.postfix}"
-#   resource_group_name     = azurerm_resource_group.automation_account_dsc_rg.name
-#   automation_account_name = azurerm_automation_account.automation_account.name
+resource "azurerm_automation_certificate" "automationAccountCertificate" {
+  name                    = "${var.automation_run_as_certificate_name}-${var.postfix}"
+  resource_group_name     = azurerm_resource_group.automation_account_dsc_rg.name
+  automation_account_name = azurerm_automation_account.automation_account.name
 
-#   description = var.automation_run_as_certificate_name
-#   # Certificate must be in .pfx format without a password encoded in base64
-#   base64      = filebase64(var.automation_run_as_certificate_path)
-# }
+  description = var.automation_run_as_certificate_name
+  # Certificate must be in .pfx format without a password encoded in base64
+  base64      = filebase64(var.automation_run_as_certificate_path)
+}
 
-# resource "azurerm_automation_connection" "automationAccountConnection" {
-#   name                    = "${var.automation_run_as_connection_name}-${var.postfix}"
-#   resource_group_name     = azurerm_resource_group.automation_account_dsc_rg.name
-#   automation_account_name = azurerm_automation_account.automation_account.name
-#   type                    = var.automation_run_as_connection_type
+resource "azurerm_automation_connection" "automationAccountConnection" {
+  name                    = "${var.automation_run_as_connection_name}-${var.postfix}"
+  resource_group_name     = azurerm_resource_group.automation_account_dsc_rg.name
+  automation_account_name = azurerm_automation_account.automation_account.name
+  type                    = var.automation_run_as_connection_type
 
-#   values = {
-#     "ApplicationId" : var.AUTOMATION_ACCOUNT_CLIENT_ID
-#     "TenantId" : var.ARM_TENANT_ID
-#     "SubscriptionId" : var.ARM_SUBSCRIPTION_ID
-#     "CertificateThumbprint" : var.AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT
-#   }
-# }
+  values = {
+    "ApplicationId" : var.AUTOMATION_ACCOUNT_CLIENT_ID
+    "TenantId" : var.ARM_TENANT_ID
+    "SubscriptionId" : var.ARM_SUBSCRIPTION_ID
+    "CertificateThumbprint" : var.AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT
+  }
+}
 
 
-# # TEST VM RESOURCES
-# resource "azurerm_virtual_network" "vmtest" {
-#   name                = "sampledscvnet-${var.postfix}"
-#   address_space       = ["10.0.0.0/16"]
-#   location            = azurerm_resource_group.automation_account_dsc_rg.location
-#   resource_group_name = azurerm_resource_group.automation_account_dsc_rg.name
-# }
+# TEST VM RESOURCES
+resource "azurerm_virtual_network" "vmtest" {
+  name                = "sampledscvnet-${var.postfix}"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.automation_account_dsc_rg.location
+  resource_group_name = azurerm_resource_group.automation_account_dsc_rg.name
+}
 
-# resource "azurerm_subnet" "vmtest" {
-#   name                 = "sampledscvmsubnet-${var.postfix}"
-#   resource_group_name  = azurerm_resource_group.automation_account_dsc_rg.name
-#   virtual_network_name = azurerm_virtual_network.vmtest.name
-#   address_prefixes     = ["10.0.2.0/24"]
-# }
+resource "azurerm_subnet" "vmtest" {
+  name                 = "sampledscvmsubnet-${var.postfix}"
+  resource_group_name  = azurerm_resource_group.automation_account_dsc_rg.name
+  virtual_network_name = azurerm_virtual_network.vmtest.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
 
-# resource "azurerm_network_interface" "vmtest" {
-#   name                = "sampledscni-${var.postfix}"
-#   location            = azurerm_resource_group.automation_account_dsc_rg.location
-#   resource_group_name = azurerm_resource_group.automation_account_dsc_rg.name
+resource "azurerm_network_interface" "vmtest" {
+  name                = "sampledscni-${var.postfix}"
+  location            = azurerm_resource_group.automation_account_dsc_rg.location
+  resource_group_name = azurerm_resource_group.automation_account_dsc_rg.name
 
-#   ip_configuration {
-#     name                          = "testconfiguration1"
-#     subnet_id                     = azurerm_subnet.vmtest.id
-#     private_ip_address_allocation = "Dynamic"
-#   }
-# }
+  ip_configuration {
+    name                          = "testconfiguration1"
+    subnet_id                     = azurerm_subnet.vmtest.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
 
-# resource "azurerm_virtual_machine" "vmtest" {
-#   name                  = "acctracvm-${var.postfix}"
-#   location              = azurerm_resource_group.automation_account_dsc_rg.location
-#   resource_group_name   = azurerm_resource_group.automation_account_dsc_rg.name
-#   network_interface_ids = [azurerm_network_interface.vmtest.id]
-#   vm_size               = "Standard_F2"
+resource "azurerm_virtual_machine" "vmtest" {
+  name                  = "${var.vm_host_name}-${var.postfix}"
+  location              = azurerm_resource_group.automation_account_dsc_rg.location
+  resource_group_name   = azurerm_resource_group.automation_account_dsc_rg.name
+  network_interface_ids = [azurerm_network_interface.vmtest.id]
+  vm_size               = "Standard_F2"
 
-#    storage_image_reference {
-#     publisher = "MicrosoftWindowsServer"
-#     offer     = "WindowsServer"
-#     sku       = "2016-Datacenter"
-#     version   = "latest"
-#   }
+   storage_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2016-Datacenter"
+    version   = "latest"
+  }
 
-#   storage_os_disk {
-#     name          = "myosdisk1"
-#     caching           = "ReadWrite"
-#     create_option     = "FromImage"
-#     managed_disk_type = "Standard_LRS"
-#   }
+  storage_os_disk {
+    name          = "myosdisk1"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+  }
 
-#   os_profile {
-#     computer_name  = "hostname"
-#     admin_username = "testadmin"
-#     admin_password = random_password.virtual_machine.result
-#   }
+  os_profile {
+    computer_name  = "${var.vm_host_name}-${var.postfix}"
+    admin_username = "testadmin"
+    admin_password = random_password.virtual_machine.result
+  }
 
-#   os_profile_windows_config {
-#     provision_vm_agent = true
-#   }
-# }
+  os_profile_windows_config {
+    provision_vm_agent = true
+  }
+}
 
-# resource "azurerm_virtual_machine_extension" "vmtest" {
-#   name                 = var.sample_dsc_name
-#   virtual_machine_id   = azurerm_virtual_machine.vmtest.id
-#   publisher            = "Microsoft.Powershell"
-#   type                 = "DSC"
-#   type_handler_version = "2.77"
-#   depends_on           = [azurerm_virtual_machine.vmtest]
+resource "azurerm_virtual_machine_extension" "vmtest" {
+  name                 = var.sample_dsc_name
+  virtual_machine_id   = azurerm_virtual_machine.vmtest.id
+  publisher            = "Microsoft.Powershell"
+  type                 = "DSC"
+  type_handler_version = "2.77"
+  depends_on           = [azurerm_virtual_machine.vmtest]
 
-#   settings = <<SETTINGS
-#     {
-#       "configurationArguments": {
-#           "RegistrationUrl": "${azurerm_automation_account.automation_account.dsc_server_endpoint}",
-#           "NodeConfigurationName": "${var.sample_dsc_configuration_name}"
-#       }
-#     }
-#   SETTINGS
+  settings = <<SETTINGS
+    {
+      "configurationArguments": {
+          "RegistrationUrl": "${azurerm_automation_account.automation_account.dsc_server_endpoint}",
+          "NodeConfigurationName": "${var.sample_dsc_configuration_name}"
+      }
+    }
+  SETTINGS
 
-#   protected_settings = <<PROTECTED_SETTINGS
-#     {
-#       "configurationArguments": {
-#         "registrationKey": {
-#           "userName": "NOT_USED",
-#           "Password": "${azurerm_automation_account.automation_account.dsc_primary_access_key}"
-#         }
-#       }
-#     }
-#   PROTECTED_SETTINGS
-# }
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "configurationArguments": {
+        "registrationKey": {
+          "userName": "NOT_USED",
+          "Password": "${azurerm_automation_account.automation_account.dsc_primary_access_key}"
+        }
+      }
+    }
+  PROTECTED_SETTINGS
+}

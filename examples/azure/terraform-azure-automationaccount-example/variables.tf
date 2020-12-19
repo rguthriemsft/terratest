@@ -116,3 +116,9 @@ variable "vm_name" {
   default     = "vm01"
 }
 
+variable "vm_host_name" {
+  description = "The host name of the VM machine where the DSC configuration will be applied"
+  type        = string
+  default     = "dscnode"
+}
+ 

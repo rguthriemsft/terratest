@@ -21,7 +21,11 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 	subscriptionID := ""
 	uniquePostfix := random.UniqueId()
 	expectedAutomationAccountName := "terratest-AutomationAccount"
-	expectedSampleDSCName := "SampleDSC"
+	expectedSampleDscName := "SampleDSC"
+	expectedSampleDscConfigurationName := "SampleDSC.NotWebServer"
+	expectedVmNodeHostName := "dscnode"
+	expectedRunAsAccountName := "terratest-AutomationRunAsConnectionName"
+	expectedRunAsType := "AzureServicePrincipal"
 	expectedRunAsCertificateName := "terratest-AutomationConnectionCertificateName"
 	expectedRunAsCertificateThumbprint := `env:"TF_VAR_AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT"`
 	// Construct options for TF apply
@@ -31,9 +35,12 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 		Vars: map[string]interface{}{
 			"postfix":                                  uniquePostfix,
 			"automation_account_name":                  expectedAutomationAccountName,
-			"sample_dsc_name":                          expectedSampleDSCName,
+			"sample_dsc_name":                          expectedSampleDscName,
+			"automation_run_as_connection_name":        expectedRunAsAccountName,
+			"automation_run_as_connection_type":        expectedRunAsType,
 			"automation_run_as_certificate_name":       expectedRunAsCertificateName,
 			"AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT": expectedRunAsCertificateThumbprint,
+			"vm_host_name":                             expectedVmNodeHostName,
 		},
 	}
 
@@ -46,16 +53,20 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 	// Run `terraform output` to get the values of output variables
 	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
 	automationAccountName := terraform.Output(t, terraformOptions, "automation_account_name")
-	// runAsAccountName := terraform.Output(t, terraformOptions, "runas_account_name")
-	// runAsCetificateName := terraform.Output(t, terraformOptions, "runas_certificate_name")
 
 	// Check that the automation account deployed successfully
 	actualAutomationAccountExists := azure.AutomationAccountExists(t, automationAccountName, resourceGroupName, subscriptionID)
 	assert.True(t, actualAutomationAccountExists)
+	// Check that the Run As configuraiton is valid
+	runAsAccountValidates := azure.AutomationAccountRunAsConnectionValidates(t, expectedRunAsAccountName+"-"+uniquePostfix, expectedRunAsType, expectedRunAsCertificateThumbprint, automationAccountName, resourceGroupName, subscriptionID)
+	assert.True(t, runAsAccountValidates)
 	//Check that the sample DSC was uploaded successfully into the deployed automation account
-	actualDSCExists := azure.AutomationAccountDSCExists(t, expectedSampleDSCName, automationAccountName, resourceGroupName, subscriptionID)
+	actualDSCExists := azure.AutomationAccountDscExists(t, expectedSampleDscName, automationAccountName, resourceGroupName, subscriptionID)
 	assert.True(t, actualDSCExists)
-	// Check that the DSC in the automation account successfully compiled
-	dscCompiled := azure.AutomationAccountDSCCompiled(t, expectedSampleDSCName, automationAccountName, resourceGroupName, subscriptionID)
+	//Check that the DSC in the automation account successfully compiled
+	dscCompiled := azure.AutomationAccountDscCompiled(t, expectedSampleDscName, automationAccountName, resourceGroupName, subscriptionID)
 	assert.True(t, dscCompiled)
+	// // Check that the DSC was successfully configured on the VM node
+	dscConfiguredOnNode := azure.AutomationAccountDscAppliedSuccessfullyToVM(t, expectedSampleDscConfigurationName, expectedVmNodeHostName+"-"+uniquePostfix, automationAccountName, resourceGroupName, subscriptionID)
+	assert.True(t, dscConfiguredOnNode)
 }

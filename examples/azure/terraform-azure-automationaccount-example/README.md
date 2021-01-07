@@ -2,21 +2,20 @@
 
 This folder contains a simple Terraform module that deploys resources in [Azure](https://azure.microsoft.com/) to demonstrate how you can use Terratest to write automated tests for your Azure Terraform code. This module deploys the following:
 
-- An [Automation Account](https://azure.microsoft.com/en-us/services/automation/) that gives the module the following:
+- An [Automation Account](https://azure.microsoft.com/en-us/services/automation/) that provides the module the following:
   - `Automation Account` with the name specified in the `automation_account_name` variable.
     - `Automation Account Connection Run As Account` with the name specified in the `automation_run_as_connection_name` variable.  See the section titled *_Example Service Principal and Certificate Setup_* below on how to configure the Automation Account RunAs Account credentials.
-    - `Automation Account Connection Run As Certificate` with the name specified in the `automation_run_as_certificate_name` variable and the thumbprint in the `RUNAS_CERTIFICATE_THUMBPRINT` variable.
+    - `Automation Account Connection Run As Certificate` with the name specified in the `automation_run_as_certificate_name` variable and the thumbprint in the `TF_VAR_AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT` variable.
     - `Automation Account Connection Type` with type specified in the `automation_run_as_connection_type` variable.
-    - [Desired State Configuration](https://docs.microsoft.com/en-us/powershell/scripting/dsc/getting-started/winGettingStarted?view=powershell-7#:~:text=Get%20started%20with%20Desired%20State%20Configuration%20%28DSC%29%20for,Windows%20PowerShell%20Desired%20State%20Configuration%20log%20files.%20) with the name specified in the `sample_dsc_configuraiton_name` variable and the path to the DSC specified in the `sample_dsc_path` variable.
+    - [Desired State Configuration](https://docs.microsoft.com/en-us/powershell/scripting/dsc/getting-started/winGettingStarted?view=powershell-7#:~:text=Get%20started%20with%20Desired%20State%20Configuration%20%28DSC%29%20for,Windows%20PowerShell%20Desired%20State%20Configuration%20log%20files.%20) with the name specified in the `sample_dsc_name` variable and the path to the DSC specified in the `sample_dsc_path` variable.
   - [Virtual Machine](https://docs.microsoft.com/en-us/azure/virtual-machines/) with the name specified in the `vm_name` output variable.
-    - [Virtual Machine Extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview#:~:text=Troubleshoot%20extensions%20%20%20%20Namespace%20%20,Encryption%20for%20Windows%20%2012%20more%20rows%20), configured for DSC, with the `NodeConigurationName` set in the `sample_dsc_configuration` variable.
+    - [Virtual Machine Extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview#:~:text=Troubleshoot%20extensions%20%20%20%20Namespace%20%20,Encryption%20for%20Windows%20%2012%20more%20rows%20), configured for DSC, with the `NodeConigurationName` set in the `sample_dsc_configuration_name` variable.
     - The VM includes a virtual network, a subnet, and a network interface with hard-coded configuration as it is not pertinent to this example.
 
 Check out [test/azure/terraform_azure_automationaccount_example_test.go](/test/azure/terraform_azure_automationaccount_example_test.go) to see how you can write
 automated tests for this module.
 
-Note that the resources deployed in this module don't actually do anything; it just runs the resources for
-demonstration purposes.
+Note that the resources deployed in this module don't actually do anything; it just runs the resources for demonstration purposes.
 
 **WARNING**: This module and the automated tests for it deploy real resources into your Azure account which can cost you
 money. The resources are all part of the [Azure Free Account](https://azure.microsoft.com/en-us/free/), so if you haven't used that up,
@@ -30,7 +29,7 @@ The same certificate file will need to be placed in the `/examples/azure/terrafo
 
 The documentation link [Manage an Azure Automation Run As account](https://docs.microsoft.com/en-us/azure/automation/manage-runas-account#:~:text=1%20Go%20to%20your%20Automation%20account%20and%20select,locate%20the%20role%20definition%20that%20is%20being%20used.) has additional background on the configuration requirements.  
 
-For the example, note that the `TF_VAR_AUTOMATION_ACCOUNT_CLIENT_ID`, `TF_VAR_AUTOMATION_ACCOUNT_CLIENT_PASSWORD`, and the `TF_VAR_RUNAS_CERTIFICATE_THUMBPRINT` environment variables must be configured with the corresponding service principal values. For the Automation Account Run As conneciton certificate, place the self-signed .pfx certificate  into the `certificate` folder per above.  Also set the certificate thumbprint in the `TF_VAR_RUNAS_CERTIFICATE_THUMBPRINT` variable.
+For the example, note that the `TF_VAR_AUTOMATION_ACCOUNT_CLIENT_ID`, and the `TF_VAR_AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT`, environment variables must be configured with the corresponding service principal values. For the Automation Account Run As conneciton certificate, place the self-signed .pfx certificate  into the `certificate` folder per above.  Also set the certificate thumbprint in the `TF_VAR_RUNAS_CERTIFICATE_THUMBPRINT` variable.
 
 For the example to suceed, and in general when uploading a DSC to an Automation Account, you will need to kick off compilation of the DSC in the Automation Account prior to applying the DSC to a VM node, else it will fail to apply.  You can use PowerShell Core to compile the DSC in Terraform via the `null_resource` resource but you first must sign-in to Azure from PowerShell Core. The `TF_VAR_POWERSHELL_CLIENT_ID` and `TF_VAR_POWERSHELL_CLIENT_SECRET` environment variables must be configured with a service principal to sign-in to Azure from PowerShell core and compile the DSC.
 

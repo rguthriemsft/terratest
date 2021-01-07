@@ -23,11 +23,11 @@ it should be free, but you are completely responsible for all Azure charges.
 
 ## Example Service Principal and Certificate Setup
 
-To run this example, you must create a service principal in Azure Active Directory as well as create a non-password protected self-signed certificate in .pfx format that you will need to upload into the Automation Account Run As service principal as a secret for test purposes.
+To run this example, you must create a service principal in Azure Active Directory as well as create a non-password protected self-signed certificate in .pfx format that you will need to upload into the Automation Account Run As service principal in Azure Active Directory as a secret for test purposes.
 
-The same certificate file will need to be placed in the `/examples/azure/terraform-azure-automationaccount-example/certificate/` folder with the name `runascert.pfx` so that the certificate can be uploaded into the Automation Account in order to successfully configure the Automation Account RunAs account and connection.
+The same certificate file will need to be placed in the `/examples/azure/terraform-azure-automationaccount-example/certificate/` folder with the name `SPRunAsCert.pfx` so that the certificate can be uploaded into the Automation Account in order to successfully configure the Automation Account RunAs account and connection.
 
-The documentation link [Manage an Azure Automation Run As account](https://docs.microsoft.com/en-us/azure/automation/manage-runas-account#:~:text=1%20Go%20to%20your%20Automation%20account%20and%20select,locate%20the%20role%20definition%20that%20is%20being%20used.) has additional background on the configuration requirements.  
+The documentation link [Manage an Azure Automation Run As account](https://docs.microsoft.com/en-us/azure/automation/manage-runas-account#:~:text=1%20Go%20to%20your%20Automation%20account%20and%20select,locate%20the%20role%20definition%20that%20is%20being%20used.) has additional background on the service principal configuration requirements.  
 
 For the example, note that the `TF_VAR_AUTOMATION_ACCOUNT_CLIENT_ID`, and the `TF_VAR_AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT`, environment variables must be configured with the corresponding service principal values. For the Automation Account Run As conneciton certificate, place the self-signed .pfx certificate  into the `certificate` folder per above.  Also set the certificate thumbprint in the `TF_VAR_RUNAS_CERTIFICATE_THUMBPRINT` variable.
 

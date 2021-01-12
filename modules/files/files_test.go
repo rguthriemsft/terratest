@@ -24,6 +24,30 @@ func TestFileExists(t *testing.T) {
 	assert.False(t, FileExists("/not/a/real/path"))
 }
 
+func TestIsExistingFile(t *testing.T) {
+	t.Parallel()
+
+	currentFile, err := filepath.Abs(os.Args[0])
+	require.NoError(t, err)
+	currentFileDir := filepath.Dir(currentFile)
+
+	assert.True(t, IsExistingFile(currentFile))
+	assert.False(t, IsExistingFile("/not/a/real/path"))
+	assert.False(t, IsExistingFile(currentFileDir))
+}
+
+func TestIsExistingDir(t *testing.T) {
+	t.Parallel()
+
+	currentFile, err := filepath.Abs(os.Args[0])
+	require.NoError(t, err)
+	currentFileDir := filepath.Dir(currentFile)
+
+	assert.False(t, IsExistingDir(currentFile))
+	assert.False(t, IsExistingDir("/not/a/real/path"))
+	assert.True(t, IsExistingDir(currentFileDir))
+}
+
 func TestCopyFolderContents(t *testing.T) {
 	t.Parallel()
 

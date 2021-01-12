@@ -32,8 +32,10 @@ func TestTerraformGcpExample(t *testing.T) {
 	// Also give the example instance a unique name
 	expectedInstanceName := fmt.Sprintf("terratest-gcp-example-%s", strings.ToLower(random.UniqueId()))
 
-	// website::tag::1::Configure Terraform setting path to Terraform code, bucket name, and instance name.
-	terraformOptions := &terraform.Options{
+	// website::tag::1::Configure Terraform setting path to Terraform code, bucket name, and instance name. Construct
+	// the terraform options with default retryable errors to handle the most common retryable errors in terraform
+	// testing.
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: exampleDir,
 
@@ -44,7 +46,7 @@ func TestTerraformGcpExample(t *testing.T) {
 			"instance_name":  expectedInstanceName,
 			"bucket_name":    expectedBucketName,
 		},
-	}
+	})
 
 	// website::tag::5::At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)

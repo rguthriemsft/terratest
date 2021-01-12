@@ -30,17 +30,17 @@ variable "dns_prefix" {
   default     = "k8stest"
 }
 
-variable cluster_name {
+variable "cluster_name" {
   description = "The name to set for the AKS cluster."
   default     = "k8stest"
 }
 
-variable resource_group_name {
+variable "resource_group_name" {
   description = "The name to set for the resource group."
   default     = "azure-k8stest"
 }
 
-variable location {
+variable "location" {
   description = "The location to set for the AKS cluster."
   default     = "Central US"
 }

@@ -1,18 +1,21 @@
-defaults: &defaults
-  machine:
-    enabled: true
-    image: "ubuntu-1604:201903-01"
+env: &env
   environment:
-    GRUNTWORK_INSTALLER_VERSION: v0.0.21
-    MODULE_CI_VERSION: v0.16.0
-    TERRAFORM_VERSION: 0.13.2
+    GRUNTWORK_INSTALLER_VERSION: v0.0.30
+    MODULE_CI_VERSION: v0.29.2
+    TERRAFORM_VERSION: 0.14.0
     TERRAGRUNT_VERSION: v0.24.2
-    PACKER_VERSION: 1.5.1
+    PACKER_VERSION: 1.6.5
     GOLANG_VERSION: 1.14
     K8S_VERSION: v1.15.0  # Same as EKS
     MINIKUBE_VERSION: v1.9.2
     HELM_VERSION: v3.1.1
     KUBECONFIG: /home/circleci/.kube/config
+
+defaults: &defaults
+  machine:
+    enabled: true
+    image: "ubuntu-1604:201903-01"
+  <<: *env
 
 setup_minikube: &setup_minikube
   command: setup-minikube --k8s-version "$K8S_VERSION" --minikube-version "$MINIKUBE_VERSION"
@@ -47,7 +50,10 @@ install_gruntwork_utils: &install_gruntwork_utils
 version: 2
 jobs:
   setup:
-    <<: *defaults
+    <<: *env
+    docker:
+      - image: circleci/python:3.8.5
+
     steps:
       - checkout
       - restore_cache:
@@ -63,16 +69,16 @@ jobs:
           paths:
           - $HOME/go/src/
 
+      # The weird way you have to set PATH in Circle 2.0
+      - run: echo 'export PATH=$HOME/.local/bin:$HOME/go/bin:$HOME/terraform:$HOME/packer:$PATH' >> $BASH_ENV
+
       # Run pre-commit hooks and fail the build if any hook finds required changes.
       - run:
           name: run precommit
           command: |
             go get golang.org/x/tools/cmd/goimports
-            # Oct 26, 2019: Install the last known working version of pre-commit. Also, we have to pin the version of
-            # transitive dependencies that are being pulled in which released new versions that are no longer compatible
-            # with any python < 3.6.
-            pyenv global 3.5.2
-            pip install pre-commit==1.21.0 cfgv==2.0.1 zipp==1.1.0
+            # Install the latest minor version for v2
+            pip install pre-commit~=2.9
             pre-commit install
             pre-commit run --all-files
 
@@ -214,13 +220,13 @@ jobs:
 
 
   deploy:
-    machine: true
+    <<: *defaults
     steps:
       - checkout
       - attach_workspace:
           at: /home/circleci
-      - run: curl -Ls https://raw.githubusercontent.com/gruntwork-io/gruntwork-installer/master/bootstrap-gruntwork-installer.sh | bash /dev/stdin --version v0.0.21
-      - run: gruntwork-install --module-name "gruntwork-module-circleci-helpers" --repo "https://github.com/gruntwork-io/module-ci" --tag "v0.13.2"
+      - run: curl -Ls https://raw.githubusercontent.com/gruntwork-io/gruntwork-installer/master/bootstrap-gruntwork-installer.sh | bash /dev/stdin --version "$GRUNTWORK_INSTALLER_VERSION"
+      - run: gruntwork-install --module-name "gruntwork-module-circleci-helpers" --repo "https://github.com/gruntwork-io/module-ci" --tag "$MODULE_CI_VERSION"
       - run: cd cmd/bin && sha256sum * > SHA256SUMS
       - run: upload-github-release-assets cmd/bin/*
 
@@ -232,6 +238,7 @@ workflows:
       - setup:
           context:
             - Gruntwork Admin
+            - Gruntwork GCP
           filters:
             tags:
               only: /^v.*/
@@ -239,6 +246,7 @@ workflows:
       - test:
           context:
             - Gruntwork Admin
+            - Gruntwork GCP
           requires:
             - setup
           filters:
@@ -248,6 +256,7 @@ workflows:
       - kubernetes_test:
           context:
             - Gruntwork Admin
+            - Gruntwork GCP
           requires:
             - setup
           filters:
@@ -257,6 +266,7 @@ workflows:
       - helm_test:
           context:
             - Gruntwork Admin
+            - Gruntwork GCP
           requires:
             - setup
           filters:
@@ -266,10 +276,9 @@ workflows:
       - deploy:
           context:
             - Gruntwork Admin
+            - Gruntwork GCP
           requires:
-            - test
-            - kubernetes_test
-            - helm_test
+            - setup
           filters:
             tags:
               only: /^v.*/

@@ -540,6 +540,24 @@ p code, h1 code, h2 code, h3 code, h4 code, h5 code {
   }
 }
 
+.thanks-page {
+  .header {
+    background: linear-gradient(135deg, #001191, #06a3ff);
+  }
+
+  .section-thanks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    
+    .copy-container {
+      margin-top: 10px;
+    }
+  }
+}
+
+
 .section-heading {
   padding-bottom: 0;
   margin-bottom: -30px;
@@ -806,6 +824,8 @@ footer hr {
   }
 }
 
+
+
 //
 // SHADOWS
 // -------------------------------------------------------
@@ -853,6 +873,21 @@ a.caret-right::after {
   &:hover, &:focus {
     color: rgba(255, 255, 255, 0.7);
   }
+}
+
+//
+// TEXT-DECORATION 
+// -------------------------------------------------------
+
+.new-badge{
+  background: #ee4f5d;
+  padding: 0px 10px;
+  border-radius: 3px;
+  display: inline-block;
+  color: #fff;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
 }
 
 //
@@ -986,12 +1021,14 @@ a.caret-right::after {
 
     ul {
       display: flex;
+      flex-wrap: wrap;
       list-style: none;
       padding-left: 0;
       margin-left: 0;
       justify-content: flex-end;
 
       li {
+        margin-bottom: 1rem;
         margin-left: 40px;
       }
     }

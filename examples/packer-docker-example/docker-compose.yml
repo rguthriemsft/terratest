@@ -17,11 +17,3 @@ services:
     # Expose the sample app's port on the host OS
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-  bash_script:
-    # The name we use for the Docker image in build.json
-    image: gruntwork/packer-docker-example
-
-    volumes:
-      - ./bash_script.sh:/home/ubuntu/bash_script.sh
-
-    entrypoint: bash_script.sh

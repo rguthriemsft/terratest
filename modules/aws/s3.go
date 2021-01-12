@@ -2,6 +2,7 @@ package aws
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -260,6 +261,36 @@ func EmptyS3BucketE(t testing.TestingT, region string, name string) error {
 	return err
 }
 
+// GetS3BucketLoggingTarget fetches the given bucket's logging configuration status and returns it as a string
+func GetS3BucketLoggingTarget(t testing.TestingT, awsRegion string, bucket string) string {
+	loggingTarget, err := GetS3BucketLoggingTargetE(t, awsRegion, bucket)
+	require.NoError(t, err)
+
+	return loggingTarget
+}
+
+// GetS3BucketLoggingE fetches the given bucket's versioning configuration status and returns it as a string
+func GetS3BucketLoggingTargetE(t testing.TestingT, awsRegion string, bucket string) (string, error) {
+	s3Client, err := NewS3ClientE(t, awsRegion)
+	if err != nil {
+		return "", err
+	}
+
+	res, err := s3Client.GetBucketLogging(&s3.GetBucketLoggingInput{
+		Bucket: &bucket,
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	if res.LoggingEnabled == nil {
+		return "", S3AccessLoggingNotEnabledErr{bucket, awsRegion}
+	}
+
+	return aws.StringValue(res.LoggingEnabled.TargetBucket), nil
+}
+
 // GetS3BucketVersioning fetches the given bucket's versioning configuration status and returns it as a string
 func GetS3BucketVersioning(t testing.TestingT, awsRegion string, bucket string) string {
 	versioningStatus, err := GetS3BucketVersioningE(t, awsRegion, bucket)
@@ -401,4 +432,14 @@ func NewS3UploaderE(t testing.TestingT, region string) (*s3manager.Uploader, err
 	}
 
 	return s3manager.NewUploader(sess), nil
+}
+
+// S3AccessLoggingNotEnabledErr is a custom error that occurs when acess logging hasn't been enabled on the S3 Bucket
+type S3AccessLoggingNotEnabledErr struct {
+	OriginBucket string
+	Region       string
+}
+
+func (err S3AccessLoggingNotEnabledErr) Error() string {
+	return fmt.Sprintf("Server Acess Logging hasn't been enabled for S3 Bucket %s in region %s", err.OriginBucket, err.Region)
 }

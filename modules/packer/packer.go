@@ -22,6 +22,7 @@ type Options struct {
 	Vars               map[string]string // The custom vars to pass when running the build command
 	VarFiles           []string          // Var file paths to pass Packer using -var-file option
 	Only               string            // If specified, only run the build of this name
+	Except             string            // Runs the build excluding the specified builds and post-processors
 	Env                map[string]string // Custom environment variables to set when running Packer
 	RetryableErrors    map[string]string // If packer build fails with one of these (transient) errors, retry. The keys are a regexp to match against the error and the message is what to display to a user if that error is matched.
 	MaxRetries         int               // Maximum number of times to retry errors matching RetryableErrors
@@ -160,6 +161,10 @@ func formatPackerArgs(options *Options) []string {
 
 	if options.Only != "" {
 		args = append(args, fmt.Sprintf("-only=%s", options.Only))
+	}
+
+	if options.Except != "" {
+		args = append(args, fmt.Sprintf("-except=%s", options.Except))
 	}
 
 	return append(args, options.Template)

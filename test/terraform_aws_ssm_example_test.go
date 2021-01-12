@@ -13,12 +13,12 @@ func TestTerraformAwsSsmExample(t *testing.T) {
 	t.Parallel()
 	region := aws.GetRandomStableRegion(t, nil, nil)
 
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/terraform-aws-ssm-example",
 		Vars: map[string]interface{}{
 			"region": region,
 		},
-	}
+	})
 	defer terraform.Destroy(t, terraformOptions)
 
 	terraform.InitAndApply(t, terraformOptions)

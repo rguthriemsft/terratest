@@ -63,7 +63,9 @@ func configureTerraformSshPasswordOptions(t *testing.T, exampleFolder string) *t
 	// Create a random password that we can use for SSH access.
 	password := random.UniqueId()
 
-	terraformOptions := &terraform.Options{
+	// Construct the terraform options with default retryable errors to handle the most common retryable errors in
+	// terraform testing.
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// The path to where our Terraform code is located.
 		TerraformDir: exampleFolder,
 
@@ -73,7 +75,7 @@ func configureTerraformSshPasswordOptions(t *testing.T, exampleFolder string) *t
 			"instance_name":      instanceName,
 			"terratest_password": password,
 		},
-	}
+	})
 
 	return terraformOptions
 }

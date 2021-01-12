@@ -6,28 +6,27 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
-	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/testing"
 	"github.com/stretchr/testify/require"
 )
 
-// Output calls terraform output for the given variable and return its value.
+// Output calls terraform output for the given variable and return its string value representation.
+// It only designed to work with primitive terraform types: string, number and bool.
+// Please use OutputStruct for anything else.
 func Output(t testing.TestingT, options *Options, key string) string {
 	out, err := OutputE(t, options, key)
 	require.NoError(t, err)
 	return out
 }
 
-// OutputE calls terraform output for the given variable and return its value.
+// OutputE calls terraform output for the given variable and return its string value representation.
+// It only designed to work with primitive terraform types: string, number and bool.
+// Please use OutputStructE for anything else.
 func OutputE(t testing.TestingT, options *Options, key string) (string, error) {
-	output, err := RunTerraformCommandAndGetStdoutE(t, options, "output", "-no-color", key)
-
-	if err != nil {
-		return "", err
-	}
-
-	return strings.TrimSpace(output), nil
+	var val interface{}
+	err := OutputStructE(t, options, key, &val)
+	return fmt.Sprintf("%v", val), err
 }
 
 // OutputRequired calls terraform output for the given variable and return its value. If the value is empty, fail the test.
@@ -133,7 +132,7 @@ func OutputMapOfObjects(t testing.TestingT, options *Options, key string) map[st
 // Also returns an error object if an error was generated.
 // If the output value is not a map of lists/maps, then it fails the test.
 func OutputMapOfObjectsE(t testing.TestingT, options *Options, key string) (map[string]interface{}, error) {
-	out, err := RunTerraformCommandAndGetStdoutE(t, options, "output", "-no-color", "-json", key)
+	out, err := OutputJsonE(t, options, key)
 
 	if err != nil {
 		return nil, err
@@ -160,7 +159,7 @@ func OutputListOfObjects(t testing.TestingT, options *Options, key string) []map
 // Also returns an error object if an error was generated.
 // If the output value is not a list of maps/lists, then it fails the test.
 func OutputListOfObjectsE(t testing.TestingT, options *Options, key string) ([]map[string]interface{}, error) {
-	out, err := RunTerraformCommandAndGetStdoutE(t, options, "output", "-no-color", "-json", key)
+	out, err := OutputJsonE(t, options, key)
 
 	if err != nil {
 		return nil, err
@@ -198,7 +197,7 @@ func OutputList(t testing.TestingT, options *Options, key string) []string {
 // OutputListE calls terraform output for the given variable and returns its value as a list.
 // If the output value is not a list type, then it returns an error.
 func OutputListE(t testing.TestingT, options *Options, key string) ([]string, error) {
-	out, err := RunTerraformCommandAndGetStdoutE(t, options, "output", "-no-color", "-json", key)
+	out, err := OutputJsonE(t, options, key)
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +236,7 @@ func OutputMap(t testing.TestingT, options *Options, key string) map[string]stri
 // OutputMapE calls terraform output for the given variable and returns its value as a map.
 // If the output value is not a map type, then it returns an error.
 func OutputMapE(t testing.TestingT, options *Options, key string) (map[string]string, error) {
-	out, err := RunTerraformCommandAndGetStdoutE(t, options, "output", "-no-color", "-json", key)
+	out, err := OutputJsonE(t, options, key)
 	if err != nil {
 		return nil, err
 	}
@@ -262,6 +261,27 @@ func OutputForKeys(t testing.TestingT, options *Options, keys []string) map[stri
 	return out
 }
 
+// OutputJson calls terraform output for the given variable and returns the
+// result as the json string.
+// If key is an empty string, it will return all the output variables.
+func OutputJson(t testing.TestingT, options *Options, key string) string {
+	str, err := OutputJsonE(t, options, key)
+	require.NoError(t, err)
+	return str
+}
+
+// OutputJsonE calls terraform output for the given variable and returns the
+// result as the json string.
+// If key is an empty string, it will return all the output variables.
+func OutputJsonE(t testing.TestingT, options *Options, key string) (string, error) {
+	args := []string{"output", "-no-color", "-json"}
+	if key != "" {
+		args = append(args, key)
+	}
+
+	return RunTerraformCommandAndGetStdoutE(t, options, args...)
+}
+
 // OutputStruct calls terraform output for the given variable and stores the
 // result in the value pointed to by v. If v is nil or not a pointer, or if
 // the value returned by Terraform is not appropriate for a given target type,
@@ -276,7 +296,7 @@ func OutputStruct(t testing.TestingT, options *Options, key string, v interface{
 // the value returned by Terraform is not appropriate for a given target type,
 // it returns an error.
 func OutputStructE(t testing.TestingT, options *Options, key string, v interface{}) error {
-	out, err := RunTerraformCommandAndGetStdoutE(t, options, "output", "-no-color", "-json", key)
+	out, err := OutputJsonE(t, options, key)
 	if err != nil {
 		return err
 	}
@@ -287,7 +307,7 @@ func OutputStructE(t testing.TestingT, options *Options, key string, v interface
 // OutputForKeysE calls terraform output for the given key list and returns values as a map.
 // The returned values are of type interface{} and need to be type casted as necessary. Refer to output_test.go
 func OutputForKeysE(t testing.TestingT, options *Options, keys []string) (map[string]interface{}, error) {
-	out, err := RunTerraformCommandAndGetStdoutE(t, options, "output", "-no-color", "-json")
+	out, err := OutputJsonE(t, options, "")
 	if err != nil {
 		return nil, err
 	}

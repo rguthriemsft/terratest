@@ -8,6 +8,12 @@ tags: ["contributing", "community"]
 order: 400
 nav_title: Documentation
 nav_title_link: /docs/
+custom_js:
+  - examples
+  - prism
+  - collection-browser_scroll
+  - collection-browser_search
+  - collection-browser_toc
 ---
 
 Terratest is an open source project, and contributions from the community are very welcome\! Please check out the
@@ -26,7 +32,6 @@ process](https://help.github.com/articles/about-pull-requests/) for contribution
 1. [Update the code](#update-the-code)
 1. [Create a pull request](#create-a-pull-request)
 1. [Merge and release](#merge-and-release)
-
 
 ### Types of contributions
 
@@ -64,7 +69,7 @@ Examples:
 * `http_helper.HttpGetWithRetry`: make an HTTP request, retrying until you get a certain expected response.
 * `ssh.CheckSshCommand`: SSH to a server and execute a command.
 * `aws.CreateS3Bucket`: create an S3 bucket.
-* `aws.GetPrivateIpsOfEc2Instances`:  use the AWS APIs to fetch IPs of some EC2 instances.          
+* `aws.GetPrivateIpsOfEc2Instances`:  use the AWS APIs to fetch IPs of some EC2 instances.
 
 The number of possible such helpers is nearly infinite, so to avoid Terratest becoming a gigantic, sprawling library
 we ask that contributions for new infrastructure helpers are limited to:
@@ -77,7 +82,7 @@ we ask that contributions for new infrastructure helpers are limited to:
    complex to do from scratch. For example, a helper that merely wraps an existing function in the AWS or GCP SDK is
    not a great choice, as the wrapper isn't contributing much value, but is bloating the Terratest API. On the other
    hand, helpers that expose simple APIs for complex logic are great contributions: `ssh.CheckSshCommand` is a great
-   example of this, as it provides a simple one-line interface for dozens of lines of complicated SSH logic.   
+   example of this, as it provides a simple one-line interface for dozens of lines of complicated SSH logic.
 
 1. **Popularity**: Terratest should only contain helpers for common use cases that come up again and again in the
    course of testing. We don't want to bloat the library with lots of esoteric helpers for rarely used tools, so
@@ -92,7 +97,7 @@ we ask that contributions for new infrastructure helpers are limited to:
    Terraform, which already handles all that complexity, to create any infrastructure you need at test time, and
    running Terratest's built-in `terraform` helpers as necessary. If you're considering contributing a function that
    creates infrastructure directly (e.g., using a cloud provider's APIs), please file a GitHub issue to explain why
-   such a function would be a better choice than using a tool like Terraform.   
+   such a function would be a better choice than using a tool like Terraform.
 
 ### File a GitHub issue
 
@@ -138,6 +143,10 @@ hook from failing, make sure to :
 1. Install [goimports](https://godoc.org/golang.org/x/tools/cmd/goimports)
 1. Run `goimports -w .`.
 
+We have a [style guide](https://gruntwork.io/guides/style%20guides/golang-style-guide/) for the Go programming language,
+in which we documented some best practices for writing Go code. Please ensure your code adheres to the guidelines
+outlined in the guide.
+
 ### Create a pull request
 
 [Create a pull request](https://help.github.com/articles/creating-a-pull-request/) with your changes. Please make sure
@@ -150,16 +159,61 @@ to include the following:
    test output so we can verify that everything is working.
 1. Any notes on backwards incompatibility or downtime.
 
+#### Validate the Pull Request for Azure Platform
+
+If you're contributing code for the [Azure Platform](https://azure.com) and if you have an active _Azure subscription_, it's recommended to follow the below guidelines after [creating a pull request](https://help.github.com/articles/creating-a-pull-request/). If you're contributing code for any other platform (e.g., AWS, GCP, etc), you can skip these steps.
+
+> Once the Terratest maintainers add `Azure` tag and _Approve_ the PR, following pipeline will run automatically to perform a full validation of the Azure contribution. You also can run the pipeline manually on your forked repo by following the below guideline.
+
+
+We have a separate CI pipeline for _Azure_ code. To run it on a forked repo:
+
+1. Run the following [Azure Cli](https://docs.microsoft.com/cli/azure/) command on your preferred Terminal to create Azure credentials and copy the output:
+
+    ```bash
+    az ad sp create-for-rbac --name "terratest-az-cli" --role contributor --sdk-auth
+    ```
+
+1. Go to Secrets settings page under `Settings` tab in your forked project, `https://github.com/<YOUR_GITHUB_ACCOUNT>/terratest/settings`, on GitHub.
+
+1. Create a new `Secret` named `AZURE_CREDENTIALS` and paste the Azure credentials you copied from the 1<sup>st</sup> step as the value
+
+    > `AZURE_CREDENTIALS` will be stored in _your_ GitHub account; neither the Terratest maintainers nor anyone else will have any access to it. Under the hood, GitHub stores your secrets in a secure, encrypted format (see: [GitHub Actions Secrets Reference](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets) for more information). Once the secret is created, it's only possible to update or delete it; the value of the secret can't be viewed. GitHub uses a [libsodium sealed box](https://libsodium.gitbook.io/doc/public-key_cryptography/sealed_boxes) to help ensure that secrets are encrypted before they reach GitHub.
+
+1. Create a [new Personal Access Token (PAT)](https://github.com/settings/tokens/new) page under [Settings](https://github.com/settings/profile) / [Developer Settings](https://github.com/settings/apps), making sure `write:discussion` and `public_repo` scopes are checked. Click the _Generate token_ button and copy the generated PAT.
+
+1. Go back to settings/secrets in your fork and [Create a new Secret](https://docs.github.com/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository) named `PAT`.  Paste the output from the 4<sup>th</sup> step as the value
+
+    > `PAT` will be stored in _your_ GitHub account; neither the Terratest maintainers nor anyone else will have any access to it. Under the hood, GitHub stores your secrets in a secure, encrypted format (see: [GitHub Actions Secrets Reference](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets) for more information). Once the secret is created, it's only possible to update or delete it; the value of the secret can't be viewed. GitHub uses a [libsodium sealed box](https://libsodium.gitbook.io/doc/public-key_cryptography/sealed_boxes) to help ensure that secrets are encrypted before they reach GitHub.
+
+1. Go to Actions tab on GitHub (https://github.com/<GITHUB_ACCOUNT>/terratest/actions)
+
+1. Click `ci-workflow` workflow
+
+1. Click `Run workflow` button and fill the fields in the drop down
+    * _Repository Info_ : name of the forked repo (_e.g. xyz/terratest_)
+    * _Name of the branch_ : branch name on the forked repo (_e.g. feature/adding-some-important-module_)
+    * _Name of the official terratest repo_ : home of the target pr (_gruntwork-io/terratest_)
+    * PR number on the official terratest repo : pr number on the official terratest repo (_e.g. 14, 25, etc._).  Setting this value will leave a success/failure comment in the PR once CI completes execution.
+
+    * Skip provider registration : set true if you want to skip terraform provider registration for debug purposes (_false_ or _true_)
+
+1. Wait for the `ci-workflow` to be finished
+
+    > The pipeline will use the given Azure subscription and deploy real resources in your Azure account as part of running the test. When the tests finish, they will tear down the resources they created. Of course, if there is a bug or glitch that prevents the clean up code from running, some resources may be left behind, but this is rare. Note that these resources may cost you money! You are responsible for all charges in your Azure subscription.
+
+1. PR with the given _PR Number_ will have the result of the `ci-workflow` as a comment
+
 ### Merge and release
 
-The maintainers for this repo will review your code and provide feedback. If everything looks good, they will merge the
+The maintainers for this repo will review your code and provide feedback. Once the PR is accepted, they will merge the
 code and release a new version, which you'll be able to find in the [releases page](https://github.com/gruntwork-io/terratest/releases).
-
 
 ## Developing Terratest
 
-1.  [Running tests](#running-tests)
-1.  [Versioning](#versioning)
+1. [Running tests](#running-tests)
+1. [Versioning](#versioning)
+1. [Developing For Azure](#developing-for-azure)
 
 ### Running tests
 
@@ -197,7 +251,6 @@ cd "<FOLDER_PATH>"
 go test -timeout 30m -run "<TEST_NAME>"
 ```
 
-
 ### Versioning
 
 This repo follows the principles of [Semantic Versioning](http://semver.org/). You can find each new release,
@@ -206,3 +259,115 @@ along with the changelog, in the [Releases Page](https://github.com/gruntwork-io
 During initial development, the major version will be 0 (e.g., `0.x.y`), which indicates the code does not yet have a
 stable API. Once we hit `1.0.0`, we will make every effort to maintain a backwards compatible API and use the MAJOR,
 MINOR, and PATCH versions on each release to indicate any incompatibilities.
+
+### Developing For Azure
+
+Azure supports multliple cloud environments. In order to properly register the correct environment for you test code, you need to use the Azure SDK Client Factory.
+
+#### Azure SDK Client Factory
+
+This documentation provides and overview of the `client_factory.go` module, targeted use cases, and behaviors.  This module is intended to provide support for and simplify working with Azure's multiple cloud environments (Azure Public, Azure Government, Azure China, Azure Germany and Azure Stack).  Developers looking to contribute to additional support for Azure to Terratest should leverage client_factory and use the patterns below to add a resource REST client from Azure Go SDK.  By doing so, it provides a consistent means for developers using Terratest to test their Azure Infrastructure to connect to the correct cloud and its associated REST apis.
+
+##### Background
+
+The Azure REST APIs support both Public and sovereign cloud environments (at the moment this includes Public, US Government, Germany, China, and Azure Stack environments).  If you are interacting with an environment other than public cloud, you need to set the base URI for the Azure REST API you are interacting with.
+
+###### Base URI
+
+You must use the correct base URI's for the Azure REST API's (either directly or via Azure SDK for GO) to communicate with a cloud environment other than Azure Public. The Azure Go SDK supports this by using the `WithBaseURI` suffixed calls when creating service clients. For example, when using the `VirtualMachinesClient` with the public cloud, a developer would normally write code for the public cloud like so:
+
+```go
+import (
+    "github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-07-01/compute"
+)
+
+func SomeVMHelperMethod() {
+    subscriptionID := "your subscription ID"
+
+    // Create a VM client and return
+    vmClient, err := compute.NewVirtualMachinesClient(subscriptionID)
+
+    // Use client / etc
+}
+```
+
+However, this code will not work in non-Public cloud environments as the REST endpoints have different URIs depending on environment.  Instead, you need to use an alternative method (provided in the Azure REST SDK for Go) to get a properly configured client (*all REST API clients should support this alternate method*):
+
+```go
+import (
+    "github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-07-01/compute"
+)
+
+func SomeVMHelperMethod() {
+    subscriptionID := "your subscription ID"
+    baseURI := "management.azure.com"
+
+    // Create a VM client and return
+    vmClient, err := compute.NewVirtualMachinesClientWithBaseURI(baseURI, subscriptionID)
+
+    // Use client / etc
+}
+```
+
+Using code similar to above, you can communicate with any Azure cloud environment just by changing the base URI that is passed to the clients (Azure Public shown in above example).
+
+##### Lookup Environment Metadata
+
+Developers MUST avoid hardcoding these base URI's.  Instead, they should be looked up from an authoritative source. The AutoRest-GO library (used by the Go SDK) provides such functionality. The `client_factory` module makes use of the AutoRest `EnvironmentFromName(envName string)` function to return the appropriate structure.  This method and Environment structure is documented on GoDoc [here](https://godoc.org/github.com/Azure/go-autorest/autorest/azure#EnvironmentFromName).
+
+To configure different cloud environments, we will use the same `AZURE_ENVIRONMENT` environment variable that the Go SDK uses. This can currently be set to one of the following values:
+
+|Value                      |Cloud Environment  |
+|---------------------------|-------------------|
+|"AzureChinaCloud"          |ChinaCloud         |
+|"AzureGermanCloud"         |GermanCloud        |
+|"AzurePublicCloud"         |PublicCloud        |
+|"AzureUSGovernmentCloud"   |USGovernmentCloud  |
+|"AzureStackCloud"          |Azure stack        |
+
+When using the "AzureStackCloud" setting, you MUST also set the `AZURE_ENVIRONMENT_FILEPATH` variable to point to a JSON file containing your Azure Stack URI details.
+
+##### Putting it all together
+
+ `client_factory` implements this pattern described above in order to instantiate and return properly configured *REST SDK for GO* clients so that test implementers don't have to consider REST API client implementation as long as they have the correct `AZURE_ENVIRONMENT` env setting.  If this environment variable is not set, the client will assume public cloud as the cloud environment to communicate with.  We strongly recommend developers creating Terratest helper methods for Azure use this pattern with client factory to create REST API clients.  This will reduce effort for Terratest users creating test for Azure resources.
+
+Note the following:
+
+* TERRAFORM uses [ARM_ENVIRONMENT](https://www.terraform.io/docs/backends/types/azurerm.html#environment) environment variable to set the correct cloud environment.  
+* The default behavior of the `client_factory` is to use the AzurePublicCloud environment. This requires no work from the developer to configure, and ensures consistent behavior with the current SDK code.
+
+###### Wait, I don't see the client in client factory for the rest api I want to interact with
+
+ If you require a client that is not already implemented in client factory for your helper method, you will need to create a corresponding method that instantiates the client and accepts base URI following the patterns discussed.  Below is a walkthrough for adding a client to client factory.
+
+##### Walkthrough, adding a client to client_factory
+
+###### Add your client namespace to client factory
+
+In the Azure SDK for GO, each service should have a module that implements that services client.  You can find the correct module [here](https://godoc.org/github.com/Azure/azure-sdk-for-go).  Add that module to the client factory imports.  Below is an example for client imports that shows clients for compute, container service and subscriptions.
+
+{% include examples/explorer.html example_id='client-factory' file_id='client_factory_code' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true snippet_id='client_factory_example.imports' %}
+
+###### Add your client method to instantiate the client
+
+The next step is to add your method to instantiate the client.  Below is an example of adding the method to create a client for Virtual Machines, note that we lookup the environment using `getEnvironmentEndpointE` and then pass that base URI to the actual method on the Virtual Machines Module to create the client `NewVirtualMachinesClientWithBaseURI`.
+
+{% include examples/explorer.html example_id='client-factory' file_id='client_factory_code' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true snippet_id='client_factory_example.CreateClient' %}
+
+###### Add a unit test to client_factory_test.go
+
+In order to ensure that your CreateClient method works properly, add a unit test to `client_factory_test.go`.  The unit test MUST assert that the base URI is correctly set for your client.  Some key points for writing your unit test are:
+
+- Use table-driven testing to test the various combinations of cloud environments
+- Give the test case a descriptive name so it is easy to identify which test failed.
+- PRs will be rejected if a client is added without a corresponding unit test.
+
+Below is an example of the Virtual Machines client unit test:
+
+{% include examples/explorer.html example_id='client-factory' file_id='client_factory_test' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true snippet_id='client_factory_example.UnitTest' %}
+
+###### Use your CreateClient method in your helper
+
+We now can use this client creation method in our helpers to create a Virtual Machines client.  Below is an example for how to call into this create method from `client_factory`:
+
+{% include examples/explorer.html example_id='client-factory' file_id='client_factory_helper' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true snippet_id='client_factory_example.helper' %}

@@ -41,6 +41,28 @@ func PlanE(t testing.TestingT, options *Options) (string, error) {
 	return RunTerraformCommandE(t, options, FormatArgs(options, "plan", "-input=false", "-lock=false")...)
 }
 
+// InitAndPlanAndShow runs terraform init, then terraform plan, and then terraform show with the given options, and
+// returns the json output of the plan file. This will fail the test if there is an error in the command.
+func InitAndPlanAndShow(t testing.TestingT, options *Options) string {
+	jsonOut, err := InitAndPlanAndShowE(t, options)
+	require.NoError(t, err)
+	return jsonOut
+}
+
+// InitAndPlanAndShowE runs terraform init, then terraform plan, and then terraform show with the given options, and
+// returns the json output of the plan file.
+func InitAndPlanAndShowE(t testing.TestingT, options *Options) (string, error) {
+	if options.PlanFilePath == "" {
+		return "", PlanFilePathRequired
+	}
+
+	_, err := InitAndPlanE(t, options)
+	if err != nil {
+		return "", err
+	}
+	return ShowE(t, options)
+}
+
 // InitAndPlanWithExitCode runs terraform init and plan with the given options and returns exitcode for the plan command.
 // This will fail the test if there is an error in the command.
 func InitAndPlanWithExitCode(t testing.TestingT, options *Options) int {
@@ -87,3 +109,9 @@ func TgPlanAllExitCodeE(t testing.TestingT, options *Options) (int, error) {
 
 	return GetExitCodeForTerraformCommandE(t, options, FormatArgs(options, "plan-all", "--input=false", "--lock=true", "--detailed-exitcode")...)
 }
+
+// Custom errors
+
+var (
+	PlanFilePathRequired = fmt.Errorf("You must set PlanFilePath on options struct to use this function.")
+)

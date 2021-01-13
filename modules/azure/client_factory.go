@@ -137,6 +137,17 @@ func CreateCosmosDBSQLClientE(subscriptionID string) (*documentdb.SQLResourcesCl
 	return &cosmosClient, nil
 }
 
+// GetKeyVaultURISuffixE returns the proper KeyVault URI suffix for the configured Azure environment.
+// This function would fail the test if there is an error.
+func GetKeyVaultURISuffixE() (string, error) {
+	envName := getDefaultEnvironmentName()
+	env, err := autorestAzure.EnvironmentFromName(envName)
+	if err != nil {
+		return "", err
+	}
+	return env.KeyVaultDNSSuffix, nil
+}
+
 // getDefaultEnvironmentName returns either a configured Azure environment name, or the public default
 func getDefaultEnvironmentName() string {
 	envName, exists := os.LookupEnv(AzureEnvironmentEnvName)

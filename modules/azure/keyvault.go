@@ -8,7 +8,6 @@ import (
 	kvauth "github.com/Azure/azure-sdk-for-go/services/keyvault/auth"
 	"github.com/Azure/azure-sdk-for-go/services/keyvault/v7.0/keyvault"
 	"github.com/Azure/go-autorest/autorest"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/stretchr/testify/require"
 )
 
@@ -125,16 +124,6 @@ func GetKeyVaultClientE() (*keyvault.BaseClient, error) {
 	}
 	kvClient.Authorizer = *authorizer
 	return &kvClient, nil
-}
-
-// GetKeyVaultURISuffixE returns the proper KeyVault URI suffix for the configured Azure environment.
-// This function would fail the test if there is an error.
-func GetKeyVaultURISuffixE() (string, error) {
-	env, err := azure.EnvironmentFromName("AzurePublicCloud")
-	if err != nil {
-		return "", err
-	}
-	return env.KeyVaultDNSSuffix, nil
 }
 
 // NewKeyVaultAuthorizerE will return Authorizer for KeyVault.

@@ -7,7 +7,11 @@
 
 provider "azurerm" {
   version = "~>2.20"
-  features {}
+  features {
+    key_vault {
+      purge_soft_delete_on_destroy = true
+    }
+  }
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -55,7 +59,7 @@ resource "azurerm_key_vault" "key_vault" {
   resource_group_name         = azurerm_resource_group.resource_group.name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
-  soft_delete_enabled         = true
+
   soft_delete_retention_days  = 7
   purge_protection_enabled    = false
 
@@ -70,6 +74,7 @@ resource "azurerm_key_vault" "key_vault" {
       "get",
       "list",
       "delete",
+      "purge",
     ]
 
     secret_permissions = [
@@ -77,6 +82,7 @@ resource "azurerm_key_vault" "key_vault" {
       "get",
       "list",
       "delete",
+      "purge",
     ]
 
     certificate_permissions = [
@@ -92,6 +98,7 @@ resource "azurerm_key_vault" "key_vault" {
       "manageissuers",
       "setissuers",
       "update",
+      "purge",
     ]
   }
 }

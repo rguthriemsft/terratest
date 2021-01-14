@@ -37,3 +37,14 @@ func TestKeyVaultCertificateExists(t *testing.T) {
 	_, err := KeyVaultCertificateExistsE(testKeyVaultName, testKeyVaultCertName)
 	require.Error(t, err)
 }
+
+func TestGetKeyVault(t *testing.T) {
+	t.Parallel()
+
+	resGroupName := ""
+	keyVaultName := ""
+	subscriptionID := ""
+
+	_, err := GetKeyVaultE(t, resGroupName, keyVaultName, subscriptionID)
+	require.Error(t, err)
+}

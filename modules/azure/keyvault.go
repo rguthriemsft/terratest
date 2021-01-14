@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	kvauth "github.com/Azure/azure-sdk-for-go/services/keyvault/auth"
+	kvmng "github.com/Azure/azure-sdk-for-go/services/keyvault/mgmt/2016-10-01/keyvault"
 	"github.com/Azure/azure-sdk-for-go/services/keyvault/v7.0/keyvault"
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/stretchr/testify/require"
@@ -126,9 +127,61 @@ func GetKeyVaultClientE() (*keyvault.BaseClient, error) {
 	return &kvClient, nil
 }
 
-// NewKeyVaultAuthorizerE will return Authorizer for KeyVault.
+// NewKeyVaultAuthorizerE will return dataplan Authorizer for KeyVault.
 // This function would fail the test if there is an error.
 func NewKeyVaultAuthorizerE() (*autorest.Authorizer, error) {
 	authorizer, err := kvauth.NewAuthorizerFromCLI()
 	return &authorizer, err
+}
+
+// GetKeyVault is a helper function that gets the keyvault management object.
+// This function would fail the test if there is an error.
+func GetKeyVault(t *testing.T, resGroupName string, keyVaultName string, subscriptionID string) *kvmng.Vault {
+	keyVault, err := GetKeyVaultE(t, resGroupName, keyVaultName, subscriptionID)
+	require.NoError(t, err)
+
+	return keyVault
+}
+
+// GetKeyVaultE is a helper function that gets the keyvault management object.
+// This function would fail the test if there is an error.
+func GetKeyVaultE(t *testing.T, resGroupName string, keyVaultName string, subscriptionID string) (*kvmng.Vault, error) {
+	// Create akey vault management client
+	vaultClient, err := GetKeyVaultManagementClientE(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	//Get the corresponding server client
+	keyVault, err := vaultClient.Get(context.Background(), resGroupName, keyVaultName)
+	if err != nil {
+		return nil, err
+	}
+
+	//Return keyvault
+	return &keyVault, nil
+}
+
+// GetKeyVaultManagementClientE is a helper function that will setup a key vault management client
+// This function would fail the test if there is an error.
+func GetKeyVaultManagementClientE(subscriptionID string) (*kvmng.VaultsClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a keyvault management client
+	vaultClient := kvmng.NewVaultsClient(subscriptionID)
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+
+	// Attach authorizer to the client
+	vaultClient.Authorizer = *authorizer
+
+	return &vaultClient, nil
 }

@@ -165,14 +165,11 @@ func GetKeyVaultE(t *testing.T, resGroupName string, keyVaultName string, subscr
 // GetKeyVaultManagementClientE is a helper function that will setup a key vault management client
 // This function would fail the test if there is an error.
 func GetKeyVaultManagementClientE(subscriptionID string) (*kvmng.VaultsClient, error) {
-	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	// Create a keyvault management client
+	vaultClient, err := CreateKeyVaultManagementClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
-
-	// Create a keyvault management client
-	vaultClient := kvmng.NewVaultsClient(subscriptionID)
 
 	// Create an authorizer
 	authorizer, err := NewAuthorizer()
@@ -183,5 +180,5 @@ func GetKeyVaultManagementClientE(subscriptionID string) (*kvmng.VaultsClient, e
 	// Attach authorizer to the client
 	vaultClient.Authorizer = *authorizer
 
-	return &vaultClient, nil
+	return vaultClient, nil
 }

@@ -45,7 +45,7 @@ func KeyVaultCertificateExistsE(keyVaultName, certificateName string) (bool, err
 	if err != nil {
 		return false, err
 	}
-	var maxVersionsCount int32 = 1
+	maxVersionsCount := int32(1)
 	versions, err := client.GetCertificateVersions(context.Background(),
 		fmt.Sprintf("https://%s.%s", keyVaultName, keyVaultSuffix),
 		certificateName,
@@ -53,9 +53,8 @@ func KeyVaultCertificateExistsE(keyVaultName, certificateName string) (bool, err
 	if err != nil {
 		return false, err
 	}
-	items := versions.Values()
 
-	if len(items) > 0 {
+	if len(versions.Values()) > 0 {
 		return true, nil
 	}
 	return false, nil
@@ -72,7 +71,7 @@ func KeyVaultKeyExistsE(keyVaultName, keyName string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	var maxVersionsCount int32 = 1
+	maxVersionsCount := int32(1)
 	versions, err := client.GetKeyVersions(context.Background(),
 		fmt.Sprintf("https://%s.%s", keyVaultName, keyVaultSuffix),
 		keyName,
@@ -99,7 +98,7 @@ func KeyVaultSecretExistsE(keyVaultName, secretName string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	var maxVersionsCount int32 = 1
+	maxVersionsCount := int32(1)
 	versions, err := client.GetSecretVersions(context.Background(),
 		fmt.Sprintf("https://%s.%s", keyVaultName, keyVaultSuffix),
 		secretName,
@@ -107,9 +106,8 @@ func KeyVaultSecretExistsE(keyVaultName, secretName string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	items := versions.Values()
 
-	if len(items) > 0 {
+	if len(versions.Values()) > 0 {
 		return true, nil
 	}
 	return false, nil
@@ -127,7 +125,7 @@ func GetKeyVaultClientE() (*keyvault.BaseClient, error) {
 	return &kvClient, nil
 }
 
-// NewKeyVaultAuthorizerE will return dataplan Authorizer for KeyVault.
+// NewKeyVaultAuthorizerE will return dataplane Authorizer for KeyVault.
 // This function would fail the test if there is an error.
 func NewKeyVaultAuthorizerE() (*autorest.Authorizer, error) {
 	authorizer, err := kvauth.NewAuthorizerFromCLI()

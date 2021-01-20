@@ -9,7 +9,7 @@ provider "azurerm" {
   version = "~>2.20"
   features {
     key_vault {
-      purge_soft_delete_on_destroy = true
+      purge_soft_delete_on_destroy = false
     }
   }
 }

@@ -2,7 +2,6 @@ package azure
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"testing"
 
@@ -14,13 +13,15 @@ import (
 )
 
 // KeyVaultSecretExists indicates whether a key vault secret exists; otherwise false
+// This function would fail the test if there is an error.
 func KeyVaultSecretExists(t *testing.T, keyVaultName string, secretName string) bool {
 	result, err := KeyVaultSecretExistsE(keyVaultName, secretName)
 	require.NoError(t, err)
 	return result
 }
 
-// KeyVaultKeyExists indicates whether a key vault key exists; otherwise false.  This function would fail the test if there is an error.
+// KeyVaultKeyExists indicates whether a key vault key exists; otherwise false.
+// This function would fail the test if there is an error.
 func KeyVaultKeyExists(t *testing.T, keyVaultName string, keyName string) bool {
 	result, err := KeyVaultKeyExistsE(keyVaultName, keyName)
 	require.NoError(t, err)
@@ -36,7 +37,6 @@ func KeyVaultCertificateExists(t *testing.T, keyVaultName string, certificateNam
 }
 
 // KeyVaultCertificateExistsE indicates whether a certificate exists in key vault; otherwise false.
-// This function would fail the test if there is an error.
 func KeyVaultCertificateExistsE(keyVaultName, certificateName string) (bool, error) {
 	keyVaultSuffix, err := GetKeyVaultURISuffixE()
 	if err != nil {
@@ -58,11 +58,10 @@ func KeyVaultCertificateExistsE(keyVaultName, certificateName string) (bool, err
 	if len(versions.Values()) > 0 {
 		return true, nil
 	}
-	return false, errors.New("No certificate versions found")
+	return false, nil
 }
 
 // KeyVaultKeyExistsE indicates whether a key exists in the key vault; otherwise false.
-// This function would fail the test if there is an error.
 func KeyVaultKeyExistsE(keyVaultName, keyName string) (bool, error) {
 	keyVaultSuffix, err := GetKeyVaultURISuffixE()
 	if err != nil {
@@ -84,11 +83,10 @@ func KeyVaultKeyExistsE(keyVaultName, keyName string) (bool, error) {
 	if len(versions.Values()) > 0 {
 		return true, nil
 	}
-	return false, errors.New("No key versions found")
+	return false, nil
 }
 
 // KeyVaultSecretExistsE indicates whether a secret exists in the key vault; otherwise false.
-// This function would fail the test if there is an error.
 func KeyVaultSecretExistsE(keyVaultName, secretName string) (bool, error) {
 	client, err := GetKeyVaultClientE()
 	if err != nil {
@@ -110,11 +108,10 @@ func KeyVaultSecretExistsE(keyVaultName, secretName string) (bool, error) {
 	if len(versions.Values()) > 0 {
 		return true, nil
 	}
-	return false, errors.New("No secret versions found")
+	return false, nil
 }
 
 // GetKeyVaultClientE creates a KeyVault client.
-// This function would fail the test if there is an error.
 func GetKeyVaultClientE() (*keyvault.BaseClient, error) {
 	kvClient := keyvault.New()
 	authorizer, err := NewKeyVaultAuthorizerE()
@@ -126,7 +123,6 @@ func GetKeyVaultClientE() (*keyvault.BaseClient, error) {
 }
 
 // NewKeyVaultAuthorizerE will return dataplane Authorizer for KeyVault.
-// This function would fail the test if there is an error.
 func NewKeyVaultAuthorizerE() (*autorest.Authorizer, error) {
 	authorizer, err := kvauth.NewAuthorizerFromCLI()
 	return &authorizer, err
@@ -142,7 +138,6 @@ func GetKeyVault(t *testing.T, resGroupName string, keyVaultName string, subscri
 }
 
 // GetKeyVaultE is a helper function that gets the keyvault management object.
-// This function would fail the test if there is an error.
 func GetKeyVaultE(t *testing.T, resGroupName string, keyVaultName string, subscriptionID string) (*kvmng.Vault, error) {
 	// Create akey vault management client
 	vaultClient, err := GetKeyVaultManagementClientE(subscriptionID)
@@ -161,7 +156,6 @@ func GetKeyVaultE(t *testing.T, resGroupName string, keyVaultName string, subscr
 }
 
 // GetKeyVaultManagementClientE is a helper function that will setup a key vault management client
-// This function would fail the test if there is an error.
 func GetKeyVaultManagementClientE(subscriptionID string) (*kvmng.VaultsClient, error) {
 	// Create a keyvault management client
 	vaultClient, err := CreateKeyVaultManagementClientE(subscriptionID)

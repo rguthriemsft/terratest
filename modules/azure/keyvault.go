@@ -2,6 +2,7 @@ package azure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 
@@ -57,7 +58,7 @@ func KeyVaultCertificateExistsE(keyVaultName, certificateName string) (bool, err
 	if len(versions.Values()) > 0 {
 		return true, nil
 	}
-	return false, nil
+	return false, errors.New("No certificate versions found")
 }
 
 // KeyVaultKeyExistsE indicates whether a key exists in the key vault; otherwise false.
@@ -79,12 +80,11 @@ func KeyVaultKeyExistsE(keyVaultName, keyName string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	items := versions.Values()
 
-	if len(items) > 0 {
+	if len(versions.Values()) > 0 {
 		return true, nil
 	}
-	return false, nil
+	return false, errors.New("No key versions found")
 }
 
 // KeyVaultSecretExistsE indicates whether a secret exists in the key vault; otherwise false.
@@ -110,7 +110,7 @@ func KeyVaultSecretExistsE(keyVaultName, secretName string) (bool, error) {
 	if len(versions.Values()) > 0 {
 		return true, nil
 	}
-	return false, nil
+	return false, errors.New("No secret versions found")
 }
 
 // GetKeyVaultClientE creates a KeyVault client.

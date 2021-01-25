@@ -25,6 +25,3 @@ kubeconfig
 
 # Environment variable file
 .env
-
-# Test certificate file
-*.pfx

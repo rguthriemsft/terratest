@@ -215,7 +215,10 @@ func AutomationAccountDscCompileJobStatusE(t testing.TestingT, dscConfigurationN
 				mostRecentCompileJobStatus = (string)(element.Status)
 			}
 		}
-		dscCompilationJobListResultPage.Next()
+		err := dscCompilationJobListResultPage.Next()
+		if err != nil {
+			return "", err
+		}
 	}
 	// Check to ensure  DSC compilation jobs are present (i.e. mostRecentCompileJobTick is non zero)
 	if mostRecentCompileJobTick == 0 {
@@ -264,7 +267,10 @@ func GetAutomationAccountDscNodeConfigurationE(t testing.TestingT, dscConfigurai
 				dscNodeID = *element.NodeID
 			}
 		}
-		dscNodeListResultPage.Next()
+		err := dscNodeListResultPage.Next()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Get Automation Account Connection

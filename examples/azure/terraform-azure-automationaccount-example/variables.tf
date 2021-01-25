@@ -93,7 +93,7 @@ variable "automation_run_as_connection_type" {
 }
 
 variable "sample_dsc_name" {
-  description = "The name of the sample DSC configuration that contains the configuraitons that can be applied"
+  description = "The name of the sample DSC configuration that contains the configuration that can be applied"
   type        = string
   default     = "SampleDSC"
 }
@@ -105,13 +105,13 @@ variable "sample_dsc_path" {
 }
 
 variable "sample_dsc_configuration_name" {
-  description = "The name of the DSC configuraiton to apply to the VM"
+  description = "The name of the DSC configuration to apply to the VM"
   type        = string
   default     = "SampleDSC.NotWebServer"
 }
 
 variable "vm_name" {
-  description = "The name of the test VM where the DSC configuraiton will be applied"
+  description = "The name of the test VM where the DSC configuration will be applied"
   type        = string
   default     = "vm01"
 }
@@ -121,4 +121,4 @@ variable "vm_host_name" {
   type        = string
   default     = "dscnode"
 }
- 
+

@@ -53,7 +53,7 @@ func TestAutomationAccountDscExistsE(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestAutomationAccountDscCompiledE(t, testing.T) {
+func TestAutomationAccountDscCompiledE(t *testing.T) {
 	t.Parallel()
 
 	dscConfiguraitonName := ""
@@ -61,139 +61,139 @@ func TestAutomationAccountDscCompiledE(t, testing.T) {
 	resourceGroupName := ""
 	subscriptionID := ""
 
-	_, err := AutomationAccountDscCompiledE(dscConfiguraitonName, automationAccountName, resourceGroupName, subscriptionID)
+	_, err := AutomationAccountDscCompiledE(t, dscConfiguraitonName, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
 }
 
-func TestAutomationAccountRunAsCertificateThumbprintMatchesE(t, testing.T) {
+func TestAutomationAccountRunAsCertificateThumbprintMatchesE(t *testing.T) {
 	t.Parallel()
 
-	runAsCertificateThumbprint = ""
-	runAsCertificateName = ""
+	runAsCertificateThumbprint := ""
+	runAsCertificateName := ""
 	automationAccountName := ""
 	resourceGroupName := ""
 	subscriptionID := ""
 
-	_, err := AutomationAccountRunAsCertificateThumbprintMatchesE(runAsCertificateThumbprint, runAsCertificateName, automationAccountName, resourceGroupName, subscriptionID)
+	_, err := AutomationAccountRunAsCertificateThumbprintMatchesE(t, runAsCertificateThumbprint, runAsCertificateName, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
 }
 
-func TestAutomationAccountRunAsConnectionValidatesE(t, testing.T) {
+func TestAutomationAccountRunAsConnectionValidatesE(t *testing.T) {
 	t.Parallel()
 
-	automationAccountrunAsAccountName = ""
-	runAsConnectionType = ""
-	runAsCertificateThumbprint = ""
+	automationAccountrunAsAccountName := ""
+	runAsConnectionType := ""
+	runAsCertificateThumbprint := ""
 	automationAccountName := ""
 	resourceGroupName := ""
 	subscriptionID := ""
 
-	_, err := AutomationAccountRunAsConnectionValidatesE(automationAccountrunAsAccountName, runAsConnectionType, runAsCertificateThumbprint, automationAccountName, resourceGroupName, subscriptionID)
+	_, err := AutomationAccountRunAsConnectionValidatesE(t, automationAccountrunAsAccountName, runAsConnectionType, runAsCertificateThumbprint, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
 }
 
-func TestAutomationAccountDscAppliedSuccessfullyToVME(t, testing.T) {
+func TestAutomationAccountDscAppliedSuccessfullyToVME(t *testing.T) {
 	t.Parallel()
 
-	dscConfiguraitonName = ""
-	vmName = ""
+	dscConfiguraitonName := ""
+	vmName := ""
 	automationAccountName := ""
 	resourceGroupName := ""
 	subscriptionID := ""
 
-	_, err := AutomationAccountDscAppliedSuccessfullyToVME(dscConfiguraitonName, vmName, automationAccountName, resourceGroupName, subscriptionID)
+	_, err := AutomationAccountDscAppliedSuccessfullyToVME(t, dscConfiguraitonName, vmName, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
 }
 
-func TestGetAutomationAccountE(t, testing.T) {
+func TestGetAutomationAccountE(t *testing.T) {
 	t.Parallel()
 
 	automationAccountName := ""
 	resourceGroupName := ""
 	subscriptionID := ""
 
-	client, err := GetAutomationAccountE(automationAccountName, resourceGroupName, subscriptionID)
+	client, err := GetAutomationAccountE(t, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
 	assert.NotEmpty(t, *client)
 }
 
-func TestGetAutomationAccountDscConfigurationE(t, testing.T) {
+func TestGetAutomationAccountDscConfigurationE(t *testing.T) {
 	t.Parallel()
 
-	dscConfigurationName = ""
-	automationAccountName := ""
+	dscConfigurationName := ""
 	resourceGroupName := ""
+	automationAccountName := ""
 	subscriptionID := ""
 
-	dscConfiguration, err := GetAutomationAccountDscConfigurationE(dscConfigurationName, resourceGroupName, automationAccountName, dscConfigurationName)
+	dscConfiguration, err := GetAutomationAccountDscConfigurationE(t, dscConfigurationName, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
 	assert.NotEmpty(t, *dscConfiguration)
 }
 
-func TestAutomationAccountDscCompileJobStatusE(t, testing.T) {
+func TestAutomationAccountDscCompileJobStatusE(t *testing.T) {
 	t.Parallel()
 
-	dscConfigurationName = ""
+	dscConfigurationName := ""
 	automationAccountName := ""
 	resourceGroupName := ""
 	subscriptionID := ""
 
-	status, err := AutomationAccountDscCompileJobStatusE(dscConfigurationName, resourceGroupName, automationAccountName, dscConfigurationName)
+	status, err := AutomationAccountDscCompileJobStatusE(t, dscConfigurationName, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
-	assert.NotEmpty(t, *status)
+	assert.NotEmpty(t, status)
 }
 
-func TestGetAutomationAccountCertificateE(t, testing.T) {
+func TestGetAutomationAccountCertificateE(t *testing.T) {
 	t.Parallel()
 
-	automationAccountCertificateName = ""
+	automationAccountCertificateName := ""
 	automationAccountName := ""
 	resourceGroupName := ""
 	subscriptionID := ""
 
-	certificate, err := GetAutomationAccountCertificateE(automationAccountCertificateName, resourceGroupName, automationAccountName, dscConfigurationName)
+	certificate, err := GetAutomationAccountCertificateE(t, automationAccountCertificateName, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
-	assert.NotEmpty(t, *status)
+	assert.NotEmpty(t, *certificate)
 }
 
-func TestGetAutomationAccountDscNodeConfigurationE(t, testing.T) {
+func TestGetAutomationAccountDscNodeConfigurationE(t *testing.T) {
 	t.Parallel()
 
-	dscConfiguraitonName = ""
-	vmName = ""
+	dscConfiguraitonName := ""
+	vmName := ""
 	automationAccountName := ""
 	resourceGroupName := ""
 	subscriptionID := ""
 
-	dscNodeConfig, err := GetAutomationAccountDscNodeConfigurationE(dscConfiguraitonName, vmName, resourceGroupName, automationAccountName, dscConfigurationName)
+	dscNodeConfig, err := GetAutomationAccountDscNodeConfigurationE(t, dscConfiguraitonName, vmName, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
 	assert.NotEmpty(t, *dscNodeConfig)
 }
 
-func TestGetAutomationAccountRunAsConnectionE(t, testing.T) {
+func TestGetAutomationAccountRunAsConnectionE(t *testing.T) {
 	t.Parallel()
 
-	automationAccountRunAsConnectionName = ""
+	automationAccountRunAsConnectionName := ""
 	automationAccountName := ""
 	resourceGroupName := ""
 	subscriptionID := ""
 
-	connection, err := GetAutomationAccountRunAsConnectionE(automationAccountRunAsConnectionName, resourceGroupName, automationAccountName, dscConfigurationName)
+	connection, err := GetAutomationAccountRunAsConnectionE(t, automationAccountRunAsConnectionName, automationAccountName, resourceGroupName, subscriptionID)
 
 	require.NoError(t, err)
 	assert.NotEmpty(t, *connection)
 }
 
-func TestGetCertificateClientE(t, testing.T) {
+func TestGetCertificateClientE(t *testing.T) {
 	t.Parallel()
 
 	subscriptionID := ""
@@ -204,18 +204,7 @@ func TestGetCertificateClientE(t, testing.T) {
 	assert.NotEmpty(t, *client)
 }
 
-func TestGetAutomationAccountClientE(t, testing.T) {
-	t.Parallel()
-
-	subscriptionID := ""
-
-	client, err := GetAutomationAccountClientE(subscriptionID)
-
-	require.NoError(t, err)
-	assert.NotEmpty(t, *client)
-}
-
-func TestGetDscConfigurationClientE(t, testing.T) {
+func TestGetDscConfigurationClientE(t *testing.T) {
 	t.Parallel()
 
 	subscriptionID := ""
@@ -226,7 +215,7 @@ func TestGetDscConfigurationClientE(t, testing.T) {
 	assert.NotEmpty(t, *client)
 }
 
-func TestGetDscCompilationJobClientE(t, testing.T) {
+func TestGetDscCompilationJobClientE(t *testing.T) {
 	t.Parallel()
 
 	subscriptionID := ""
@@ -237,7 +226,7 @@ func TestGetDscCompilationJobClientE(t, testing.T) {
 	assert.NotEmpty(t, *client)
 }
 
-func TestGetAutomationAccountCertficateClientE(t, testing.T) {
+func TestGetAutomationAccountCertficateClientE(t *testing.T) {
 	t.Parallel()
 
 	subscriptionID := ""
@@ -248,7 +237,7 @@ func TestGetAutomationAccountCertficateClientE(t, testing.T) {
 	assert.NotEmpty(t, *client)
 }
 
-func TestGetAutomationAccountRunAsConnectionClientE(t, testing.T) {
+func TestGetAutomationAccountRunAsConnectionClientE(t *testing.T) {
 	t.Parallel()
 
 	subscriptionID := ""
@@ -259,7 +248,7 @@ func TestGetAutomationAccountRunAsConnectionClientE(t, testing.T) {
 	assert.NotEmpty(t, *client)
 }
 
-func TestGetAutomationAccountDscNodeConfigClientE(t, testing.T) {
+func TestGetAutomationAccountDscNodeConfigClientE(t *testing.T) {
 	t.Parallel()
 
 	subscriptionID := ""

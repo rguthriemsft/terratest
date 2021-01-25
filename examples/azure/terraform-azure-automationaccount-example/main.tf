@@ -26,8 +26,8 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_resource_group" "automation_account_dsc_rg" {
-    name     = "${var.resource_group_name}-${var.postfix}"
-    location = var.location
+  name     = "${var.resource_group_name}-${var.postfix}"
+  location = var.location
 }
 
 resource "random_password" "virtual_machine" {
@@ -59,11 +59,11 @@ resource "azurerm_automation_dsc_configuration" "SampleDSC" {
 # # COMPILE THE SAMPLE DSC IN THE AUTOMATION ACCOUNT
 # # The Terraform `null_resource` signs in to Azure.  The second performs the compliation
 # # Compilation is triggered on every one to ensure the latest changes are always applied
+# # WARNING: ConvertTo-SecureString -String '${var.POWERSHELL_CLIENT_SECRET}, will expose the actual secret value in the logs.
 # # ---------------------------------------------------------------------------------------------------------------------
-
 resource "null_resource" "azureSignInPWSH" {
   provisioner "local-exec" {
-    command = "$User = '${var.POWERSHELL_CLIENT_ID}' ; $Pword =  ConvertTo-SecureString -String '${var.POWERSHELL_CLIENT_SECRET}' -AsPlainText -Force ; $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, $PWord ; Connect-AzAccount -Environment ${var.cloud_environment} -Credential $Credential -Tenant '${var.ARM_TENANT_ID}' -ServicePrincipal"
+    command     = "$User = '${var.POWERSHELL_CLIENT_ID}' ; $Pword =  ConvertTo-SecureString -String '${var.POWERSHELL_CLIENT_SECRET}' -AsPlainText -Force ; $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, $PWord ; Connect-AzAccount -Environment ${var.cloud_environment} -Credential $Credential -Tenant '${var.ARM_TENANT_ID}' -ServicePrincipal"
     interpreter = ["pwsh", "-Command"]
   }
   triggers = {
@@ -74,7 +74,7 @@ resource "null_resource" "azureSignInPWSH" {
 
 resource "null_resource" "compileSampleDSC" {
   provisioner "local-exec" {
-    command = "Start-AzAutomationDscCompilationJob -ResourceGroupName  ${azurerm_resource_group.automation_account_dsc_rg.name} -AutomationAccountName ${azurerm_automation_account.automation_account.name} -ConfigurationName ${var.sample_dsc_name}"
+    command     = "Start-AzAutomationDscCompilationJob -ResourceGroupName  ${azurerm_resource_group.automation_account_dsc_rg.name} -AutomationAccountName ${azurerm_automation_account.automation_account.name} -ConfigurationName ${var.sample_dsc_name}"
     interpreter = ["pwsh", "-Command"]
   }
   triggers = {
@@ -90,7 +90,7 @@ resource "azurerm_automation_certificate" "automationAccountCertificate" {
 
   description = var.automation_run_as_certificate_name
   # Certificate must be in .pfx format without a password encoded in base64
-  base64      = filebase64(var.automation_run_as_certificate_path)
+  base64 = filebase64(var.automation_run_as_certificate_path)
 }
 
 resource "azurerm_automation_connection" "automationAccountConnection" {
@@ -142,7 +142,7 @@ resource "azurerm_virtual_machine" "vmtest" {
   network_interface_ids = [azurerm_network_interface.vmtest.id]
   vm_size               = "Standard_F2"
 
-   storage_image_reference {
+  storage_image_reference {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
     sku       = "2016-Datacenter"
@@ -150,7 +150,7 @@ resource "azurerm_virtual_machine" "vmtest" {
   }
 
   storage_os_disk {
-    name          = "myosdisk1"
+    name              = "myosdisk1"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"

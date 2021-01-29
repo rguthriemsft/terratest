@@ -26,12 +26,12 @@
 # You must provide a value for each of these parameters.
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable ARM_SUBSCRIPTION_ID {}
-variable POWERSHELL_CLIENT_ID {}
-variable POWERSHELL_CLIENT_SECRET {}
-variable ARM_TENANT_ID {}
-variable AUTOMATION_ACCOUNT_CLIENT_ID {}
-variable AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT {}
+variable "ARM_SUBSCRIPTION_ID" {}
+variable "POWERSHELL_CLIENT_ID" {}
+variable "POWERSHELL_CLIENT_SECRET" {}
+variable "ARM_TENANT_ID" {}
+variable "AUTOMATION_ACCOUNT_CLIENT_ID" {}
+variable "AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT" {}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS

@@ -267,6 +267,7 @@ func GetAutomationAccountDscNodeConfigurationE(t testing.TestingT, dscConfigurai
 				dscNodeID = *element.NodeID
 			}
 		}
+
 		err := dscNodeListResultPage.Next()
 		if err != nil {
 			return nil, err

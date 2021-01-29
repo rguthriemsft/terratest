@@ -2,9 +2,11 @@
 .terraform
 terraform.tfstate
 terraform.tfvars
+.terraform.lock.hcl
 *.tfstate*
 .terragrunt
 .terragrunt-cache
+
 
 # IDE files
 .idea

@@ -3,7 +3,6 @@ package azure
 import (
 	"context"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2019-06-01/storage"
@@ -176,7 +175,13 @@ func GetStorageAccountPropertyE(storageAccountName, resourceGroupName, subscript
 
 // GetStorageAccountClientE creates a storage account client.
 func GetStorageAccountClientE(subscriptionID string) (*storage.AccountsClient, error) {
-	storageAccountClient := storage.NewAccountsClient(os.Getenv(AzureSubscriptionID))
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	storageAccountClient := storage.NewAccountsClient(subscriptionID)
 	authorizer, err := NewAuthorizer()
 	if err != nil {
 		return nil, err
@@ -187,7 +192,12 @@ func GetStorageAccountClientE(subscriptionID string) (*storage.AccountsClient, e
 
 // GetStorageBlobContainerClientE creates a storage container client.
 func GetStorageBlobContainerClientE(subscriptionID string) (*storage.BlobContainersClient, error) {
-	blobContainerClient := storage.NewBlobContainersClient(os.Getenv(AzureSubscriptionID))
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	blobContainerClient := storage.NewBlobContainersClient(subscriptionID)
 	authorizer, err := NewAuthorizer()
 
 	if err != nil {
@@ -198,13 +208,13 @@ func GetStorageBlobContainerClientE(subscriptionID string) (*storage.BlobContain
 }
 
 // GetStorageURISuffixE returns the proper storage URI suffix for the configured Azure environment.
-func GetStorageURISuffixE() (*string, error) {
-	var envName = "AzurePublicCloud"
+func GetStorageURISuffixE() (string, error) {
+	envName := "AzurePublicCloud"
 	env, err := azure.EnvironmentFromName(envName)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return &env.StorageEndpointSuffix, nil
+	return env.StorageEndpointSuffix, nil
 }
 
 // GetStorageAccountPrimaryBlobEndpointE gets the storage account blob endpoint as URI string.
@@ -228,7 +238,7 @@ func GetStorageDNSStringE(storageAccountName, resourceGroupName, subscriptionID 
 		if err2 != nil {
 			return "", err2
 		}
-		return fmt.Sprintf("https://%s.blob.%s/", storageAccountName, *storageSuffix), nil
+		return fmt.Sprintf("https://%s.blob.%s/", storageAccountName, storageSuffix), nil
 	}
 
 	return "", NewNotFoundError("storage account", storageAccountName, "")

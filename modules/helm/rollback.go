@@ -15,6 +15,11 @@ func Rollback(t testing.TestingT, options *Options, releaseName string, revision
 func RollbackE(t testing.TestingT, options *Options, releaseName string, revision string) error {
 	var err error
 	args := []string{}
+	if options.ExtraArgs != nil {
+		if rollbackArgs, ok := options.ExtraArgs["rollback"]; ok {
+			args = append(args, rollbackArgs...)
+		}
+	}
 	args = append(args, getNamespaceArgs(options)...)
 	args = append(args, releaseName)
 	if revision != "" {

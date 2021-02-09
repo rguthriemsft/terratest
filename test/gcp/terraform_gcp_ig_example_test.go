@@ -1,3 +1,7 @@
+// +build gcp
+
+// NOTE: We use build tags to differentiate GCP testing for better isolation and parallelism when executing our tests.
+
 package test
 
 import (
@@ -14,7 +18,7 @@ import (
 func TestTerraformGcpInstanceGroupExample(t *testing.T) {
 	t.Parallel()
 
-	exampleDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/terraform-gcp-ig-example")
+	exampleDir := test_structure.CopyTerraformFolderToTemp(t, "../../", "examples/terraform-gcp-ig-example")
 
 	// Setup values for our Terraform apply
 	projectId := gcp.GetGoogleProjectIDFromEnvVar(t)
@@ -25,7 +29,7 @@ func TestTerraformGcpInstanceGroupExample(t *testing.T) {
 	randomValidGcpName := gcp.RandomValidGcpName()
 	clusterSize := 3
 
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// The path to where our Terraform code instances located
 		TerraformDir: exampleDir,
 
@@ -35,7 +39,7 @@ func TestTerraformGcpInstanceGroupExample(t *testing.T) {
 			"gcp_region":     region,
 			"cluster_name":   randomValidGcpName,
 		},
-	}
+	})
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)

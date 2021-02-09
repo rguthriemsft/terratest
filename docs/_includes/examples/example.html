@@ -52,6 +52,7 @@
         data-target="{{ file_name | replace: '.', '-' | replace: ' ', '-' }}"
         data-url="{{ site.github_api_url }}{{ file.url }}"
         data-skip-tags="{{include.skip_tags}}"
+        data-snippet-id="{{include.snippet_id}}"
         >
         <pre><code class="language-{{ prism_lang }}">Loading...</code></pre>
         {% unless include.skip_view_on_github %}

@@ -28,4 +28,4 @@ Read through [existing issues](https://github.com/gruntwork-io/terratest/issues)
 
 ## Commercial support
 
-If you need help with Terratest or anything else related to infrastructure or DevOps, Gruntwork offers [Commercial Support](https://gruntwork.io/support/) via Slack, email, and phone/video. If you’re already a Gruntwork customer, hop on Slack and ask away\! If not, [subscribe now](https://www.gruntwork.io/pricing/). If you’re not sure, feel free to email us at <support@gruntwork.io>.
+Does your company rely on Terratest in production? If so, you can get commercial support directly from Gruntwork, the creators of Terratest! Check out the [Commercial Support Page](/commercial-support/) for more details.

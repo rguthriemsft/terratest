@@ -34,6 +34,9 @@ func TestPackerBasicExample(t *testing.T) {
 	// Pick a random AWS region to test in. This helps ensure your code works in all regions.
 	awsRegion := terratest_aws.GetRandomStableRegion(t, nil, nil)
 
+	// Some AWS regions are missing certain instance types, so pick an available type based on the region we picked
+	instanceType := terratest_aws.GetRecommendedInstanceType(t, awsRegion, []string{"t2.micro", "t3.micro"})
+
 	// website::tag::1::Read Packer's template and set AWS Region variable.
 	packerOptions := &packer.Options{
 		// The path to where the Packer template is located
@@ -41,7 +44,9 @@ func TestPackerBasicExample(t *testing.T) {
 
 		// Variables to pass to our Packer build using -var options
 		Vars: map[string]string{
-			"aws_region": awsRegion,
+			"aws_region":    awsRegion,
+			"ami_base_name": fmt.Sprintf("%s", random.UniqueId()),
+			"instance_type": instanceType,
 		},
 
 		// Only build the AWS AMI
@@ -86,6 +91,9 @@ func TestPackerBasicExampleWithVarFile(t *testing.T) {
 	// Pick a random AWS region to test in. This helps ensure your code works in all regions.
 	awsRegion := terratest_aws.GetRandomStableRegion(t, nil, nil)
 
+	// Some AWS regions are missing certain instance types, so pick an available type based on the region we picked
+	instanceType := terratest_aws.GetRecommendedInstanceType(t, awsRegion, []string{"t2.micro", "t3.micro"})
+
 	// Create temporary packer variable file to store aws region
 	varFile, err := ioutil.TempFile("", "*.json")
 	require.NoError(t, err, "Did not expect temp file creation to cause error")
@@ -93,8 +101,8 @@ func TestPackerBasicExampleWithVarFile(t *testing.T) {
 	// Be sure to clean up temp file
 	defer os.Remove(varFile.Name())
 
-	// Write random generated aws region to temporary json file
-	varFileContent := []byte(fmt.Sprintf("{ \"aws_region\": \"%s\" }", awsRegion))
+	// Write the vars we need to a temporary json file
+	varFileContent := []byte(fmt.Sprintf(`{"aws_region": "%s", "instance_type": "%s"}`, awsRegion, instanceType))
 	_, err = varFile.Write(varFileContent)
 	require.NoError(t, err, "Did not expect writing to temp file %s to cause error", varFile.Name())
 
@@ -148,6 +156,9 @@ func TestPackerMultipleConcurrentAmis(t *testing.T) {
 		// Pick a random AWS region to test in. This helps ensure your code works in all regions.
 		awsRegion := terratest_aws.GetRandomStableRegion(t, nil, nil)
 
+		// Some AWS regions are missing certain instance types, so pick an available type based on the region we picked
+		instanceType := terratest_aws.GetRecommendedInstanceType(t, awsRegion, []string{"t2.micro", "t3.micro"})
+
 		packerOptions := &packer.Options{
 			// The path to where the Packer template is located
 			Template: "../examples/packer-basic-example/build.json",
@@ -155,7 +166,8 @@ func TestPackerMultipleConcurrentAmis(t *testing.T) {
 			// Variables to pass to our Packer build using -var options
 			Vars: map[string]string{
 				"aws_region":    awsRegion,
-				"ami_base_name": fmt.Sprintf("%s-terratest-packer", random.UniqueId()),
+				"ami_base_name": fmt.Sprintf("%s", random.UniqueId()),
+				"instance_type": instanceType,
 			},
 
 			// Only build the AWS AMI

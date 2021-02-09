@@ -21,7 +21,9 @@ func TestTerraformAwsNetworkExample(t *testing.T) {
 	privateSubnetCidr := "10.10.1.0/24"
 	publicSubnetCidr := "10.10.2.0/24"
 
-	terraformOptions := &terraform.Options{
+	// Construct the terraform options with default retryable errors to handle the most common retryable errors in
+	// terraform testing.
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../examples/terraform-aws-network-example",
 
@@ -32,7 +34,7 @@ func TestTerraformAwsNetworkExample(t *testing.T) {
 			"public_subnet_cidr":  publicSubnetCidr,
 			"aws_region":          awsRegion,
 		},
-	}
+	})
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)

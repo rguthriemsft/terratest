@@ -93,3 +93,14 @@
   learn_more:
     - name: Terraform Azure Example
       url: https://github.com/gruntwork-io/terratest/tree/master/examples/azure/terraform-azure-example
+
+- id: client-factory
+  name: Azure Client Factory
+  display_in_examples: false
+  files:
+    - url: /modules/azure/client_factory.go
+      id: client_factory_code
+    - url: /modules/azure/client_factory_test.go
+      id: client_factory_test
+    - url: /modules/azure/compute.go
+      id: client_factory_helper

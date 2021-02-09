@@ -30,7 +30,9 @@ func TestTerraformAwsDynamoDBExample(t *testing.T) {
 		{Key: awsSDK.String("Environment"), Value: awsSDK.String("production")},
 	}
 
-	terraformOptions := &terraform.Options{
+	// Construct the terraform options with default retryable errors to handle the most common retryable errors in
+	// terraform testing.
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../examples/terraform-aws-dynamodb-example",
 
@@ -43,7 +45,7 @@ func TestTerraformAwsDynamoDBExample(t *testing.T) {
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
-	}
+	})
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)

@@ -15,10 +15,10 @@ func TestApplyNoError(t *testing.T) {
 	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-no-error", t.Name())
 	require.NoError(t, err)
 
-	options := &Options{
+	options := WithDefaultRetryableErrors(t, &Options{
 		TerraformDir: testFolder,
 		NoColor:      true,
-	}
+	})
 
 	out := InitAndApply(t, options)
 
@@ -34,9 +34,9 @@ func TestApplyWithErrorNoRetry(t *testing.T) {
 	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-with-error", t.Name())
 	require.NoError(t, err)
 
-	options := &Options{
+	options := WithDefaultRetryableErrors(t, &Options{
 		TerraformDir: testFolder,
-	}
+	})
 
 	out, err := InitAndApplyE(t, options)
 
@@ -50,13 +50,13 @@ func TestApplyWithErrorWithRetry(t *testing.T) {
 	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-with-error", t.Name())
 	require.NoError(t, err)
 
-	options := &Options{
+	options := WithDefaultRetryableErrors(t, &Options{
 		TerraformDir: testFolder,
 		MaxRetries:   1,
 		RetryableTerraformErrors: map[string]string{
 			"This is the first run, exiting with an error": "Intentional failure in test fixture",
 		},
-	}
+	})
 
 	out := InitAndApply(t, options)
 
@@ -68,10 +68,10 @@ func TestTgApplyAllTgError(t *testing.T) {
 	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())
 	require.NoError(t, err)
 
-	options := &Options{
+	options := WithDefaultRetryableErrors(t, &Options{
 		TerraformDir:    testFolder,
 		TerraformBinary: "terragrunt",
-	}
+	})
 
 	out := TgApplyAll(t, options)
 
@@ -84,14 +84,14 @@ func TestTgApplyAllError(t *testing.T) {
 	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-with-error", t.Name())
 	require.NoError(t, err)
 
-	options := &Options{
+	options := WithDefaultRetryableErrors(t, &Options{
 		TerraformDir:    testFolder,
 		TerraformBinary: "terragrunt",
 		MaxRetries:      1,
 		RetryableTerraformErrors: map[string]string{
 			"This is the first run, exiting with an error": "Intentional failure in test fixture",
 		},
-	}
+	})
 
 	out := TgApplyAll(t, options)
 
@@ -101,10 +101,10 @@ func TestTgApplyAllError(t *testing.T) {
 func TestTgApplyOutput(t *testing.T) {
 	t.Parallel()
 
-	options := &Options{
+	options := WithDefaultRetryableErrors(t, &Options{
 		TerraformDir:    "../../test/fixtures/terragrunt/terragrunt-output",
 		TerraformBinary: "terragrunt",
-	}
+	})
 
 	Apply(t, options)
 
@@ -127,10 +127,10 @@ func TestIdempotentNoChanges(t *testing.T) {
 	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-no-error", t.Name())
 	require.NoError(t, err)
 
-	options := &Options{
+	options := WithDefaultRetryableErrors(t, &Options{
 		TerraformDir: testFolder,
 		NoColor:      true,
-	}
+	})
 
 	InitAndApplyAndIdempotentE(t, options)
 }
@@ -141,10 +141,10 @@ func TestIdempotentWithChanges(t *testing.T) {
 	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-not-idempotent", t.Name())
 	require.NoError(t, err)
 
-	options := &Options{
+	options := WithDefaultRetryableErrors(t, &Options{
 		TerraformDir: testFolder,
 		NoColor:      true,
-	}
+	})
 
 	out, err := InitAndApplyAndIdempotentE(t, options)
 
@@ -159,10 +159,10 @@ func TestParallelism(t *testing.T) {
 	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-parallelism", t.Name())
 	require.NoError(t, err)
 
-	options := &Options{
+	options := WithDefaultRetryableErrors(t, &Options{
 		TerraformDir: testFolder,
 		NoColor:      true,
-	}
+	})
 
 	Init(t, options)
 

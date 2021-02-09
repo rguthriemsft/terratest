@@ -3,14 +3,22 @@
     <div class="hidden-navs">
       {% for example in site.data.examples %}
         {% if include.example_id == nil or include.example_id == example.id %}
-          <div
-            class="examples__nav-item nav-{{ example.id }}"
-            data-id="{{ example.id }}"
-            data-name="{{ example.name }}"
-            data-url="{{ site.github_api_url }}{{ example.url }}"
-            >
-            <img src="{{ site.baseurl }}{{ example.image }}" alt="{{ example.name }}" />
-          </div>
+          {% assign render_example = false %}
+          
+          {% if example.display_in_examples == nil or example.display_in_examples == true %}
+            {% assign render_example = true %}
+          {% endif %}
+
+          {% if render_example %}
+            <div
+              class="examples__nav-item nav-{{ example.id }}"
+              data-id="{{ example.id }}"
+              data-name="{{ example.name }}"
+              data-url="{{ site.github_api_url }}{{ example.url }}"
+              >
+              <img src="{{ site.baseurl }}{{ example.image }}" alt="{{ example.name }}" />
+            </div>
+          {% endif %}
         {% endif %}
       {% endfor %}
     </div>
@@ -39,7 +47,11 @@
 
   {% for example in site.data.examples %}
     {% if include.example_id == nil or include.example_id == example.id %}
-      {% include examples/example.html example=example file_id=include.file_id skip_learn_more=include.skip_learn_more skip_view_on_github=include.skip_view_on_github skip_tags=include.skip_tags %}
+      {% assign render_example = true %}
+      
+      {% if render_example %}
+        {% include examples/example.html example=example file_id=include.file_id skip_learn_more=include.skip_learn_more skip_view_on_github=include.skip_view_on_github skip_tags=include.skip_tags snippet_id=include.snippet_id %}
+      {% endif %}
     {% endif %}
   {% endfor %}
 

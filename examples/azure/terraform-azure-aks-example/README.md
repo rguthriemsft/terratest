@@ -4,7 +4,7 @@ This folder contains a Terraform module that deploys a basic AKS cluster in [Azu
 
 This module deploys [Azure Kubenetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/), then deploys nginx by a kubernetes yaml file with a Public IP Address using the `Service` resource.
 
-Check out [test/azure/terraform_azure_aks_example_test.go](/test/azure/terraform/azure_aks_example_test.go) to see how you can write automated tests for this module and validate the configuration of the parameters and options. 
+Check out [test/azure/terraform_azure_aks_example_test.go](/test/azure/terraform_azure_aks_example_test.go) to see how you can write automated tests for this module and validate the configuration of the parameters and options. 
 
 **WARNING**: This module and the automated tests for it deploy real resources into your Azure account which can cost you money. 
 

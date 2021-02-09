@@ -16,7 +16,7 @@ func DiskExists(t testing.TestingT, diskName string, resGroupName string, subscr
 	return exists
 }
 
-// DiskExistsE indicates whether the specified Azure Managed Disk exists
+// DiskExistsE indicates whether the specified Azure Managed Disk exists in the specified Azure Resource Group
 func DiskExistsE(diskName string, resGroupName string, subscriptionID string) (bool, error) {
 	// Get the Disk object
 	_, err := GetDiskE(diskName, resGroupName, subscriptionID)

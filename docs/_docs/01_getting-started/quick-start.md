@@ -184,7 +184,7 @@ extra sure that the test always has a chance to finish cleanly.
 
 ## Example #3: Docker
 
-You can use Terratest for testing a variety of infrastructure code and not Terraform. For example, you can use it to 
+You can use Terratest for testing a variety of infrastructure code, not just Terraform. For example, you can use it to
 test your [Docker](https://www.docker.com/) images:
 
 {% include examples/explorer.html example_id='docker-hello-world' file_id='docker_code' class='wide quick-start-examples' skip_learn_more=true skip_view_on_github=true skip_tags=true %}
@@ -220,7 +220,7 @@ To test this code manually, you would:
 1. Run `kubectl apply` to deploy the Docker training webapp.
 1. Use the Kubernetes APIs to figure out the endpoint to hit for the load balancer.
 1. Open the endpoint in your web browser on port 5000 and make sure it says “Hello, World”. Note that, depending on 
-   your Kubernetes cluster, it could take a minute or two for the Docker container to come p, so you may have to retry 
+   your Kubernetes cluster, it could take a minute or two for the Docker container to come up, so you may have to retry 
    a few times.
 1. When you're done testing, run `kubectl delete` to clean everything up.
 

@@ -88,7 +88,9 @@ func initialDeploy(t *testing.T, awsRegion string, workingDir string) {
 	// Specify the text the ASG will return when we make HTTP requests to it.
 	text := fmt.Sprintf("Hello, %s!", uniqueID)
 
-	terraformOptions := &terraform.Options{
+	// Construct the terraform options with default retryable errors to handle the most common retryable errors in
+	// terraform testing.
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: workingDir,
 
@@ -99,7 +101,7 @@ func initialDeploy(t *testing.T, awsRegion string, workingDir string) {
 			"instance_text": text,
 			"key_pair_name": keyPair.Name,
 		},
-	}
+	})
 
 	// Save the Terraform Options struct so future test stages can use it
 	test_structure.SaveTerraformOptions(t, workingDir, terraformOptions)

@@ -147,7 +147,7 @@ func GetAllAzureRegionsE(t testing.TestingT, subscriptionID string) ([]string, e
 	}
 
 	// Setup Subscription client
-	subscriptionClient, err := GetSubscriptionClient()
+	subscriptionClient, err := GetSubscriptionClientE()
 	if err != nil {
 		return nil, err
 	}

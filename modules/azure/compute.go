@@ -8,6 +8,35 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// GetVirtualMachineClient is a helper function that will setup an Azure Virtual Machine client on your behalf.
+func GetVirtualMachineClient(t testing.TestingT, subscriptionID string) *compute.VirtualMachinesClient {
+	vmClient, err := GetVirtualMachineClientE(subscriptionID)
+	require.NoError(t, err)
+	return vmClient
+}
+
+// GetVirtualMachineClientE is a helper function that will setup an Azure Virtual Machine client on your behalf.
+func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesClient, error) {
+
+	// snippet-tag-start::client_factory_example.helper
+	// Create a VM client
+	vmClient, err := CreateVirtualMachinesClientE(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+	// snippet-tag-end::client_factory_example.helper
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+
+	// Attach authorizer to the client
+	vmClient.Authorizer = *authorizer
+	return &vmClient, nil
+}
+
 // VirtualMachineExists indicates whether the specifcied Azure Virtual Machine exists.
 // This function would fail the test if there is an error.
 func VirtualMachineExists(t testing.TestingT, vmName string, resGroupName string, subscriptionID string) bool {
@@ -338,25 +367,4 @@ func GetVirtualMachineE(vmName string, resGroupName string, subscriptionID strin
 	}
 
 	return &vm, nil
-}
-
-// GetVirtualMachineClientE creates a Azure Virtual Machine client in the specified Azure Subscription.
-func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesClient, error) {
-	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get the VM client
-	client := compute.NewVirtualMachinesClient(subscriptionID)
-
-	// Create an authorizer
-	authorizer, err := NewAuthorizer()
-	if err != nil {
-		return nil, err
-	}
-	client.Authorizer = *authorizer
-
-	return &client, nil
 }

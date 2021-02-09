@@ -62,7 +62,9 @@ func TestTerraformRemoteExecExample(t *testing.T) {
 		sshAgent := ssh.SshAgentWithKeyPair(t, keyPair.KeyPair)
 		defer sshAgent.Stop()
 
-		terraformOptions := &terraform.Options{
+		// Construct the terraform options with default retryable errors to handle the most common retryable errors in
+		// terraform testing.
+		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			// The path to where our Terraform code is located
 			TerraformDir: terraformDirectory,
 
@@ -74,7 +76,7 @@ func TestTerraformRemoteExecExample(t *testing.T) {
 			},
 
 			SshAgent: sshAgent, // Overrides local SSH agent with our new agent
-		}
+		})
 
 		// Save the options and key pair so later test stages can use them
 		test_structure.SaveTerraformOptions(t, terraformDirectory, terraformOptions)

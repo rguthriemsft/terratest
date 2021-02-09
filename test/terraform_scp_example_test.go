@@ -86,7 +86,9 @@ func createTerraformOptions(t *testing.T, exampleFolder string) (*terraform.Opti
 	keyPairName := fmt.Sprintf("terratest-asg-scp-example-%s", uniqueID)
 	keyPair := aws.CreateAndImportEC2KeyPair(t, awsRegion, keyPairName)
 
-	terraformOptions := &terraform.Options{
+	// Construct the terraform options with default retryable errors to handle the most common retryable errors in
+	// terraform testing.
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: exampleFolder,
 
@@ -96,7 +98,7 @@ func createTerraformOptions(t *testing.T, exampleFolder string) (*terraform.Opti
 			"instance_name": instanceName,
 			"key_pair_name": keyPairName,
 		},
-	}
+	})
 
 	return terraformOptions, keyPair
 }

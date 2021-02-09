@@ -150,6 +150,17 @@ func TestFormatPackerArgs(t *testing.T) {
 				Vars: map[string]string{
 					"foo": "bar",
 				},
+				Only:   "onlythis",
+				Except: "long-run-pp,artifact",
+			},
+			expected: "build -machine-readable -var foo=bar -only=onlythis -except=long-run-pp,artifact packer.json",
+		},
+		{
+			option: &Options{
+				Template: "packer.json",
+				Vars: map[string]string{
+					"foo": "bar",
+				},
 				VarFiles: []string{
 					"foofile.json",
 				},

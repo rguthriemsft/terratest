@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 
 	// The following line loads the gcp plugin which is required to authenticate against GKE clusters.
 	// See: https://github.com/kubernetes/client-go/issues/242
@@ -25,6 +26,7 @@ func GetKubernetesClientE(t testing.TestingT) (*kubernetes.Clientset, error) {
 // GetKubernetesClientFromOptionsE returns a Kubernetes API client given a configured KubectlOptions object.
 func GetKubernetesClientFromOptionsE(t testing.TestingT, options *KubectlOptions) (*kubernetes.Clientset, error) {
 	var err error
+	var config *rest.Config
 
 	kubeConfigPath, err := options.GetConfigPath(t)
 	if err != nil {
@@ -32,9 +34,14 @@ func GetKubernetesClientFromOptionsE(t testing.TestingT, options *KubectlOptions
 	}
 	logger.Logf(t, "Configuring kubectl using config file %s with context %s", kubeConfigPath, options.ContextName)
 	// Load API config (instead of more low level ClientConfig)
-	config, err := LoadApiClientConfigE(kubeConfigPath, options.ContextName)
+	config, err = LoadApiClientConfigE(kubeConfigPath, options.ContextName)
 	if err != nil {
-		return nil, err
+		logger.Logf(t, "Error loading api client config, falling back to in-cluster authentication via serviceaccount token: %s", err)
+		config, err = rest.InClusterConfig()
+		if err != nil {
+			return nil, err
+		}
+		logger.Log(t, "Configuring kubectl using in-cluster serviceaccount token")
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)

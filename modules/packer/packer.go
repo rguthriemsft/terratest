@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/retry"
+	"github.com/hashicorp/go-multierror"
 
-	"github.com/gruntwork-io/terratest/modules/customerrors"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/shell"
 	"github.com/gruntwork-io/terratest/modules/testing"
@@ -22,6 +22,7 @@ type Options struct {
 	Vars               map[string]string // The custom vars to pass when running the build command
 	VarFiles           []string          // Var file paths to pass Packer using -var-file option
 	Only               string            // If specified, only run the build of this name
+	Except             string            // Runs the build excluding the specified builds and post-processors
 	Env                map[string]string // Custom environment variables to set when running Packer
 	RetryableErrors    map[string]string // If packer build fails with one of these (transient) errors, retry. The keys are a regexp to match against the error and the message is what to display to a user if that error is matched.
 	MaxRetries         int               // Maximum number of times to retry errors matching RetryableErrors
@@ -54,7 +55,7 @@ func BuildArtifactsE(t testing.TestingT, artifactNameToOptions map[string]*Optio
 	waitForArtifacts.Add(len(artifactNameToOptions))
 
 	var artifactNameToArtifactId = map[string]string{}
-	errorsOccurred := []error{}
+	var errorsOccurred = new(multierror.Error)
 
 	for artifactName, curOptions := range artifactNameToOptions {
 		// The following is necessary to make sure artifactName and curOptions don't
@@ -66,7 +67,7 @@ func BuildArtifactsE(t testing.TestingT, artifactNameToOptions map[string]*Optio
 			artifactId, err := BuildArtifactE(t, curOptions)
 
 			if err != nil {
-				errorsOccurred = append(errorsOccurred, err)
+				errorsOccurred = multierror.Append(errorsOccurred, err)
 			} else {
 				artifactNameToArtifactId[artifactName] = artifactId
 			}
@@ -75,7 +76,7 @@ func BuildArtifactsE(t testing.TestingT, artifactNameToOptions map[string]*Optio
 
 	waitForArtifacts.Wait()
 
-	return artifactNameToArtifactId, customerrors.NewMultiError(errorsOccurred...)
+	return artifactNameToArtifactId, errorsOccurred.ErrorOrNil()
 }
 
 // BuildArtifact builds the given Packer template and return the generated Artifact ID.
@@ -160,6 +161,10 @@ func formatPackerArgs(options *Options) []string {
 
 	if options.Only != "" {
 		args = append(args, fmt.Sprintf("-only=%s", options.Only))
+	}
+
+	if options.Except != "" {
+		args = append(args, fmt.Sprintf("-except=%s", options.Except))
 	}
 
 	return append(args, options.Template)

@@ -4,10 +4,13 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2019-06-01/subscriptions"
 )
 
-// GetSubscriptionClient is a helper function that will setup an Azure Subscription client on your behalf
-func GetSubscriptionClient() (*subscriptions.Client, error) {
+// GetSubscriptionClientE is a helper function that will setup an Azure Subscription client on your behalf
+func GetSubscriptionClientE() (*subscriptions.Client, error) {
 	// Create a Subscription client
-	subscriptionClient := subscriptions.NewClient()
+	client, err := CreateSubscriptionsClientE()
+	if err != nil {
+		return nil, err
+	}
 
 	// Create an authorizer
 	authorizer, err := NewAuthorizer()
@@ -16,7 +19,6 @@ func GetSubscriptionClient() (*subscriptions.Client, error) {
 	}
 
 	// Attach authorizer to the client
-	subscriptionClient.Authorizer = *authorizer
-
-	return &subscriptionClient, nil
+	client.Authorizer = *authorizer
+	return &client, nil
 }

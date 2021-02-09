@@ -6,6 +6,7 @@ terraform.tfvars
 .terragrunt
 .terragrunt-cache
 
+# IDE files
 .idea
 .vscode
 *.iml
@@ -21,3 +22,6 @@ vendor
 .DS_Store
 # Intermediate file for testing
 kubeconfig
+
+# environment files
+.env

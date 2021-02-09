@@ -26,8 +26,6 @@ import (
 func TestRemoteChartInstall(t *testing.T) {
 	t.Parallel()
 
-	helmChart := "stable/chartmuseum"
-
 	namespaceName := fmt.Sprintf(
 		"%s-%s",
 		strings.ToLower(t.Name()),
@@ -48,6 +46,12 @@ func TestRemoteChartInstall(t *testing.T) {
 		},
 	}
 
+	// Add the stable repo under a random name so as not to touch existing repo configs
+	uniqueName := strings.ToLower(fmt.Sprintf("terratest-%s", random.UniqueId()))
+	defer RemoveRepo(t, options, uniqueName)
+	AddRepo(t, options, uniqueName, "https://charts.helm.sh/stable")
+	helmChart := fmt.Sprintf("%s/chartmuseum", uniqueName)
+
 	// Generate a unique release name so we can defer the delete before installing
 	releaseName := fmt.Sprintf(
 		"chartmuseum-%s",
@@ -61,6 +65,9 @@ func TestRemoteChartInstall(t *testing.T) {
 
 	// Fix chart version and retry install
 	options.Version = "2.3.0"
+	// Test that passing extra arguments doesn't error, by changing default timeout
+	options.ExtraArgs = map[string][]string{"install": []string{"--timeout", "5m1s"}}
+	options.ExtraArgs["delete"] = []string{"--timeout", "5m1s"}
 	require.NoError(t, InstallE(t, options, helmChart, releaseName))
 	waitForRemoteChartPods(t, kubectlOptions, releaseName, 1)
 

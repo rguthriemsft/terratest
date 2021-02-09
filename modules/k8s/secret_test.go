@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -38,6 +39,18 @@ func TestGetSecretEReturnsCorrectSecretInCorrectNamespace(t *testing.T) {
 	secret := GetSecret(t, options, "master-password")
 	require.Equal(t, secret.Name, "master-password")
 	require.Equal(t, secret.Namespace, uniqueID)
+}
+
+func TestWaitUntilSecretAvailableReturnsSuccessfully(t *testing.T) {
+	t.Parallel()
+
+	uniqueID := strings.ToLower(random.UniqueId())
+	options := NewKubectlOptions("", "", uniqueID)
+	configData := fmt.Sprintf(EXAMPLE_SECRET_YAML_TEMPLATE, uniqueID, uniqueID)
+	defer KubectlDeleteFromString(t, options, configData)
+
+	KubectlApplyFromString(t, options, configData)
+	WaitUntilSecretAvailable(t, options, "master-password", 10, 1*time.Second)
 }
 
 const EXAMPLE_SECRET_YAML_TEMPLATE = `---

@@ -32,6 +32,11 @@ func InstallE(t testing.TestingT, options *Options, chart string, releaseName st
 	// Declare err here so that we can update args later
 	var err error
 	args := []string{}
+	if options.ExtraArgs != nil {
+		if installArgs, ok := options.ExtraArgs["install"]; ok {
+			args = append(args, installArgs...)
+		}
+	}
 	args = append(args, getNamespaceArgs(options)...)
 	if options.Version != "" {
 		args = append(args, "--version", options.Version)

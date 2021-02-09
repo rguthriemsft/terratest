@@ -9,13 +9,14 @@
     "oci_base_image_ocid": "",
     "oci_compartment_ocid": "",
     "oci_pass_phrase": "",
-    "oci_subnet_ocid": ""
+    "oci_subnet_ocid": "",
+    "instance_type": "t2.micro"
   },
   "builders": [{
     "type": "amazon-ebs",
     "ami_name": "{{user `ami_base_name`}}-terratest-packer-example",
     "ami_description": "An example of how to create a custom AMI on top of Ubuntu",
-    "instance_type": "t2.micro",
+    "instance_type": "{{user `instance_type`}}",
     "region": "{{user `aws_region`}}",
     "source_ami_filter": {
       "filters": {
@@ -54,6 +55,7 @@
     "inline": [
       "sudo DEBIAN_FRONTEND=noninteractive apt-get update",
       "sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y"
-    ]
+    ],
+    "pause_before": "30s"
   }]
 }

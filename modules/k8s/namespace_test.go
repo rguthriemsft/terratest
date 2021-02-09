@@ -14,6 +14,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/gruntwork-io/terratest/modules/random"
 )
@@ -33,4 +34,27 @@ func TestNamespaces(t *testing.T) {
 
 	namespace := GetNamespace(t, options, namespaceName)
 	require.Equal(t, namespace.Name, namespaceName)
+}
+
+func TestNamespaceWithMetadata(t *testing.T) {
+	t.Parallel()
+
+	uniqueId := random.UniqueId()
+	namespaceName := strings.ToLower(uniqueId)
+	options := NewKubectlOptions("", "", namespaceName)
+	namespaceLabels := map[string]string{"foo": "bar"}
+	namespaceObjectMetaWithLabels := metav1.ObjectMeta{
+		Name:   namespaceName,
+		Labels: namespaceLabels,
+	}
+	CreateNamespaceWithMetadata(t, options, namespaceObjectMetaWithLabels)
+	defer func() {
+		DeleteNamespace(t, options, namespaceName)
+		namespace := GetNamespace(t, options, namespaceName)
+		require.Equal(t, namespace.Status.Phase, corev1.NamespaceTerminating)
+	}()
+
+	namespace := GetNamespace(t, options, namespaceName)
+	require.Equal(t, namespace.Name, namespaceName)
+	require.Equal(t, namespace.Labels, namespaceLabels)
 }

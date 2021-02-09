@@ -2,6 +2,7 @@ package docker
 
 import (
 	"crypto/tls"
+	"fmt"
 	"strconv"
 	"strings"
 	"testing"
@@ -20,7 +21,9 @@ func TestStop(t *testing.T) {
 
 	// choosing a unique port since 80 may not fly well on test machines
 	port := "13030"
-	testURL := "http://localhost:" + port
+	host := GetDockerHost()
+
+	testURL := fmt.Sprintf("http://%s:%s", host, port)
 
 	// for testing the stopping of a docker container
 	// we got to run a container first and then stop it

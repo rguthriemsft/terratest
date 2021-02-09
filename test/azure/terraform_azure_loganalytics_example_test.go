@@ -1,5 +1,3 @@
-// +build azure
-
 // NOTE: We use build tags to differentiate azure testing because we currently do not have azure access setup for
 // CircleCI.
 
@@ -50,7 +48,7 @@ func TestTerraformAzureLogAnalyticsExample(t *testing.T) {
 	assert.True(t, workspaceExists, "log analytics workspace not found.")
 
 	actualSku := azure.GetLogAnalyticsWorkspaceSku(t, workspaceName, resourceGroupName, subscriptionID)
-	assert.Equal(t, sku, strings.ToLower(actualSku), "log analytics sku mismatch")
+	assert.Equal(t, strings.ToLower(sku), strings.ToLower(actualSku), "log analytics sku mismatch")
 
 	var actualRetentionPeriod = azure.GetLogAnalyticsWorkspaceRetentionPeriodDays(t, workspaceName, resourceGroupName, subscriptionID)
 	expectedPeriod, _ := strconv.ParseInt(retentionPeriodString, 10, 32)

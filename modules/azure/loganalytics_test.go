@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 /*
@@ -18,16 +19,12 @@ func TestLogAnalyticsWorkspace(t *testing.T) {
 	assert.Error(t, err, "Workspace")
 }
 
-func TestLogAnalyticsSku(t *testing.T) {
+func TestGetLogAnalyticsWorkspaceE(t *testing.T) {
 	t.Parallel()
+	workspaceName := ""
+	resourceGroupName := ""
+	subscriptionID := ""
 
-	_, err := GetLogAnalyticsWorkspaceSkuE("fake", "", "")
-	assert.Error(t, err, "Sku")
-}
-
-func TestLogAnalyticsRetentionPeriodDays(t *testing.T) {
-	t.Parallel()
-
-	_, err := GetLogAnalyticsWorkspaceRetentionPeriodDaysE("fake", "", "")
-	assert.Error(t, err, "RetentionPeriod")
+	_, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
+	require.Error(t, err)
 }

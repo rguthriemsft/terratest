@@ -17,37 +17,13 @@ func LogAnalyticsWorkspaceExists(t testing.TestingT, workspaceName string, resou
 	return exists
 }
 
-// GetLogAnalyticsWorkspaceSku return the log analytics workspace SKU as string as one of the following: Free, Standard, Premium, PerGB2018, CapacityReservation; otherwise empty string "".
+// GetLogAnalyticsWorkspace gets an operational insights workspace if it exists in a subscription.
 // This function would fail the test if there is an error.
-func GetLogAnalyticsWorkspaceSku(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) string {
-	sku, err := GetLogAnalyticsWorkspaceSkuE(workspaceName, resourceGroupName, subscriptionID)
-	require.NoError(t, err)
-	return string(sku)
-}
-
-func GetLogAnalyticsWorkspaceSkuE(workspaceName string, resourceGroupName string, subscriptionID string) (string, error) {
+func GetLogAnalyticsWorkspace(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) *operationalinsights.Workspace {
 	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
-	if err != nil {
-		return "", err
-	}
-	return string(ws.Sku.Name), nil
-}
-
-// GetLogAnalyticsWorkspaceRetentionPeriodDays returns the log analytics workspace retention period in days.
-// This function would fail the test if there is an error.
-func GetLogAnalyticsWorkspaceRetentionPeriodDays(t testing.TestingT, workspaceName string, resourceGroupName string, subscriptionID string) int32 {
-	periodInDays, err := GetLogAnalyticsWorkspaceRetentionPeriodDaysE(workspaceName, resourceGroupName, subscriptionID)
 	require.NoError(t, err)
-	return periodInDays
-}
 
-func GetLogAnalyticsWorkspaceRetentionPeriodDaysE(workspaceName string, resourceGroupName string, subscriptionID string) (int32, error) {
-	ws, err := GetLogAnalyticsWorkspaceE(workspaceName, resourceGroupName, subscriptionID)
-	if err != nil {
-		return -1, err
-	}
-
-	return *ws.RetentionInDays, nil
+	return ws
 }
 
 // GetLogAnalyticsWorkspaceE gets an operational insights workspace if it exists in a subscription.

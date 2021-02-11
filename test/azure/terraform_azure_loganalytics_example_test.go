@@ -49,10 +49,12 @@ func TestTerraformAzureLogAnalyticsExample(t *testing.T) {
 	workspaceExists := azure.LogAnalyticsWorkspaceExists(t, workspaceName, resourceGroupName, subscriptionID)
 	assert.True(t, workspaceExists, "log analytics workspace not found.")
 
-	actualSku := azure.GetLogAnalyticsWorkspaceSku(t, workspaceName, resourceGroupName, subscriptionID)
+	actualWorkspace := azure.GetLogAnalyticsWorkspace(t, workspaceName, resourceGroupName, subscriptionID)
+
+	actualSku := string(actualWorkspace.Sku.Name)
 	assert.Equal(t, strings.ToLower(sku), strings.ToLower(actualSku), "log analytics sku mismatch")
 
-	var actualRetentionPeriod = azure.GetLogAnalyticsWorkspaceRetentionPeriodDays(t, workspaceName, resourceGroupName, subscriptionID)
+	actualRetentionPeriod := *actualWorkspace.RetentionInDays
 	expectedPeriod, _ := strconv.ParseInt(retentionPeriodString, 10, 32)
 	assert.Equal(t, int32(expectedPeriod), actualRetentionPeriod, "log analytics retention period mismatch")
 }

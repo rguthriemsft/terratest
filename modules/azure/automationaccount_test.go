@@ -17,17 +17,6 @@ The below tests are currently stubbed out, with the expectation that they will t
 If/when methods to create and delete automation account resources are added, these tests can be extended.
 */
 
-func TestGetAutomationAccountClientE(t *testing.T) {
-	t.Parallel()
-
-	subscriptionID := ""
-
-	client, err := GetAutomationAccountClientE(subscriptionID)
-
-	require.NoError(t, err)
-	assert.NotEmpty(t, *client)
-}
-
 func TestAutomationAccountExistsE(t *testing.T) {
 	t.Parallel()
 
@@ -191,70 +180,4 @@ func TestGetAutomationAccountRunAsConnectionE(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.NotEmpty(t, *connection)
-}
-
-func TestGetCertificateClientE(t *testing.T) {
-	t.Parallel()
-
-	subscriptionID := ""
-
-	client, err := GetCertificateClientE(subscriptionID)
-
-	require.NoError(t, err)
-	assert.NotEmpty(t, *client)
-}
-
-func TestGetDscConfigurationClientE(t *testing.T) {
-	t.Parallel()
-
-	subscriptionID := ""
-
-	client, err := GetDscConfigurationClientE(subscriptionID)
-
-	require.NoError(t, err)
-	assert.NotEmpty(t, *client)
-}
-
-func TestGetDscCompilationJobClientE(t *testing.T) {
-	t.Parallel()
-
-	subscriptionID := ""
-
-	client, err := GetDscCompilationJobClientE(subscriptionID)
-
-	require.NoError(t, err)
-	assert.NotEmpty(t, *client)
-}
-
-func TestGetAutomationAccountCertficateClientE(t *testing.T) {
-	t.Parallel()
-
-	subscriptionID := ""
-
-	client, err := GetAutomationAccountCertficateClientE(subscriptionID)
-
-	require.NoError(t, err)
-	assert.NotEmpty(t, *client)
-}
-
-func TestGetAutomationAccountRunAsConnectionClientE(t *testing.T) {
-	t.Parallel()
-
-	subscriptionID := ""
-
-	client, err := GetAutomationAccountRunAsConnectionClientE(subscriptionID)
-
-	require.NoError(t, err)
-	assert.NotEmpty(t, *client)
-}
-
-func TestGetAutomationAccountDscNodeConfigClientE(t *testing.T) {
-	t.Parallel()
-
-	subscriptionID := ""
-
-	client, err := GetAutomationAccountDscNodeConfigClientE(subscriptionID)
-
-	require.NoError(t, err)
-	assert.NotEmpty(t, *client)
 }

@@ -161,10 +161,17 @@ func GetAutomationAccountE(t testing.TestingT, automationAccountName string, res
 		return nil, err
 	}
 
-	client, err := GetAutomationAccountClientE(subscriptionID)
+	client, err := CreateAutomationAccountClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+	client.Authorizer = *authorizer
 
 	automationAccount, err := client.Get(context.Background(), resourceGroupName, automationAccountName)
 	if err != nil {
@@ -176,10 +183,17 @@ func GetAutomationAccountE(t testing.TestingT, automationAccountName string, res
 
 // GetAutomationAccountDscConfigurationE returns the Azure Automation Account DscConfiguration by Automation Account name if it exists in the subscription
 func GetAutomationAccountDscConfigurationE(t testing.TestingT, dscConfigurationName string, automationAccountName string, resourceGroupName string, subscriptionID string) (*automation.DscConfiguration, error) {
-	client, err := GetDscConfigurationClientE(subscriptionID)
+	client, err := CreateAutomationAccountDscConfigurationClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+	client.Authorizer = *authorizer
 
 	dscConfiguration, err := client.Get(context.Background(), resourceGroupName, automationAccountName, dscConfigurationName)
 	if err != nil {
@@ -191,10 +205,17 @@ func GetAutomationAccountDscConfigurationE(t testing.TestingT, dscConfigurationN
 
 // AutomationAccountDscCompileJobStatusE returns the Azure Automation Account DscConfiguration by Automation Account name if it exists in the subscription
 func AutomationAccountDscCompileJobStatusE(t testing.TestingT, dscConfigurationName string, automationAccountName string, resourceGroupName string, subscriptionID string) (string, error) {
-	client, err := GetDscCompilationJobClientE(subscriptionID)
+	client, err := CreateAutomationAccountDscCompilationJobClientE(subscriptionID)
 	if err != nil {
 		return "", err
 	}
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return "", err
+	}
+	client.Authorizer = *authorizer
 
 	filter := fmt.Sprintf("properties/configuration/name eq '%s'", dscConfigurationName)
 	dscCompilationJobListResultPage, err := client.ListByAutomationAccount(context.Background(), resourceGroupName, automationAccountName, filter)
@@ -230,10 +251,17 @@ func AutomationAccountDscCompileJobStatusE(t testing.TestingT, dscConfigurationN
 
 // GetAutomationAccountCertificateE gets the RunAs Connection Certificate if it exists in the Azure Automation Account
 func GetAutomationAccountCertificateE(t testing.TestingT, automationAccountCertificateName string, automationAccountName string, resourceGroupName string, subscriptionID string) (*automation.Certificate, error) {
-	client, err := GetAutomationAccountCertficateClientE(subscriptionID)
+	client, err := CreateAutomationAccountCertficateClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+	client.Authorizer = *authorizer
 
 	// Get Automation Account Connection
 	automationAccountCertificate, err := client.Get(context.Background(), resourceGroupName, automationAccountName, automationAccountCertificateName)
@@ -246,10 +274,17 @@ func GetAutomationAccountCertificateE(t testing.TestingT, automationAccountCerti
 
 // GetAutomationAccountDscNodeConfigurationE gets the Node Configuration if it exists in the Azure Automation Account
 func GetAutomationAccountDscNodeConfigurationE(t testing.TestingT, dscConfiguraitonName string, vmName string, automationAccountName string, resourceGroupName string, subscriptionID string) (*automation.DscNode, error) {
-	client, err := GetAutomationAccountDscNodeConfigClientE(subscriptionID)
+	client, err := CreateAutomationAccountDscNodeConfigClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+	client.Authorizer = *authorizer
 
 	filter := fmt.Sprintf("name eq '%s'", vmName)
 	dscNodeListResultPage, err := client.ListByAutomationAccount(context.Background(), resourceGroupName, automationAccountName, filter)
@@ -285,10 +320,17 @@ func GetAutomationAccountDscNodeConfigurationE(t testing.TestingT, dscConfigurai
 
 // GetAutomationAccountRunAsConnectionE gets the RunAs Connection if it exists in the Azure Automation Account
 func GetAutomationAccountRunAsConnectionE(t testing.TestingT, automationAccountRunAsConnectionName string, automationAccountName string, resourceGroupName string, subscriptionID string) (*automation.Connection, error) {
-	client, err := GetAutomationAccountRunAsConnectionClientE(subscriptionID)
+	client, err := CreateAutomationAccountRunAsConnectionClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+	client.Authorizer = *authorizer
 
 	// Get Automation Account Connection
 	automationAccountRunAsConnection, err := client.Get(context.Background(), resourceGroupName, automationAccountName, automationAccountRunAsConnectionName)
@@ -297,153 +339,4 @@ func GetAutomationAccountRunAsConnectionE(t testing.TestingT, automationAccountR
 	}
 
 	return &automationAccountRunAsConnection, nil
-}
-
-// GetCertificateClientE returns the Azure Automation Account Certfiicate client
-func GetCertificateClientE(subscriptionID string) (*automation.CertificateClient, error) {
-	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get the Automation Account Certificate client
-	client := automation.NewCertificateClient(subscriptionID)
-
-	// Create an authorizer
-	authorizer, err := NewAuthorizer()
-	if err != nil {
-		return nil, err
-	}
-	client.Authorizer = *authorizer
-
-	return &client, nil
-}
-
-// GetAutomationAccountClientE returns the Azure Automation Account client
-func GetAutomationAccountClientE(subscriptionID string) (*automation.AccountClient, error) {
-	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get the Automation Account Client
-	client := automation.NewAccountClient(subscriptionID)
-
-	// Create an authorizer
-	authorizer, err := NewAuthorizer()
-	if err != nil {
-		return nil, err
-	}
-	client.Authorizer = *authorizer
-
-	return &client, nil
-}
-
-// GetDscConfigurationClientE returns the Azure Automation Account DscConfigurationClient
-func GetDscConfigurationClientE(subscriptionID string) (*automation.DscConfigurationClient, error) {
-	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get the Automation Account DSC Configuraiton Client
-	client := automation.NewDscConfigurationClient(subscriptionID)
-
-	// Create an authorizer
-	authorizer, err := NewAuthorizer()
-	if err != nil {
-		return nil, err
-	}
-	client.Authorizer = *authorizer
-
-	return &client, nil
-}
-
-// GetDscCompilationJobClientE returns the Azure Automation Account DscCompilationJobClient
-func GetDscCompilationJobClientE(subscriptionID string) (*automation.DscCompilationJobClient, error) {
-	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get the Automation Account DSC Compilation Job Client
-	client := automation.NewDscCompilationJobClient(subscriptionID)
-
-	// Create an authorizer
-	authorizer, err := NewAuthorizer()
-	if err != nil {
-		return nil, err
-	}
-	client.Authorizer = *authorizer
-
-	return &client, nil
-}
-
-// GetAutomationAccountCertficateClientE gets the RunAs Connection Certificate if it exists in the Azure Automation Account
-func GetAutomationAccountCertficateClientE(subscriptionID string) (*automation.CertificateClient, error) {
-	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get the Certificate Client reference
-	client := automation.NewCertificateClient(subscriptionID)
-
-	// setup authorizer
-	authorizer, err := NewAuthorizer()
-	if err != nil {
-		return nil, err
-	}
-	client.Authorizer = *authorizer
-
-	return &client, nil
-}
-
-// GetAutomationAccountRunAsConnectionClientE gets the RunAs Connection if it exists in the Azure Automation Account
-func GetAutomationAccountRunAsConnectionClientE(subscriptionID string) (*automation.ConnectionClient, error) {
-	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get the Automation Account Client
-	client := automation.NewConnectionClient(subscriptionID)
-
-	// setup authorizer
-	auth, err := NewAuthorizer()
-	if err != nil {
-		return nil, err
-	}
-	// Setup auth and create request params
-	client.Authorizer = *auth
-
-	return &client, nil
-}
-
-// GetAutomationAccountDscNodeConfigClientE gets the RunAs Connection if it exists in the Azure Automation Account
-func GetAutomationAccountDscNodeConfigClientE(subscriptionID string) (*automation.DscNodeClient, error) {
-	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get the Automation Account Client
-	client := automation.NewDscNodeClient(subscriptionID)
-
-	// setup authorizer
-	auth, err := NewAuthorizer()
-	if err != nil {
-		return nil, err
-	}
-	// Setup auth and create request params
-	client.Authorizer = *auth
-
-	return &client, nil
 }

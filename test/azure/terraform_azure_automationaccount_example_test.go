@@ -23,7 +23,7 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 	expectedAutomationAccountName := "terratest-AutomationAccount"
 	expectedSampleDscName := "SampleDSC"
 	expectedSampleDscConfigurationName := "SampleDSC.NotWebServer"
-	expectedVmNodeHostName := "dscnode"
+	expectedVMNodeHostName := "dscnode"
 	expectedRunAsAccountName := "terratest-AutomationRunAsConnectionName"
 	expectedRunAsType := "AzureServicePrincipal"
 	expectedRunAsCertificateName := "terratest-AutomationConnectionCertificateName"
@@ -40,7 +40,7 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 			"automation_run_as_connection_type":        expectedRunAsType,
 			"automation_run_as_certificate_name":       expectedRunAsCertificateName,
 			"AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT": expectedRunAsCertificateThumbprint,
-			"vm_host_name":                             expectedVmNodeHostName,
+			"vm_host_name":                             expectedVMNodeHostName,
 		},
 	}
 
@@ -67,6 +67,6 @@ func TestTerraformAzureAutomationAccountExample(t *testing.T) {
 	dscCompiled := azure.AutomationAccountDscCompiled(t, expectedSampleDscName, automationAccountName, resourceGroupName, subscriptionID)
 	assert.True(t, dscCompiled)
 	// Check that the DSC was successfully configured on the VM node
-	dscConfiguredOnNode := azure.AutomationAccountDscAppliedSuccessfullyToVM(t, expectedSampleDscConfigurationName, expectedVmNodeHostName+"-"+uniquePostfix, automationAccountName, resourceGroupName, subscriptionID)
+	dscConfiguredOnNode := azure.AutomationAccountDscAppliedSuccessfullyToVM(t, expectedSampleDscConfigurationName, expectedVMNodeHostName+"-"+uniquePostfix, automationAccountName, resourceGroupName, subscriptionID)
 	assert.True(t, dscConfiguredOnNode)
 }

@@ -27,3 +27,4 @@ kubeconfig
 
 # Environment variable file
 .env
+*.pfx

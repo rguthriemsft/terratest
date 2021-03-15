@@ -159,6 +159,34 @@ func CreateKeyVaultManagementClientE(subscriptionID string) (*kvmng.VaultsClient
 	return &vaultClient, nil
 }
 
+// CreateDisksClientE returns a new Disks client in the specified Azure Subscription
+func CreateDisksClientE(subscriptionID string) (*compute.DisksClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the Disks client
+	client := compute.NewDisksClientWithBaseURI(baseURI, subscriptionID)
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+
+	client.Authorizer = *authorizer
+
+	return &client, nil
+}
+
 // GetKeyVaultURISuffixE returns the proper KeyVault URI suffix for the configured Azure environment.
 // This function would fail the test if there is an error.
 func GetKeyVaultURISuffixE() (string, error) {

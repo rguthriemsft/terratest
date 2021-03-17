@@ -103,6 +103,7 @@ jobs:
           APP_ID=`echo $AZURE_CREDENTIALS | jq -r -c ".clientId"`
           APP_PASSWORD=`echo $AZURE_CREDENTIALS | jq -r -c ".clientSecret"`
           TENANT_ID=`echo $AZURE_CREDENTIALS | jq -r -c ".tenantId"`
+          APP_DISPLAY_NAME=`az ad sp show --id ea2a3195-6d82-4ca8-a325-6b356795fc91  --query "displayName" --output tsv`
 
           # if clientId, subscriptionId, tenantId doesn't provide to the go tests
           # by default, terratest reads them from below environment variables
@@ -121,8 +122,32 @@ jobs:
           export TF_VAR_client_id="$APP_ID"
           export TF_VAR_client_secret="$APP_PASSWORD"
 
+          # automation account requires executing a PowerShell login with service principal credentials
+          export TF_VAR_POWERSHELL_CLIENT_ID="$APP_ID"
+          export TF_VAR_POWERSHELL_CLIENT_SECRET="$APP_PASSWORD"
+          export TF_VAR_AUTOMATION_ACCOUNT_CLIENT_ID="$APP_ID"
+          
+          # automation account requires an x.509 certificate for configuration on the resource and service principal run as account
+          # create x.509 certificate
+          openssl req -new -newkey rsa:2048 -days 365 -nodes -x509  -subj "/C=US/ST=fl/L=pvb/O=Dis/CN=www.terratest.com" -keyout ~/cert.pem  -out ~/cert.pem
+          # add x.509 certificate as a certificate on the service principal
+          az ad sp credential reset --name "$APP_DISPLAY_NAME" --cert "@~/cert.pem" --append
+          openssl pkcs12 -export -in ~/cert.pem -inkey ~/cert.pem -out ~/cert.pfx -passout pass:""
+          export TF_VAR_AUTOMATION_RUN_AS_CERTIFICATE_THUMBPRINT=`az ad sp credential list --id $APP_ID --cert | jq -r '.[].customKeyIdentifier'`
+          export TF_VAR_automation_run_as_certificate_path=~/cert.pfx
+
           # run the actual tests under the `azure` subfolder
           go test ./azure/* -v -timeout 90m
+
+          function finally() {
+            # Clean up the certificates in file system after running the tests
+            rm -rf ~/cert.pem
+            rm -rf ~/cert.pfx
+          
+            # Clean up service principal by removing the x.509 certificate after running the tests
+            az ad sp credential delete --id $APP_ID --key-id  `az ad sp credential list --id $APP_ID --cert | jq -r '.[].keyId'` --cert
+          }
+          trap finally EXIT SIGTERM
       - name: report back the result
         if: always()
         env:

@@ -26,7 +26,7 @@ func TestAutomationAccountExistsE(t *testing.T) {
 
 	_, err := AutomationAccountExistsE(t, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
+	require.Error(t, err)
 }
 
 func TestAutomationAccountDscExistsE(t *testing.T) {
@@ -39,7 +39,7 @@ func TestAutomationAccountDscExistsE(t *testing.T) {
 
 	_, err := AutomationAccountDscExistsE(t, dscConfiguraitonName, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
+	require.Error(t, err)
 }
 
 func TestAutomationAccountDscCompiledE(t *testing.T) {
@@ -52,7 +52,7 @@ func TestAutomationAccountDscCompiledE(t *testing.T) {
 
 	_, err := AutomationAccountDscCompiledE(t, dscConfiguraitonName, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
+	require.Error(t, err)
 }
 
 func TestAutomationAccountRunAsCertificateThumbprintMatchesE(t *testing.T) {
@@ -66,7 +66,7 @@ func TestAutomationAccountRunAsCertificateThumbprintMatchesE(t *testing.T) {
 
 	_, err := AutomationAccountRunAsCertificateThumbprintMatchesE(t, runAsCertificateThumbprint, runAsCertificateName, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
+	require.Error(t, err)
 }
 
 func TestAutomationAccountRunAsConnectionValidatesE(t *testing.T) {
@@ -81,7 +81,7 @@ func TestAutomationAccountRunAsConnectionValidatesE(t *testing.T) {
 
 	_, err := AutomationAccountRunAsConnectionValidatesE(t, automationAccountrunAsAccountName, runAsConnectionType, runAsCertificateThumbprint, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
+	require.Error(t, err)
 }
 
 func TestAutomationAccountDscAppliedSuccessfullyToVME(t *testing.T) {
@@ -95,7 +95,7 @@ func TestAutomationAccountDscAppliedSuccessfullyToVME(t *testing.T) {
 
 	_, err := AutomationAccountDscAppliedSuccessfullyToVME(t, dscConfiguraitonName, vmName, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
+	require.Error(t, err)
 }
 
 func TestGetAutomationAccountE(t *testing.T) {
@@ -107,8 +107,8 @@ func TestGetAutomationAccountE(t *testing.T) {
 
 	client, err := GetAutomationAccountE(t, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
-	assert.NotEmpty(t, *client)
+	require.Error(t, err)
+	assert.Nil(t, client)
 }
 
 func TestGetAutomationAccountDscConfigurationE(t *testing.T) {
@@ -121,8 +121,8 @@ func TestGetAutomationAccountDscConfigurationE(t *testing.T) {
 
 	dscConfiguration, err := GetAutomationAccountDscConfigurationE(t, dscConfigurationName, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
-	assert.NotEmpty(t, *dscConfiguration)
+	require.Error(t, err)
+	assert.Nil(t, dscConfiguration)
 }
 
 func TestAutomationAccountDscCompileJobStatusE(t *testing.T) {
@@ -135,8 +135,8 @@ func TestAutomationAccountDscCompileJobStatusE(t *testing.T) {
 
 	status, err := AutomationAccountDscCompileJobStatusE(t, dscConfigurationName, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
-	assert.NotEmpty(t, status)
+	require.Error(t, err)
+	assert.Empty(t, status)
 }
 
 func TestGetAutomationAccountCertificateE(t *testing.T) {
@@ -149,8 +149,8 @@ func TestGetAutomationAccountCertificateE(t *testing.T) {
 
 	certificate, err := GetAutomationAccountCertificateE(t, automationAccountCertificateName, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
-	assert.NotEmpty(t, *certificate)
+	require.Error(t, err)
+	assert.Nil(t, certificate)
 }
 
 func TestGetAutomationAccountDscNodeConfigurationE(t *testing.T) {
@@ -164,8 +164,8 @@ func TestGetAutomationAccountDscNodeConfigurationE(t *testing.T) {
 
 	dscNodeConfig, err := GetAutomationAccountDscNodeConfigurationE(t, dscConfiguraitonName, vmName, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
-	assert.NotEmpty(t, *dscNodeConfig)
+	require.Error(t, err)
+	assert.Nil(t, dscNodeConfig)
 }
 
 func TestGetAutomationAccountRunAsConnectionE(t *testing.T) {
@@ -178,6 +178,6 @@ func TestGetAutomationAccountRunAsConnectionE(t *testing.T) {
 
 	connection, err := GetAutomationAccountRunAsConnectionE(t, automationAccountRunAsConnectionName, automationAccountName, resourceGroupName, subscriptionID)
 
-	require.NoError(t, err)
-	assert.NotEmpty(t, *connection)
+	require.Error(t, err)
+	assert.Nil(t, connection)
 }

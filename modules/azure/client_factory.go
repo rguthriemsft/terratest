@@ -171,6 +171,8 @@ func GetKeyVaultURISuffixE() (string, error) {
 	return env.KeyVaultDNSSuffix, nil
 }
 
+// CreateNsgDefaultRulesClientE returns an NSG default (platform) rules client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
 func CreateNsgDefaultRulesClientE(subscriptionID string) (*network.DefaultSecurityRulesClient, error) {
 	// Validate Azure subscription ID
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
@@ -189,6 +191,8 @@ func CreateNsgDefaultRulesClientE(subscriptionID string) (*network.DefaultSecuri
 	return &nsgClient, nil
 }
 
+// CreateNsgCustomRulesClientE returns an NSG custom (user) rules client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
 func CreateNsgCustomRulesClientE(subscriptionID string) (*network.SecurityRulesClient, error) {
 	// Validate Azure subscription ID
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
@@ -207,6 +211,8 @@ func CreateNsgCustomRulesClientE(subscriptionID string) (*network.SecurityRulesC
 	return &nsgClient, nil
 }
 
+// CreateNewNetworkInterfacesClientE returns an NIC client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
 func CreateNewNetworkInterfacesClientE(subscriptionID string) (*network.InterfacesClient, error) {
 	// Validate Azure subscription ID
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
@@ -225,6 +231,8 @@ func CreateNewNetworkInterfacesClientE(subscriptionID string) (*network.Interfac
 	return &nicClient, nil
 }
 
+// CreateNewNetworkInterfaceIPConfigurationClientE returns an NIC IP configuration client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
 func CreateNewNetworkInterfaceIPConfigurationClientE(subscriptionID string) (*network.InterfaceIPConfigurationsClient, error) {
 	// Validate Azure subscription ID
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)

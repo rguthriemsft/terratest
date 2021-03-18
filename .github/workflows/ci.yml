@@ -103,7 +103,7 @@ jobs:
           APP_ID=`echo $AZURE_CREDENTIALS | jq -r -c ".clientId"`
           APP_PASSWORD=`echo $AZURE_CREDENTIALS | jq -r -c ".clientSecret"`
           TENANT_ID=`echo $AZURE_CREDENTIALS | jq -r -c ".tenantId"`
-          APP_DISPLAY_NAME=`az ad sp show --id ea2a3195-6d82-4ca8-a325-6b356795fc91  --query "displayName" --output tsv`
+          APP_DISPLAY_NAME=`az ad sp show --id $APP_ID  --query "displayName" --output tsv`
 
           # if clientId, subscriptionId, tenantId doesn't provide to the go tests
           # by default, terratest reads them from below environment variables

@@ -71,7 +71,8 @@ jobs:
       - name: login to azure cli
         uses: azure/login@v1.1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }} 
+          allow-no-subscriptions: true
       - name: run go unit test for azure
         id: azure_unit_test
         env:

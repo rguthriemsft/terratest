@@ -190,7 +190,10 @@ func GetLoadBalancerClientE(subscriptionID string) (*network.LoadBalancersClient
 	}
 
 	// Get the Load Balancer client
-	client := network.NewLoadBalancersClient(subscriptionID)
+	client, err := CreateLoadBalancerClientE(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
 
 	// Create an authorizer
 	authorizer, err := NewAuthorizer()
@@ -199,5 +202,5 @@ func GetLoadBalancerClientE(subscriptionID string) (*network.LoadBalancersClient
 	}
 	client.Authorizer = *authorizer
 
-	return &client, nil
+	return client, nil
 }

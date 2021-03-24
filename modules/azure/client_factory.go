@@ -18,6 +18,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-07-01/compute"
 	"github.com/Azure/azure-sdk-for-go/services/containerservice/mgmt/2019-11-01/containerservice"
 	kvmng "github.com/Azure/azure-sdk-for-go/services/keyvault/mgmt/2016-10-01/keyvault"
+	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2019-09-01/network"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2019-06-01/subscriptions"
 	autorestAzure "github.com/Azure/go-autorest/autorest/azure"
 )
@@ -168,6 +169,26 @@ func GetKeyVaultURISuffixE() (string, error) {
 		return "", err
 	}
 	return env.KeyVaultDNSSuffix, nil
+}
+
+// CreateLoadBalancerClientE returns a load balancer client instance configured with the correct BaseURI depending on
+// the Azure environment that is currently setup (or "Public", if none is setup).
+func CreateLoadBalancerClientE(subscriptionID string) (*network.LoadBalancersClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	//create LB client
+	client := network.NewLoadBalancersClientWithBaseURI(baseURI, subscriptionID)
+	return &client, nil
 }
 
 // getDefaultEnvironmentName returns either a configured Azure environment name, or the public default

@@ -58,21 +58,31 @@ func CreateSubscriptionsClientE() (subscriptions.Client, error) {
 
 // CreateVirtualMachinesClientE returns a virtual machines client instance configured with the correct BaseURI depending on
 // the Azure environment that is currently setup (or "Public", if none is setup).
-func CreateVirtualMachinesClientE(subscriptionID string) (compute.VirtualMachinesClient, error) {
+func CreateVirtualMachinesClientE(subscriptionID string) (*compute.VirtualMachinesClient, error) {
 	// Validate Azure subscription ID
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
-		return compute.VirtualMachinesClient{}, err
+		return nil, err
 	}
 
 	// Lookup environment URI
 	baseURI, err := getBaseURI()
 	if err != nil {
-		return compute.VirtualMachinesClient{}, err
+		return nil, err
 	}
 
 	// Create correct client based on type passed
-	return compute.NewVirtualMachinesClientWithBaseURI(baseURI, subscriptionID), nil
+	vmClient := compute.NewVirtualMachinesClientWithBaseURI(baseURI, subscriptionID)
+
+	// Create an authorizer
+	authorizer, err := NewAuthorizer()
+	if err != nil {
+		return nil, err
+	}
+
+	// Attach authorizer to the client
+	vmClient.Authorizer = *authorizer
+	return &vmClient, nil
 }
 
 // snippet-tag-end::client_factory_example.CreateClient

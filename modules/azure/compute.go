@@ -9,6 +9,7 @@ import (
 )
 
 // GetVirtualMachineClient is a helper function that will setup an Azure Virtual Machine client on your behalf.
+// TODO: remove in next version
 func GetVirtualMachineClient(t testing.TestingT, subscriptionID string) *compute.VirtualMachinesClient {
 	vmClient, err := GetVirtualMachineClientE(subscriptionID)
 	require.NoError(t, err)
@@ -16,6 +17,7 @@ func GetVirtualMachineClient(t testing.TestingT, subscriptionID string) *compute
 }
 
 // GetVirtualMachineClientE is a helper function that will setup an Azure Virtual Machine client on your behalf.
+// TODO: remove in next version
 func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesClient, error) {
 
 	// snippet-tag-start::client_factory_example.helper
@@ -34,7 +36,7 @@ func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesCl
 
 	// Attach authorizer to the client
 	vmClient.Authorizer = *authorizer
-	return &vmClient, nil
+	return vmClient, nil
 }
 
 // VirtualMachineExists indicates whether the specifcied Azure Virtual Machine exists.
@@ -272,7 +274,7 @@ func ListVirtualMachinesForResourceGroup(t testing.TestingT, resGroupName string
 func ListVirtualMachinesForResourceGroupE(resourceGroupName string, subscriptionID string) ([]string, error) {
 	var vmDetails []string
 
-	vmClient, err := GetVirtualMachineClientE(subscriptionID)
+	vmClient, err := CreateVirtualMachinesClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
@@ -301,7 +303,7 @@ func GetVirtualMachinesForResourceGroup(t testing.TestingT, resGroupName string,
 // VM Object represents the entire set of VM compute properties accessible by using the VM name as the map key.
 func GetVirtualMachinesForResourceGroupE(resourceGroupName string, subscriptionID string) (map[string]compute.VirtualMachineProperties, error) {
 	// Create VM Client
-	vmClient, err := GetVirtualMachineClientE(subscriptionID)
+	vmClient, err := CreateVirtualMachinesClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
@@ -356,7 +358,7 @@ func GetVirtualMachineE(vmName string, resGroupName string, subscriptionID strin
 	}
 
 	// Get the client reference
-	client, err := GetVirtualMachineClientE(subscriptionID)
+	client, err := CreateVirtualMachinesClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
